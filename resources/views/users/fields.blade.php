@@ -21,15 +21,9 @@
             {{-- {{ Form::select('department_id', dump($role), null, ['class' => 'form-select fw-bold', 'required', 'id' => 'userRole', 'placeholder' => __('messages.role.select_role'), 'data-control' => 'select2']) }} --}}
             <select class="form-select status-selector " id="userRole" data-control="select2" name="department_id">
                 <option value="">{{ __('messages.role.select_role') }}</option>
-                <option value="1">{{ __('messages.admin') }}</option>
-                <option value="2">{{ __('messages.doctors') }}</option>
-                <option value="3">{{ __('messages.patients') }}</option>
-                <option value="4">{{ __('messages.nurses') }}</option>
-                <option value="5">{{ __('messages.receptionists') }}</option>
-                <option value="6">{{ __('messages.pharmacists') }}</option>
-                <option value="7">{{ __('messages.accountants') }}</option>
-                <option value="8">{{ __('messages.case_manager') }}</option>
-                <option value="9">{{ __('messages.lab_technicians') }}</option>
+                @foreach (\App\Models\Department::where('is_active', 1)->orderBy('id')->get() as $roleOption)
+                    <option value="{{ $roleOption->id }}" {{ old('department_id') == $roleOption->id ? 'selected' : '' }}>{{ $roleOption->display_name }}</option>
+                @endforeach
             </select>
         </div>
    

@@ -58,7 +58,8 @@ class LoginController extends Controller
             } elseif ($request->user()->hasRole(['Accountant'])) {
                 $this->redirectTo = 'accounts';
             } else {
-                $this->redirectTo = 'employee/notice-board';
+                // Custom role: first page its permissions allow (falls back to the notice board).
+                $this->redirectTo = redirectToDashboard();
             }
         }
 

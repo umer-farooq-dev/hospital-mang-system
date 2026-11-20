@@ -63,5 +63,6 @@ class AppServiceProvider extends ServiceProvider
 
             return false;
         });
+        Blade::if('canroute', fn (string $routeName) => canAccessRoute($routeName));
     }
 }
