@@ -804,7 +804,8 @@ mix.js(
         "resources/assets/js/odontogram/odontogram.js",
         "resources/assets/js/complaints/complaint.js",
         "resources/assets/js/email_templates/email_template.js",
-        
+        "resources/assets/js/roles/roles.js",
+
     ],
     "public/js/pages.js",
 );

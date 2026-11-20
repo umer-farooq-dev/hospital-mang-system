@@ -797,7 +797,11 @@ function addNotification($data)
  */
 function getNotification($role)
 {
-    return Notification::whereUserId(Auth::id())->whereNotificationFor(Notification::NOTIFICATION_FOR[$role])->where(
+    // Users without a built-in role (custom roles) get notifications addressed like admins,
+    // the same way User::getOwnerType() files them.
+    $notificationFor = Notification::NOTIFICATION_FOR[$role] ?? Notification::NOTIFICATION_FOR[Notification::ADMIN];
+
+    return Notification::whereUserId(Auth::id())->whereNotificationFor($notificationFor)->where(
         'read_at',
         null
     )->orderByDesc('created_at')->toBase()->get();
@@ -1112,7 +1116,9 @@ function getMenuLinks($menu)
 
     $allDisabled = \App\Models\Module::whereIn('name', $subMenus)
         ->where('is_active', true)
-        ->get();
+        ->get()
+        ->filter(fn ($module) => canAccessRoute($module->route))
+        ->values();
 
     if ($allDisabled->isEmpty()) {
         return false;
@@ -1142,9 +1148,24 @@ function redirectToDashboard(): string
         return 'bed-types';
     } elseif ($user->hasRole(['Accountant'])) {
         return 'accounts';
-    } else {
-        return 'employee/notice-board';
     }
+
+    // Custom role: the first active module list page its permissions allow
+    // (pages open to all staff, like the notice board, are the fallback).
+    $module = \App\Models\Module::where('is_active', true)->orderBy('id')->get()
+        ->first(function ($module) {
+            $route = \Illuminate\Support\Facades\Route::getRoutes()->getByName($module->route);
+
+            return $route
+                && (\App\Utils\RouteAccess::permission($route)[1] ?? null) === 'list'
+                && ! \App\Utils\RouteAccess::isOpenToStaff(\App\Utils\RouteAccess::defaultRoles($route) ?? [])
+                && canAccessRoute($module->route);
+        });
+    if ($module) {
+        return ltrim(parse_url(route($module->route), PHP_URL_PATH), '/');
+    }
+
+    return 'employee/notice-board';
 }
 
 /**
@@ -1607,5 +1628,32 @@ if (!function_exists('generateCustomSerialNumber')) {
         }
 
         return $newSerial;
+    }
+}
+
+if (! function_exists('canAccessRoute')) {
+    /**
+     * Whether the logged-in user may open the named route, according to the
+     * permissions set on the Roles screen. Used to hide menu items and buttons.
+     */
+    function canAccessRoute(string $routeName): bool
+    {
+        $route = \Illuminate\Support\Facades\Route::getRoutes()->getByName($routeName);
+        $user = Auth::user();
+
+        return $route !== null && $user !== null && \App\Utils\RouteAccess::allows($user, $route);
+    }
+}
+
+if (! function_exists('hasCustomRole')) {
+    /**
+     * True for users whose role was created on the Roles screen (no built-in role).
+     * They get the full menu, filtered by their permissions.
+     */
+    function hasCustomRole(): bool
+    {
+        $user = Auth::user();
+
+        return $user !== null && ! $user->hasAnyRole(\App\Utils\RouteAccess::builtInRoles());
     }
 }

@@ -110,6 +110,9 @@ class UserRepository extends BaseRepository
                     config('app.media_disc'));
             }
 
+            // Admin and custom roles (created on the Roles screen) have no profile record.
+            $ownerId = null;
+            $ownerType = null;
             if ($input['department_id'] == 1) {
                 $ownerId = null;
                 $ownerType = null;

@@ -18,8 +18,9 @@
 {{--           autocomplete="off"> --}}
 {{-- </li> --}}
 {{-- <div class="no-record text-white text-center d-none">No matching records found</li> --}}
-@role('Admin')
+@if (Auth::user()->hasRole('Admin') || hasCustomRole())
     {{-- Dashboard --}}
+    @canroute('dashboard')
     <li class="nav-item {{ Request::is('dashboard*') ? 'active' : '' }}">
         <a class="nav-link  d-flex align-items-center py-3" href="{{ route('dashboard') }}">
             <span class="aside-menu-icon me-3">
@@ -28,8 +29,10 @@
             <span class="aside-menu-title">{{ __('messages.dashboard.dashboard') }}</span>
         </a>
     </li>
+    @endcanroute
 
     {{-- patient id card --}}
+    @canroute('smart-patient-cards.index')
     <li class="nav-item {{ Request::is('smart-patient-cards*', 'generate-patient-smart-cards*') ? 'active' : '' }}">
         <a class="nav-link  d-flex align-items-center py-3" href="{{ route('smart-patient-cards.index') }}">
             <span class="aside-menu-icon me-3">
@@ -38,6 +41,7 @@
             <span class="aside-menu-title">{{ __('messages.patient_id_card.patient_id_card') }}</span>
         </a>
     </li>
+    @endcanroute
 
     {{-- @module('Operation Categories', $modules) --}}
     {{-- Operations Category --}}
@@ -53,6 +57,7 @@
     {{-- @endmodule --}}
 
     {{-- Users --}}
+    @canroute('users.index')
     <li
         class="nav-item {{ Request::is('users*', 'admins*', 'accountants*', 'nurses*', 'lab-technicians*', 'receptionists*', 'pharmacists*') ? 'active' : '' }}">
         <a class="nav-link  d-flex align-items-center py-3" href="{{ route('users.index') }}">
@@ -62,8 +67,10 @@
             <span class="aside-menu-title">{{ __('messages.users') }}</span>
         </a>
     </li>
+    @endcanroute
 
     {{-- Odontogram --}}
+    @canroute('odontogram.index')
     <li
         class="nav-item {{ Request::is('odontogram*') ? 'active' : '' }}">
         <a class="nav-link  d-flex align-items-center py-3" href="{{ route('odontogram.index') }}">
@@ -73,31 +80,38 @@
             <span class="aside-menu-title">{{ __('Odontogram')}}</span>
         </a>
     </li>
+    @endcanroute
 
+    @canroute('addon.index')
     <li class="nav-item {{ Request::is('add-on*') ? 'active' : '' }}">
         <a class="nav-link  d-flex align-items-center py-3" href="{{ route('addon.index') }}">
             <span class="aside-menu-icon me-3"><i class="fa-solid fa-upload"></i></span>
             <span class="aside-menu-title">{{ __('messages.addon.addon') }}</span>
         </a>
     </li>
+    @endcanroute
 
 
     @if (moduleExists('Holiday'))
+        @canroute('annualHolidays.index')
         <li class="nav-item {{ Request::is('annual-holidays*', 'calendar-view*') ? 'active' : '' }}">
             <a class="nav-link  d-flex align-items-center py-3" href="{{ route('annualHolidays.index') }}">
                 <span class="aside-menu-icon me-3"><i class="fa-solid fa-signs-post"></i></span>
                 <span class="aside-menu-title">{{ __('holiday::messages.holidays') }}</span>
             </a>
         </li>
+        @endcanroute
     @endif
     {{-- Appointments --}}
     @module('Appointments', $modules)
+        @canroute('appointments.index')
         <li class="nav-item {{ Request::is('appointment*') ? 'active' : '' }}">
             <a class="nav-link  d-flex align-items-center py-3" href="{{ route('appointments.index') }}">
                 <span class="aside-menu-icon me-3"><i class="fas fa-calendar-check"></i></span>
                 <span class="aside-menu-title">{{ __('messages.appointments') }}</span>
             </a>
         </li>
+        @endcanroute
     @endmodule
 
     {{-- ipds/opds --}}
@@ -161,6 +175,7 @@
     ?>
     @if ($bedMGT)
         {{-- Bed Management  --}}
+        @canroute('bed-status')
         <li
             class="nav-item  {{ Request::is('bed-types*', 'beds*', 'bed-assigns*', 'bulk-beds', 'bed-status') ? 'active' : '' }}">
             <a class="nav-link  d-flex align-items-center py-3" href="{{ route('bed-status') }}">
@@ -171,6 +186,7 @@
                 <span class="d-none">{{ __('messages.bed_assigns') }}</span>
             </a>
         </li>
+        @endcanroute
     @endif
 
     {{-- Blood Bank dropdown --}}
@@ -256,12 +272,14 @@
 
     {{-- Enquiries --}}
     @module('Enquires', $modules)
+        @canroute('enquiries')
         <li class="nav-item  {{ Request::is('enquiries*') || Request::is('enquiry*') ? 'active' : '' }}">
             <a class="nav-link  d-flex align-items-center py-3" href="{{ route('enquiries') }}">
                 <span class="aside-menu-icon me-3"><i class="fas fa-question-circle"></i></span>
                 <span class="aside-menu-title">{{ __('messages.enquiries') }}</span>
             </a>
         </li>
+        @endcanroute
     @endmodule
 
     {{-- Finance --}}
@@ -297,6 +315,7 @@
     @endif
 
     {{-- Front settings --}}
+    @canroute('front.settings.index')
     <li
         class="nav-item {{ Request::is('front-settings*', 'notice-boards*', 'testimonials*', 'front-cms-services*','complaints*') ? 'active' : '' }}">
         <a class="nav-link  d-flex align-items-center py-3" href="{{ route('front.settings.index') }}">
@@ -309,6 +328,7 @@
             <span class="d-none">{{ __('messages.complaint') }}</span>
         </a>
     </li>
+    @endcanroute
 
     {{-- Hospital Charges --}}
     <?php
@@ -485,24 +505,41 @@
         @endif
 
 
+            @canroute('email-template.index')
             <li class="nav-item  {{ Request::is('email-template*') || Request::is('email-template*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('email-template.index') }}">
                     <span class="aside-menu-icon me-3"><i class="fas fa-envelope-open-text"></i></span>
                     <span class="aside-menu-title">{{ __('messages.email_template.email_template') }}</span>
                 </a>
             </li>
+            @endcanroute
 
         {{-- Audit Logs --}}
         @module('Audit Logs', $modules)
+            @canroute('audit-logs.index')
             <li class="nav-item  {{ Request::is('audit-logs*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('audit-logs.index') }}">
                     <span class="aside-menu-icon me-3"><i class="fas fa-clipboard-list"></i></span>
                     <span class="aside-menu-title">{{ __('messages.audit_log.audit_logs') }}</span>
                 </a>
             </li>
+            @endcanroute
+        @endmodule
+
+        {{-- Roles and Permissions --}}
+        @module('Roles', $modules)
+            @canroute('roles.index')
+            <li class="nav-item  {{ Request::is('roles*') ? 'active' : '' }}">
+                <a class="nav-link  d-flex align-items-center py-3" href="{{ route('roles.index') }}">
+                    <span class="aside-menu-icon me-3"><i class="fas fa-user-shield"></i></span>
+                    <span class="aside-menu-title">{{ __('messages.access.roles') }}</span>
+                </a>
+            </li>
+            @endcanroute
         @endmodule
 
         {{-- Settings --}}
+        @canroute('settings.edit')
         <li
             class="nav-item  {{ Request::is('settings*', 'hospital-schedules*', 'currency-settings*', 'operation-categories*', 'operations*', 'payment-gateways*', 'add-custom-fields*') ? 'active' : '' }}">
             <a class="nav-link  d-flex align-items-center py-3" href="{{ route('settings.edit') }}">
@@ -512,6 +549,7 @@
                 <span class="d-none">{{ __('messages.sidebar_setting') }}</span>
             </a>
         </li>
+        @endcanroute
 
         {{-- Vaccination --}}
         <?php
@@ -528,19 +566,22 @@
                 </a>
             </li>
         @endif
-    @endrole
+    @endif
     @if (Auth::user()->email_verified_at != null)
         @role('Doctor')
             @module('Appointments', $modules)
+                @canroute('appointments.index')
                 <li class="nav-item  {{ Request::is('appointments*','patient-queue*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('appointments.index') }}">
                         <span class="aside-menu-icon me-3"><i class="nav-icon fas fa-calendar-check"></i></span>
                         <span class="aside-menu-title">{{ __('messages.appointments') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
              {{-- Odontogram --}}
+             @canroute('odontogram.index')
              <li class="nav-item {{ Request::is('odontogram*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('odontogram.index') }}">
                     <span class="aside-menu-icon me-3">
@@ -549,14 +590,17 @@
                     <span class="aside-menu-title">{{ __('Odontogram')}}</span>
                 </a>
             </li>
+             @endcanroute
 
             @if (moduleExists('Holiday'))
+                @canroute('calendar.view')
                 <li class="nav-item {{ Request::is('annual-holidays*', 'calendar-view*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('calendar.view') }}">
                         <span class="aside-menu-icon me-3"><i class="fa-solid fa-signs-post"></i></span>
                         <span class="aside-menu-title">{{ __('holiday::messages.holidays') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endif
 
             <?php
@@ -584,6 +628,7 @@
                 </li>
             @endmodule
             @module('Schedules', $modules)
+                @canroute('schedules.edit')
                 <li class="nav-item  {{ Request::is('schedules*', 'holidays*', 'breaks*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3"
                         href="{{ route('schedules.edit', getDoctorSchedule()) }}">
@@ -591,6 +636,7 @@
                         <span class="aside-menu-title">{{ __('messages.schedules') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             <?php
@@ -606,12 +652,14 @@
             @endif
 
             @module('Documents', $modules)
+                @canroute('documents.index')
                 <li class="nav-item  {{ Request::is('documents*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('documents.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-file"></i></span>
                         <span class="aside-menu-title">{{ __('messages.documents') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Diagnosis Test --}}
@@ -692,12 +740,14 @@
 
             {{-- My Payrolls --}}
             @module('My Payrolls', $modules)
+                @canroute('payroll')
                 <li class="nav-item {{ Request::is('employee/payroll*', 'employee-payrolls*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('payroll') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-chart-pie"></i></span>
                         <span class="aside-menu-title">{{ __('messages.my_payrolls') }}</span>
                     </a>
                 </li>
+                @endcanroute
 
                 {{-- Patients --}}
                 <?php
@@ -734,12 +784,14 @@
 
                 {{-- SMS --}}
                 @module('SMS', $modules)
+                    @canroute('sms.index')
                     <li class="nav-item {{ Request::is('sms*') ? 'active' : '' }}">
                         <a class="nav-link  d-flex align-items-center py-3" href="{{ route('sms.index') }}">
                             <span class="aside-menu-icon me-3"><i class="fas fa fa-sms"></i></span>
                             <span class="aside-menu-title">{{ __('messages.sms.sms') }}</span>
                         </a>
                     </li>
+                    @endcanroute
                 @endmodule
             @endmodule
         @endrole
@@ -755,12 +807,14 @@
             @endmodule
 
             @if (moduleExists('Holiday'))
+                @canroute('calendar.view')
                 <li class="nav-item {{ Request::is('annual-holidays*', 'calendar-view*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('calendar.view') }}">
                         <span class="aside-menu-icon me-3"><i class="fa-solid fa-signs-post"></i></span>
                         <span class="aside-menu-title">{{ __('holiday::messages.holidays') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endif
 
             {{-- Notice Boards --}}
@@ -775,21 +829,25 @@
 
                 {{-- Live Meeting --}}
                 @module('Live Meetings', $modules)
+                    @canroute('live.meeting.index')
                     <li class="nav-item  {{ Request::is('live-meeting*') ? 'active' : '' }}">
                         <a class="nav-link  d-flex align-items-center py-3" href="{{ route('live.meeting.index') }}">
                             <span class="aside-menu-icon me-3"><i class="fa fa-file-video"></i></span>
                             <span class="aside-menu-title">{{ __('messages.live_meetings') }}</span>
                         </a>
                     </li>
+                    @endcanroute
                 @endmodule
 
                 @module('My Payrolls', $modules)
+                    @canroute('payroll')
                     <li class="nav-item  {{ Request::is('employee/payroll*', 'employee-payrolls*') ? 'active' : '' }}">
                         <a class="nav-link  d-flex align-items-center py-3" href="{{ route('payroll') }}">
                             <span class="aside-menu-icon me-3"><i class="fas fa-chart-pie"></i></span>
                             <span class="aside-menu-title">{{ __('messages.my_payrolls') }}</span>
                         </a>
                     </li>
+                    @endcanroute
                 @endmodule
 
                 {{-- Patient admissions and Cases --}}
@@ -829,6 +887,7 @@
                 $smsMailCaseManagerMgt = getMenuLinks(\App\Models\User::MAIN_SMS_MAIL);
                 ?>
                 @if ($smsMailCaseManagerMgt)
+                    @canroute('sms.index')
                     <li class="nav-item  {{ Request::is('sms*', 'mail*') ? 'active' : '' }}">
                         <a class="nav-link  d-flex align-items-center py-3" href="{{ route('sms.index') }}"
                             title="{{ __('messages.sms_mail') }}">
@@ -838,6 +897,7 @@
                             <span class="aside-menu-title">{{ __('messages.sms.sms') }}/{{ __('messages.mail') }}</span>
                         </a>
                     </li>
+                    @endcanroute
                 @endif
             @endmodule
         @endrole
@@ -845,24 +905,29 @@
         @role('Receptionist')
             {{-- Appointments --}}
             @module('Appointments', $modules)
+                @canroute('appointments.index')
                 <li class="nav-item  {{ Request::is('appointments*','patient-queue*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('appointments.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-calendar-check"></i></span>
                         <span class="aside-menu-title">{{ __('messages.appointments') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             @if (moduleExists('Holiday'))
+                @canroute('calendar.view')
                 <li class="nav-item {{ Request::is('annual-holidays*', 'calendar-view*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('calendar.view') }}">
                         <span class="aside-menu-icon me-3"><i class="fa-solid fa-signs-post"></i></span>
                         <span class="aside-menu-title">{{ __('holiday::messages.holidays') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endif
 
             {{-- Patient Smart Cards --}}
+            @canroute('smart-patient-cards.index')
             <li
                 class="nav-item {{ Request::is('smart-patient-cards*', 'generate-patient-smart-cards*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('smart-patient-cards.index') }}">
@@ -872,11 +937,13 @@
                     <span class="aside-menu-title">{{ __('messages.patient_id_card.patient_id_card') }}</span>
                 </a>
             </li>
+            @endcanroute
 
             
             {{-- Billing --}}
 
             @module('Bills', $modules)
+                @canroute('bills.index')
                 <li
                     class="nav-item  {{ Request::is('manual-billing-payments*', 'accounts*', 'employee-payrolls*', 'invoices*', 'payments*', 'payment-reports*', 'advanced-payments*', 'bills*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('bills.index') }}">
@@ -891,16 +958,19 @@
                         <span class="d-none">{{ __('messages.bill.manual_bill') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Doctors --}}
             @module('Doctors', $modules)
+                @canroute('doctors.index')
                 <li class="nav-item  {{ Request::is('doctors*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('doctors.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-user-md"></i></span>
                         <span class="aside-menu-title">{{ __('messages.doctors') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Diagnosis Test --}}
@@ -921,12 +991,14 @@
 
             {{-- Enquires --}}
             @module('Enquires', $modules)
+                @canroute('enquiries')
                 <li class="nav-item  {{ Request::is('enquiries*') || Request::is('enquiry*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('enquiries') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-question-circle"></i></span>
                         <span class="aside-menu-title">{{ __('messages.enquiries') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Front office --}}
@@ -959,6 +1031,7 @@
 
             {{-- Complaints --}}
 
+            @canroute('complaints.index')
             <li class="nav-item {{ Request::is('complaints*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('complaints.index') }}">
                     <span class="aside-menu-icon me-3">
@@ -967,6 +1040,7 @@
                     <span class="aside-menu-title">{{ __('messages.complaint') }}</span>
                 </a>
             </li>
+            @endcanroute
 
 
             {{-- Hospital Charges --}}
@@ -1022,6 +1096,7 @@
 
             {{-- Live Meeting --}}
             @module('Live Meetings', $modules)
+                @canroute('live.meeting.index')
                 <li class="nav-item  {{ Request::is('live-meeting*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('live.meeting.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-file-video"></i></span>
@@ -1029,15 +1104,18 @@
                         <span class="d-none">{{ __('messages.live_meetings') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             @module('My Payrolls', $modules)
+                @canroute('payroll')
                 <li class="nav-item {{ Request::is('employee/payroll*', 'employee-payrolls*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('payroll') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-chart-pie"></i></span>
                         <span class="aside-menu-title">{{ __('messages.my_payrolls') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Cases Mgt --}}
@@ -1148,12 +1226,14 @@
             @endmodule
 
             @if (moduleExists('Holiday'))
+                @canroute('calendar.view')
                 <li class="nav-item {{ Request::is('annual-holidays*', 'calendar-view*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('calendar.view') }}">
                         <span class="aside-menu-icon me-3"><i class="fa-solid fa-signs-post"></i></span>
                         <span class="aside-menu-title">{{ __('holiday::messages.holidays') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endif
 
             @module('Prescriptions', $modules)
@@ -1177,12 +1257,14 @@
 
             {{-- Live Meeting --}}
             @module('Live Meetings', $modules)
+                @canroute('live.meeting.index')
                 <li class="nav-item  {{ Request::is('live-meeting*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('live.meeting.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-file-video"></i></span>
                         <span class="aside-menu-title">{{ __('messages.live_meetings') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Medicines --}}
@@ -1203,24 +1285,29 @@
             @endif
 
             @module('My Payrolls', $modules)
+                @canroute('payroll')
                 <li class="nav-item {{ Request::is('employee/payroll*', 'employee-payrolls*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('payroll') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-chart-pie"></i></span>
                         <span class="aside-menu-title">{{ __('messages.my_payrolls') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             @module('Pathology Tests', $modules)
+                @canroute('pathology.test.index')
                 <li class="nav-item  {{ Request::is('pathology-tests*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('pathology.test.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-flask"></i></span>
                         <span class="aside-menu-title">{{ __('messages.pathologies') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             @module('Radiology Tests', $modules)
+                @canroute('radiology.test.index')
                 <li class="nav-item {{ Request::is('radiology-tests*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('radiology.test.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-x-ray"></i></span>
@@ -1228,16 +1315,19 @@
                         <span class="d-none">{{ __('messages.radiology_tests') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- SMS --}}
             @module('SMS', $modules)
+                @canroute('sms.index')
                 <li class="nav-item {{ Request::is('sms*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('sms.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa fa-sms"></i></span>
                         <span class="aside-menu-title">{{ __('messages.sms.sms') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
         @endrole
 
@@ -1292,12 +1382,14 @@
             @endif
 
             @if (moduleExists('Holiday'))
+                @canroute('calendar.view')
                 <li class="nav-item {{ Request::is('annual-holidays*', 'calendar-view*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('calendar.view') }}">
                         <span class="aside-menu-icon me-3"><i class="fa-solid fa-signs-post"></i></span>
                         <span class="aside-menu-title">{{ __('holiday::messages.holidays') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endif
 
             @module('Employee Noticeboard', $modules)
@@ -1312,22 +1404,26 @@
 
             {{-- Live Meeting --}}
             @module('Live Meetings', $modules)
+                @canroute('live.meeting.index')
                 <li class="nav-item {{ Request::is('live-meeting*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('live.meeting.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-file-video"></i></span>
                         <span class="aside-menu-title">{{ __('messages.live_meetings') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- My Payrolls --}}
             @module('My Payrolls', $modules)
+                @canroute('payroll')
                 <li class="nav-item  {{ Request::is('employee/payroll*', 'employee-payroll*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('payroll') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-chart-pie"></i></span>
                         <span class="aside-menu-title">{{ __('messages.my_payrolls') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Medicines --}}
@@ -1348,14 +1444,17 @@
             @endif
 
             @module('Prescriptions', $modules)
+                @canroute('prescriptions.index')
                 <li class="nav-item {{ Request::is('prescriptions*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('prescriptions.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-prescription"></i></span>
                         <span class="aside-menu-title">{{ __('messages.prescriptions') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
+            @canroute('patient.diagnosis.test.index')
             <li class="nav-item  {{ Request::is('diagnosis-categories*', 'patient-diagnosis-test*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('patient.diagnosis.test.index') }}">
                     <span class="aside-menu-icon me-3"><i class="fas fa-diagnoses"></i></span>
@@ -1364,6 +1463,7 @@
                     <span class="d-none">{{ __('messages.patient_diagnosis_test.diagnosis_test') }}</span>
                 </a>
             </li>
+            @endcanroute
 
             <?php
             $reportMgt = getMenuLinks(\App\Models\User::MAIN_REPORT);
@@ -1383,6 +1483,7 @@
             @endif
 
 
+            @canroute('doctors.index')
             <li
                 class="nav-item  {{ Request::is('doctors*', 'doctor-departments*', 'schedules*', 'holidays*', 'breaks*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('doctors.index') }}">
@@ -1395,6 +1496,7 @@
                     <span class="d-none">{{ __('messages.prescriptions') }}</span>
                 </a>
             </li>
+            @endcanroute
         @endrole
 
         @role('Lab Technician')
@@ -1416,12 +1518,14 @@
             @endif
 
             @if (moduleExists('Holiday'))
+                @canroute('calendar.view')
                 <li class="nav-item {{ Request::is('annual-holidays*', 'calendar-view*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('calendar.view') }}">
                         <span class="aside-menu-icon me-3"><i class="fa-solid fa-signs-post"></i></span>
                         <span class="aside-menu-title">{{ __('holiday::messages.holidays') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endif
 
             @module('Doctors', $modules)
@@ -1479,12 +1583,14 @@
 
             {{-- Live Meeting --}}
             @module('Live Meetings', $modules)
+                @canroute('live.meeting.index')
                 <li class="nav-item  {{ Request::is('live-meeting*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('live.meeting.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-file-video"></i></span>
                         <span class="aside-menu-title">{{ __('messages.live_meetings') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Medicines --}}
@@ -1506,16 +1612,19 @@
 
             {{-- My Payrolls --}}
             @module('My Payrolls', $modules)
+                @canroute('payroll')
                 <li class="nav-item {{ Request::is('employee/payroll*', 'employee-payrolls*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('payroll') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-chart-pie"></i></span>
                         <span class="aside-menu-title">{{ __('messages.my_payrolls') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Pathologies --}}
             @module('Pathology Tests', $modules)
+                @canroute('pathology.test.index')
                 <li class="nav-item  {{ Request::is('pathology-tests*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('pathology.test.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-flask"></i></span>
@@ -1523,9 +1632,11 @@
                         <span class="d-none">{{ __('messages.pathology_tests') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             @module('Radiology Tests', $modules)
+                @canroute('radiology.test.index')
                 <li class="nav-item  {{ Request::is('radiology-tests*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('radiology.test.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-x-ray"></i></span>
@@ -1533,6 +1644,7 @@
                         <span class="d-none">{{ __('messages.radiology_tests') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
         @endrole
 
@@ -1557,12 +1669,14 @@
             @endif
 
             @if (moduleExists('Holiday'))
+                @canroute('calendar.view')
                 <li class="nav-item {{ Request::is('calendar-view*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('calendar.view') }}">
                         <span class="aside-menu-icon me-3"><i class="fa-solid fa-signs-post"></i></span>
                         <span class="aside-menu-title">{{ __('holiday::messages.holidays') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endif
 
             {{-- Finance --}}
@@ -1593,47 +1707,56 @@
 
             {{-- Live Meeting --}}
             @module('Live Meetings', $modules)
+                @canroute('live.meeting.index')
                 <li class="nav-item  {{ Request::is('live-meeting*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('live.meeting.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-file-video"></i></span>
                         <span class="aside-menu-title">{{ __('messages.live_meetings') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- My Payrolls --}}
             @module('My Payrolls', $modules)
+                @canroute('payroll')
                 <li class="nav-item  {{ Request::is('employee/payroll*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('payroll') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-chart-pie"></i></span>
                         <span class="aside-menu-title">{{ __('messages.my_payrolls') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Services --}}
             @module('Services', $modules)
+                @canroute('services.index')
                 <li class="nav-item {{ Request::is('services*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('services.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-box"></i></span>
                         <span class="aside-menu-title">{{ __('messages.services') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- SMS --}}
             @module('SMS', $modules)
+                @canroute('sms.index')
                 <li class="nav-item  {{ Request::is('sms*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('sms.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa fa-sms"></i></span>
                         <span class="aside-menu-title">{{ __('messages.sms.sms') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
         @endrole
 
         @role('Patient')
 
+            @canroute('patient.dashboard')
             <li class="nav-item {{ Request::is('patient-dashboard*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('patient.dashboard') }}">
                     <span class="aside-menu-icon me-3">
@@ -1642,27 +1765,33 @@
                     <span class="aside-menu-title">{{ __('messages.dashboard.dashboard') }}</span>
                 </a>
             </li>
+            @endcanroute
 
 
             @if (moduleExists('Holiday'))
+                @canroute('calendar.view')
                 <li class="nav-item {{ Request::is('annual-holidays*', 'calendar-view*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('calendar.view') }}">
                         <span class="aside-menu-icon me-3"><i class="fa-solid fa-signs-post"></i></span>
                         <span class="aside-menu-title">{{ __('holiday::messages.holidays') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endif
 
             @module('Appointments', $modules)
+                @canroute('appointments.index')
                 <li class="nav-item  {{ Request::is('appointments*','patient-queue*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('appointments.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-calendar-check"></i></span>
                         <span class="aside-menu-title">{{ __('messages.appointments') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
              {{-- Odontogram --}}
+            @canroute('odontogram.index')
             <li class="nav-item {{ Request::is('odontogram*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('odontogram.index') }}">
                     <span class="aside-menu-icon me-3">
@@ -1671,6 +1800,7 @@
                     <span class="aside-menu-title">{{ __('Odontogram')}}</span>
                 </a>
             </li>
+            @endcanroute
 
             {{-- patient id card --}}
             {{-- <li class="nav-item {{ Request::is('patient-smart-card') ? 'active' : '' }}">
@@ -1693,12 +1823,14 @@
 
             {{-- Documents --}}
             @module('Documents', $modules)
+                @canroute('documents.index')
                 <li class="nav-item  {{ Request::is('documents*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('documents.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-file"></i></span>
                         <span class="aside-menu-title">{{ __('messages.documents') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             @module('Employee Noticeboard', $modules)
@@ -1711,6 +1843,7 @@
                 </li>
             @endmodule
 
+            @canroute('complaints.index')
             <li class="nav-item {{ Request::is('complaints*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('complaints.index') }}">
                     <span class="aside-menu-icon me-3">
@@ -1719,8 +1852,10 @@
                     <span class="aside-menu-title">{{ __('messages.complaint') }}</span>
                 </a>
             </li>
+            @endcanroute
 
             {{-- ipds/opds --}}
+            @canroute('patient.ipd')
             <li class="nav-item  {{ Request::is('patient/my-ipds*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('patient.ipd') }}"
                     title="{{ __('messages.ipd_opd') }}">
@@ -1732,7 +1867,9 @@
                     <span class="d-none">{{ __('messages.opd_patients') }}</span>
                 </a>
             </li>
+            @endcanroute
 
+            @canroute('patient.opd')
             <li class="nav-item  {{ Request::is('opds*', 'patient/my-opds*') ? 'active' : '' }}">
                 <a class="nav-link  d-flex align-items-center py-3" href="{{ route('patient.opd') }}"
                     title="{{ __('messages.ipd_opd') }}">
@@ -1744,6 +1881,7 @@
                     <span class="d-none">{{ __('messages.opd_patients') }}</span>
                 </a>
             </li>
+            @endcanroute
 
             @module('Invoices', $modules)
                 <li class="nav-item  {{ Request::is('employee/invoices*') ? 'active' : '' }}">
@@ -1756,12 +1894,14 @@
 
             {{-- Live Consultation --}}
             @module('Live Consultations', $modules)
+                @canroute('live.consultation.index')
                 <li class="nav-item  {{ Request::is('live-consultation*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('live.consultation.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fa fa-video"></i></span>
                         <span class="aside-menu-title">{{ __('messages.live_consultations') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             @module('Patient Cases', $modules)
@@ -1783,21 +1923,25 @@
             @endmodule
 
             @module('Prescriptions', $modules)
+                @canroute('prescriptions.list')
                 <li class="nav-item {{ Request::is('patient/my-prescriptions*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('prescriptions.list') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-prescription"></i></span>
                         <span class="aside-menu-title">{{ __('messages.prescriptions') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             @module('Vaccinated Patients', $modules)
+                @canroute('patient.vaccinated')
                 <li class="nav-item  {{ Request::is('patient/my-vaccinated*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('patient.vaccinated') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-head-side-mask"></i></span>
                         <span class="aside-menu-title">{{ __('messages.vaccinated_patients') }}</span>
                     </a>
                 </li>
+                @endcanroute
             @endmodule
 
             {{-- Patient Reports --}}

@@ -80,6 +80,36 @@ class Department extends Model implements RoleContract
         9 => 'Lab Technician',
     ];
 
+    // Translation keys the user form uses for the built-in roles.
+    const ROLE_LABELS = [
+        1 => 'messages.admin',
+        2 => 'messages.doctors',
+        3 => 'messages.patients',
+        4 => 'messages.nurses',
+        5 => 'messages.receptionists',
+        6 => 'messages.pharmacists',
+        7 => 'messages.accountants',
+        8 => 'messages.case_manager',
+        9 => 'messages.lab_technicians',
+    ];
+
+    /** Built-in roles (ids 1-9) are referenced by id and name in code, so they cannot be renamed or deleted. */
+    public function isBuiltIn(): bool
+    {
+        return $this->id > 0 && array_key_exists($this->id, self::ROLE);
+    }
+
+    /** The Admin role keeps its default permissions so nobody can lock the hospital out. */
+    public function isAdmin(): bool
+    {
+        return $this->id === 1;
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        return isset(self::ROLE_LABELS[$this->id]) ? __(self::ROLE_LABELS[$this->id]) : $this->name;
+    }
+
     public static function boot()
     {
         parent::boot();

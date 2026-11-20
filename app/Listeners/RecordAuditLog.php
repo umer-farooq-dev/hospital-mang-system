@@ -58,6 +58,15 @@ class RecordAuditLog
             return;
         }
 
+        self::write($model, $event, $old, $new);
+    }
+
+    /**
+     * Writes one audit row. Also used directly for changes that fire no model event,
+     * such as a role's permissions (a pivot table).
+     */
+    public static function write(Model $model, string $event, array $old, array $new): void
+    {
         $inConsole = app()->runningInConsole();
 
         AuditLog::create([

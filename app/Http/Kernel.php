@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\CheckAccess;
 use App\Http\Middleware\CheckModule;
 use App\Http\Middleware\CheckUserStatus;
 use App\Http\Middleware\EncryptCookies;
@@ -94,6 +95,7 @@ class Kernel extends HttpKernel
         'role' => RoleMiddleware::class,
         'permission' => PermissionMiddleware::class,
         'role_or_permission' => RoleOrPermissionMiddleware::class,
+        'access' => CheckAccess::class,
         'xss' => XSS::class,
         'checkUserStatus' => CheckUserStatus::class,
         'modules' => CheckModule::class,
