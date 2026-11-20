@@ -11,6 +11,7 @@ use App\Http\Controllers\AmbulanceController;
 use App\Http\Controllers\AppointmentCalendarController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AppointmentTransactionController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\TwofactorAuthenticationController;
 use App\Http\Controllers\BedAssignController;
@@ -1562,6 +1563,13 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
 
         Route::put('/email-templates/{id}', [EmailTemplateController::class, 'update'])
             ->name('email-template.update');
+
+        // Audit Logs
+        Route::get('audit-logs', [AuditLogController::class, 'index'])
+            ->name('audit-logs.index')
+            ->middleware('modules');
+        Route::get('audit-logs/{auditLog}', [AuditLogController::class, 'show'])
+            ->name('audit-logs.show');
     });
 
     // Operation Categories
