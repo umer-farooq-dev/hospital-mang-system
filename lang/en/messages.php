@@ -2333,4 +2333,26 @@ return [
     // 'complaint' => [
     //     'complaint' => 'complaint',
     // ],
+
+    'audit_log' => [
+        'audit_logs' => 'Audit Logs',
+        'audit_log_details' => 'Audit Log Details',
+        'date_time' => 'Date & Time',
+        'user' => 'User',
+        'event' => 'Event',
+        'module' => 'Module',
+        'record_id' => 'Record ID',
+        'ip_address' => 'IP Address',
+        'url' => 'URL',
+        'user_agent' => 'Browser',
+        'changes' => 'Changes',
+        'field' => 'Field',
+        'old_value' => 'Old Value',
+        'new_value' => 'New Value',
+        'system' => 'System',
+        'created' => 'Created',
+        'updated' => 'Updated',
+        'deleted' => 'Deleted',
+        'no_changes' => 'No field changes recorded.',
+    ],
 ];

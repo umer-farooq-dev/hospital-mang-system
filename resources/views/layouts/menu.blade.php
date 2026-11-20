@@ -492,6 +492,16 @@
                 </a>
             </li>
 
+        {{-- Audit Logs --}}
+        @module('Audit Logs', $modules)
+            <li class="nav-item  {{ Request::is('audit-logs*') ? 'active' : '' }}">
+                <a class="nav-link  d-flex align-items-center py-3" href="{{ route('audit-logs.index') }}">
+                    <span class="aside-menu-icon me-3"><i class="fas fa-clipboard-list"></i></span>
+                    <span class="aside-menu-title">{{ __('messages.audit_log.audit_logs') }}</span>
+                </a>
+            </li>
+        @endmodule
+
         {{-- Settings --}}
         <li
             class="nav-item  {{ Request::is('settings*', 'hospital-schedules*', 'currency-settings*', 'operation-categories*', 'operations*', 'payment-gateways*', 'add-custom-fields*') ? 'active' : '' }}">
