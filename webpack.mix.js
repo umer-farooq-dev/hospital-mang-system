@@ -606,6 +606,7 @@ mix.js(
         "resources/assets/js/pharmacists/create-edit.js",
         "resources/assets/js/patients/patients.js",
         "resources/assets/js/patients/patients_data_listing.js",
+        "resources/assets/js/patients/insurances.js",
         "resources/assets/js/patients/create-edit.js",
         "resources/assets/js/patients/registration.js",
         "resources/assets/js/reception_desk/reception_desk.js",

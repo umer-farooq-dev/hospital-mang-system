@@ -97,6 +97,7 @@ use App\Http\Controllers\Patient;
 use App\Http\Controllers\PatientAdmissionController;
 use App\Http\Controllers\PatientCaseController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PatientInsuranceController;
 use App\Http\Controllers\ReceptionDeskController;
 use App\Http\Controllers\PatientRegistrationReportController;
 use App\Http\Controllers\PatientDiagnosisTestController;
@@ -624,6 +625,9 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('patients/{patient}/active-deactive', [PatientController::class, 'activeDeactiveStatus']);
         Route::get('export-patients', [PatientController::class, 'patientExport'])->name('patient.excel');
         Route::get('patient-duplicates', [PatientController::class, 'getDuplicates'])->name('patients.duplicates');
+        Route::post('patients/{patient}/insurances', [PatientInsuranceController::class, 'store'])->name('patient-insurances.store');
+        Route::post('patient-insurances/{patientInsurance}', [PatientInsuranceController::class, 'update'])->name('patient-insurances.update');
+        Route::delete('patient-insurances/{patientInsurance}', [PatientInsuranceController::class, 'destroy'])->name('patient-insurances.destroy');
 
         Route::resource('case-handlers', CaseHandlerController::class)->parameters(['case-handlers' => 'caseHandler']);
         Route::get('case-handlers', [CaseHandlerController::class, 'index'])

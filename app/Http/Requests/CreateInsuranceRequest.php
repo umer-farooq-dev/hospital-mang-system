@@ -15,11 +15,23 @@ class CreateInsuranceRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
+    /** Amounts are typed with thousands separators; validate the plain number. */
+    protected function prepareForValidation(): void
+    {
+        foreach (['service_tax', 'hospital_rate'] as $field) {
+            if ($this->filled($field)) {
+                $this->merge([$field => removeCommaFromNumbers($this->input($field))]);
+            }
+        }
+    }
+
     public function rules(): array
     {
-        return Insurance::$rules;
+        return Insurance::rules(null);
+    }
+
+    public function attributes(): array
+    {
+        return Insurance::attributeNames();
     }
 }

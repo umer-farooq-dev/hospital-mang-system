@@ -28,6 +28,7 @@
             <td>{{ __('messages.reception_report.male') }} : <b>{{ $summary['male'] }}</b></td>
             <td>{{ __('messages.reception_report.female') }} : <b>{{ $summary['female'] }}</b></td>
             <td>{{ __('messages.reception_report.with_id') }} : <b>{{ $summary['with_id'] }}</b></td>
+            <td>{{ __('messages.reception_report.insured') }} : <b>{{ $summary['insured'] }}</b></td>
         </tr>
     </table>
 

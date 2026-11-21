@@ -6,6 +6,7 @@ use Eloquent as Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 
 /**
  * Class Insurance
@@ -51,14 +52,30 @@ use Illuminate\Support\Carbon;
  */
 class Insurance extends Model
 {
-    public static $rules = [
-        'name' => 'required|unique:insurances,name',
-        'service_tax' => 'required',
-        'insurance_no' => 'required',
-        'insurance_code' => 'required',
-        'hospital_rate' => 'required',
-        'discount' => 'required|integer',
-    ];
+    /** How the payer share is invoiced to the payer (used by the claims module). */
+    const BILLING_OPTIONS = ['per_visit', 'per_admission', 'monthly'];
+
+    const PAYER_TYPE = 'payer_type';
+
+    public static function rules(?int $ignoreId = null): array
+    {
+        return [
+            'name' => 'required|max:160|unique:insurances,name'.($ignoreId ? ','.$ignoreId : ''),
+            'payer_type' => ['required', 'integer', Rule::in(array_keys(MasterListItem::labels(self::PAYER_TYPE)))],
+            'coverage_percent' => 'nullable|numeric|min:0|max:100',
+            'discount' => 'nullable|numeric|min:0|max:100',
+            'service_tax' => 'nullable|numeric|min:0',
+            'hospital_rate' => 'nullable|numeric|min:0',
+            'insurance_no' => 'nullable|max:191',
+            'insurance_code' => 'required|max:191',
+            'contact_person' => 'nullable|max:160',
+            'phone' => 'nullable|max:30',
+            'email' => 'nullable|email|max:160',
+            'address' => 'nullable|max:1000',
+            'billing_option' => ['required', Rule::in(self::BILLING_OPTIONS)],
+            'credit_days' => 'nullable|integer|min:0|max:365',
+        ];
+    }
 
     public $table = 'insurances';
 
@@ -82,6 +99,14 @@ class Insurance extends Model
 
     public $fillable = [
         'name',
+        'payer_type',
+        'coverage_percent',
+        'contact_person',
+        'phone',
+        'email',
+        'address',
+        'billing_option',
+        'credit_days',
         'service_tax',
         'discount',
         'remark',
@@ -94,8 +119,11 @@ class Insurance extends Model
 
     protected $casts = [
         'id' => 'integer',
-        'service_tax' => 'integer',
-        'discount' => 'integer',
+        'payer_type' => 'integer',
+        'coverage_percent' => 'float',
+        'credit_days' => 'integer',
+        'service_tax' => 'double',
+        'discount' => 'double',
         'remark' => 'string',
         'insurance_no' => 'string',
         'insurance_code' => 'string',
@@ -108,5 +136,36 @@ class Insurance extends Model
     public function insuranceDiseases(): HasMany
     {
         return $this->hasMany(InsuranceDisease::class, 'insurance_id');
+    }
+
+    /** Field names in validation messages, as labelled on the form. */
+    public static function attributeNames(): array
+    {
+        $names = collect(array_keys(self::rules()))->mapWithKeys(fn ($f) => [$f => __('messages.insurance.'.$f)])->all();
+        $names['name'] = __('messages.insurance.insurance');
+
+        return $names;
+    }
+
+    public function patientInsurances(): HasMany
+    {
+        return $this->hasMany(PatientInsurance::class, 'insurance_id');
+    }
+
+    public function getPayerTypeNameAttribute(): ?string
+    {
+        return MasterListItem::label(self::PAYER_TYPE, $this->payer_type);
+    }
+
+    public static function billingOptions(): array
+    {
+        return collect(self::BILLING_OPTIONS)->mapWithKeys(fn ($o) => [$o => __('messages.insurance.billing_options.'.$o)])->all();
+    }
+
+    /** Active payers for a dropdown, keeping a current (possibly deactivated) one. */
+    public static function options($currentId = null): array
+    {
+        return self::where('status', self::ACTIVE)->when($currentId, fn ($q) => $q->orWhere('id', $currentId))
+            ->orderBy('name')->pluck('name', 'id')->all();
     }
 }

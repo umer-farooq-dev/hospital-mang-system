@@ -118,8 +118,8 @@ function resetInsuranceItemIndex () {
         $('#insuranceTotal').text('0')
         $('#insuranceBillTbl tbody').append('<tr>' +
             '<td class="text-center item-number">1</td>' +
-            '<td><input class="form-control disease-name" required name="disease_name[]" type="text"></td>' +
-            '<td><input class="form-control disease-charge price-input" required name="disease_charge[]" type="text"></td>' +
+            '<td><input class="form-control disease-name" name="disease_name[]" type="text"></td>' +
+            '<td><input class="form-control disease-charge price-input" name="disease_charge[]" type="text"></td>' +
             '<td class="text-center"><a href="javascript:void(0)" title="{{__(\'messages.common.delete\')}}"  class="delete-disease btn px-1 text-danger fs-3 pe-0">\n' +
             '                    <i class="fa-solid fa-trash"></i>\n' +
             '                            </a></td>' +

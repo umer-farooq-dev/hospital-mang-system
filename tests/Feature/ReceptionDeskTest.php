@@ -24,6 +24,19 @@ class ReceptionDeskTest extends TestCase
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
         });
+        Schema::create('insurances', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->boolean('status')->default(1);
+            $table->timestamps();
+        });
+        Schema::create('patient_insurances', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedInteger('patient_id');
+            $table->unsignedInteger('insurance_id');
+            $table->unsignedTinyInteger('priority')->default(1);
+            $table->timestamps();
+        });
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');

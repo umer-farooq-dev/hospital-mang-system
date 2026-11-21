@@ -329,6 +329,12 @@ class Patient extends Model
         return $this->hasMany(Document::class, 'patient_id');
     }
 
+    /** Insurance policies and partner-company memberships, first payer first. */
+    public function insurances(): HasMany
+    {
+        return $this->hasMany(PatientInsurance::class, 'patient_id')->orderBy('priority')->orderBy('id');
+    }
+
     public function vaccinations(): HasMany
     {
         return $this->hasMany(VaccinatedPatients::class, 'patient_id');

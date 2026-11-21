@@ -34,6 +34,9 @@
             </div>
             @include('patients.advanced_payments.edit_modal')
             @include('patients.vaccinations.edit_modal')
+            @if (canAccessRoute('patient-insurances.store') || canAccessRoute('patient-insurances.update'))
+                @include('patients.insurances.modal')
+            @endif
         </div>
     </div>
 @endsection

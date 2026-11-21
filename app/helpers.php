@@ -448,6 +448,16 @@ function formatAmount($amount): string
 }
 
 /**
+ * A percentage without trailing zeros, with the decimal separator from settings (80%, 12,5%).
+ */
+function formatPercent($value): string
+{
+    $number = rtrim(rtrim(number_format((float) $value, 2, '.', ''), '0'), '.');
+
+    return str_replace('.', currencyFormatSettings()['decimal_separator'], $number).'%';
+}
+
+/**
  * An amount with its currency symbol on the side chosen in settings.
  */
 function formatMoney($amount, ?string $symbol = null): string

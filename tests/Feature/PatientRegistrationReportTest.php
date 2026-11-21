@@ -58,6 +58,19 @@ class PatientRegistrationReportTest extends TestCase
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+        Schema::create('insurances', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->boolean('status')->default(1);
+            $table->timestamps();
+        });
+        Schema::create('patient_insurances', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedInteger('patient_id');
+            $table->unsignedInteger('insurance_id');
+            $table->unsignedTinyInteger('priority')->default(1);
+            $table->timestamps();
+        });
         DB::table('master_list_items')->insert(['type' => 'id_document_type', 'code' => 1, 'name' => 'National ID card']);
         MasterListItem::flushCache();
 
@@ -82,6 +95,9 @@ class PatientRegistrationReportTest extends TestCase
             ['patient_id' => 4, 'doctor_id' => 1, 'appointment_date' => '2026-11-20 16:00'], // new
             ['patient_id' => 3, 'doctor_id' => 1, 'appointment_date' => '2026-10-30 10:00'], // outside the period
         ]);
+
+        DB::table('insurances')->insert(['name' => 'Assur']);
+        DB::table('patient_insurances')->insert(['patient_id' => 4, 'insurance_id' => 1]); // Mariam is insured
 
         $this->report = app(PatientRegistrationReportRepository::class);
     }
@@ -113,6 +129,7 @@ class PatientRegistrationReportTest extends TestCase
         $this->assertSame(1, $summary['male']);
         $this->assertSame(2, $summary['female']);
         $this->assertSame(2, $summary['with_id']);
+        $this->assertSame(1, $summary['insured']);
         $this->assertSame(['2026-11-03' => 2, '2026-11-20' => 1], $summary['by_day']->all());
 
         $this->assertSame(['visits' => 3, 'patients' => 2, 'new' => 1, 'returning' => 1], $summary['visits']['General']);
@@ -126,5 +143,11 @@ class PatientRegistrationReportTest extends TestCase
 
         $withId = $this->report->patients($this->report->filters(['id_document_type' => 1]))->count();
         $this->assertSame(2, $withId);
+
+        $payer = fn ($value) => $this->report->patients($this->report->filters(['payer' => $value]))->pluck('patient_unique_id')->all();
+        $this->assertSame(['ISSA', 'AWA'], $payer('self'));
+        $this->assertSame(['MARIAM'], $payer('insured'));
+        $this->assertSame(['MARIAM'], $payer('1'));
+        $this->assertSame('', $this->report->filters(['payer' => '99'])['payer'], 'unknown payer is ignored');
     }
 }

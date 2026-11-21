@@ -10,6 +10,21 @@
                                     class="pb-2 fs-5 text-gray-600">{{ __('messages.insurance.insurance') . ':' }}</label>
                                 <span class="fs-5 text-gray-800">{{ $insurance->name }}</span>
                             </div>
+                            @foreach ([
+                                'payer_type' => $insurance->payer_type_name,
+                                'coverage_percent' => isset($insurance->coverage_percent) ? formatPercent($insurance->coverage_percent) : null,
+                                'billing_option' => __('messages.insurance.billing_options.' . $insurance->billing_option),
+                                'credit_days' => $insurance->credit_days,
+                                'contact_person' => $insurance->contact_person,
+                                'phone' => $insurance->phone,
+                                'email' => $insurance->email,
+                                'address' => $insurance->address,
+                            ] as $field => $value)
+                                <div class="col-lg-3 d-flex flex-column mb-md-10 mb-5">
+                                    <label class="pb-2 fs-5 text-gray-600">{{ __('messages.insurance.' . $field) . ':' }}</label>
+                                    <span class="fs-5 text-gray-800">{{ filled($value) ? $value : __('messages.common.n/a') }}</span>
+                                </div>
+                            @endforeach
                             <div class="col-lg-3 d-flex flex-column mb-md-10 mb-5">
                                 <label
                                     class="pb-2 fs-5 text-gray-600">{{ __('messages.insurance.service_tax') . ':' }}</label>
