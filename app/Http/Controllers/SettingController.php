@@ -57,6 +57,7 @@ class SettingController extends AppBaseController
             'patient_portal_login' => $request->boolean('patient_portal_login') ? '1' : '0',
             'patient_duplicate_check' => $input['patient_duplicate_check'],
             'patient_duplicate_fields' => implode(',', $input['patient_duplicate_fields'] ?? []),
+            'reception_webcam' => $request->boolean('reception_webcam') ? '1' : '0',
         ];
         foreach ($values as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);

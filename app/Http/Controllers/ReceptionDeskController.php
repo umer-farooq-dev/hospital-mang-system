@@ -26,7 +26,9 @@ class ReceptionDeskController extends AppBaseController
             ? Patient::with('patientUser.media')->whereKey($request->integer('patient'))->get()
             : collect();
 
-        return view('reception_desk.index', compact('appointments', 'recentPatients', 'selected'));
+        $webcam = Patient::registrationSettings()['webcam'];
+
+        return view('reception_desk.index', compact('appointments', 'recentPatients', 'selected', 'webcam'));
     }
 
     /**
