@@ -2817,6 +2817,9 @@ return [
             'not_covered' => 'Ce payeur ne prend pas en charge ce service.',
             'approval_needed' => 'Ce payeur exige un accord : saisissez le n° de bon pour appliquer la prise en charge.',
             'limit_reached' => 'Le plafond de la police est atteint : le reste est à la charge du patient.',
+            'followup_free' => 'Consultation de contrôle pendant la validité : gratuite.',
+            'followup_reduced' => 'Consultation de contrôle pendant la validité : prix réduit.',
+            'policy_blocked' => 'La police du patient n\'est pas valable à cette date : choisissez payant ou un autre payeur.',
         ],
     ],
     'coverage' => [
@@ -2922,6 +2925,19 @@ return [
         ],
         'receipt_footer_text' => 'Texte du pied de reçu',
         'receipt_footer_hint' => 'Imprimé sur les reçus de consultation. Utilisez :days et :date pour la validité. Vide = texte par défaut.',
+        'followup_mode' => 'Consultation de contrôle (même médecin, pendant la validité)',
+        'followup_percent' => 'Réduction',
+        'followup_hint' => 'Une consultation avec le même médecin pendant la validité d\'une consultation payée est gratuite ou réduite.',
+        'policy_expired_mode' => 'Si la police du patient n\'est pas valable',
+        'followup_modes' => [
+            'off' => 'Facturée normalement',
+            'free' => 'Gratuite',
+            'percent' => 'Réduite du %',
+        ],
+        'policy_expired_modes' => [
+            'self_pay' => 'Le patient paie tout (avertissement)',
+            'block' => 'Refuser l\'enregistrement',
+        ],
     ],
     'receipts' => [
         'receipts' => 'Reçus',

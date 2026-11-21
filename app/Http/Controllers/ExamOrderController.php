@@ -67,6 +67,7 @@ class ExamOrderController extends AppBaseController
         if (! $lines) {
             throw ValidationException::withMessages(['tests' => __('messages.exam_orders.no_valid_test')]);
         }
+        \App\Utils\PriceSplit::assertPolicyAllowed($lines[0]['split']);
 
         $order = DB::transaction(function () use ($input, $lines) {
             $order = ExamOrder::create([

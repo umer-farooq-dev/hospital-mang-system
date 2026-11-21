@@ -158,6 +158,7 @@ class CashierTest extends TestCase
         Schema::create('doctor_departments', function (Blueprint $t) {
             $t->id();
             $t->string('title');
+            $t->decimal('discount_percent', 5, 2)->nullable();
         });
         Schema::create('opd_patient_departments', function (Blueprint $t) {
             $t->id();
@@ -169,6 +170,7 @@ class CashierTest extends TestCase
             $t->decimal('discount_amount', 15, 2)->default(0);
             $t->decimal('payer_amount', 15, 2)->default(0);
             $t->decimal('patient_amount', 15, 2)->nullable();
+            $t->boolean('is_followup')->default(false);
         });
         (require base_path('database/migrations/2026_11_20_120000_create_audit_logs_table.php'))->up();
 
@@ -352,5 +354,24 @@ class CashierTest extends TestCase
 
         $this->assertSame(3, $journal['rows']->count(), '2 receipts + the transfer to the safe; the register-to-register transfer is internal');
         $this->assertSame(6742.0, $journal['closing'], '6 000 + 1 242 - 500');
+    }
+
+    public function test_follow_up_with_the_same_doctor_after_a_paid_consultation(): void
+    {
+        $input = ['patient_id' => 7, 'doctor_id' => 1, 'standard_charge' => 6000, 'appointment_date' => '2026-11-30 10:00'];
+        $this->assertNull(\App\Models\OpdPatientDepartment::followupFactor($input), 'off by default');
+
+        DB::table('settings')->insert([['key' => 'followup_mode', 'value' => 'free'], ['key' => 'receipt_followup_days', 'value' => '14'], ['key' => 'followup_percent', 'value' => '50']]);
+        $this->assertNull(\App\Models\OpdPatientDepartment::followupFactor($input), 'nothing paid yet');
+
+        $session = $this->cashier->open($this->user, 0);
+        $this->cashier->collect($session, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]); // visit of 22/11 paid
+        [, $split] = \App\Models\OpdPatientDepartment::splitFor($input);
+        $this->assertSame([0.0, true, ['followup_free']], [$split['patient_amount'], $split['is_followup'], $split['warnings']]);
+
+        DB::table('settings')->where('key', 'followup_mode')->update(['value' => 'percent']);
+        $this->assertSame(0.5, \App\Models\OpdPatientDepartment::followupFactor($input));
+        $this->assertNull(\App\Models\OpdPatientDepartment::followupFactor(['appointment_date' => '2026-12-07 10:00'] + $input), 'after 14 days');
+        $this->assertNull(\App\Models\OpdPatientDepartment::followupFactor(['doctor_id' => 2] + $input), 'another doctor');
     }
 }

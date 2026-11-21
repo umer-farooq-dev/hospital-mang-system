@@ -115,6 +115,21 @@
                                 {{ Form::textarea('receipt_footer_text', $settings['receipt_footer_text'] ?? '', ['class' => 'form-control', 'rows' => 3, 'maxlength' => 500, 'placeholder' => __('messages.cashier.followup_footer'), ] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
                                 <div class="form-text">{{ __('messages.cashier.receipt_footer_hint') }}</div>
                             </div>
+                            <div class="row">
+                                <div class="col-7 mb-5">
+                                    {{ Form::label('followup_mode', __('messages.cashier.followup_mode') . ':', ['class' => 'form-label']) }}
+                                    {{ Form::select('followup_mode', collect(\App\Http\Controllers\CashCounterController::FOLLOWUP_MODES)->mapWithKeys(fn ($m) => [$m => __('messages.cashier.followup_modes.' . $m)]), $settings['followup_mode'] ?? 'off', ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                                </div>
+                                <div class="col-5 mb-5">
+                                    {{ Form::label('followup_percent', __('messages.cashier.followup_percent') . ' %:', ['class' => 'form-label']) }}
+                                    {{ Form::number('followup_percent', $settings['followup_percent'] ?? 0, ['class' => 'form-control', 'min' => 0, 'max' => 100, 'step' => 'any'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                                </div>
+                                <div class="col-12 form-text mt-n3 mb-5">{{ __('messages.cashier.followup_hint') }}</div>
+                            </div>
+                            <div class="mb-5">
+                                {{ Form::label('policy_expired_mode', __('messages.cashier.policy_expired_mode') . ':', ['class' => 'form-label']) }}
+                                {{ Form::select('policy_expired_mode', collect(\App\Http\Controllers\CashCounterController::POLICY_EXPIRED_MODES)->mapWithKeys(fn ($m) => [$m => __('messages.cashier.policy_expired_modes.' . $m)]), $settings['policy_expired_mode'] ?? 'self_pay', ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                            </div>
                             <div class="mb-5">
                                 {{ Form::label('cash_payment_method', __('messages.cashier.cash_payment_method') . ':', ['class' => 'form-label']) }}
                                 {{ Form::select('cash_payment_method', \App\Models\PaymentMethod::options([], $settings['cash_payment_method'] ?? 1), $settings['cash_payment_method'] ?? 1, ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}

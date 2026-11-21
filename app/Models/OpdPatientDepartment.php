@@ -83,6 +83,7 @@ class OpdPatientDepartment extends Model
         'discount_amount',
         'payer_amount',
         'patient_amount',
+        'is_followup',
         'currency_symbol',
         'custom_field',
     ];
@@ -125,21 +126,57 @@ class OpdPatientDepartment extends Model
             ? PatientInsurance::with('insurance')->where('patient_id', (int) ($input['patient_id'] ?? 0))->find($input['patient_insurance_id'])
             : null;
         $departmentId = Doctor::whereKey((int) ($input['doctor_id'] ?? 0))->value('doctor_department_id');
-        $split = PriceSplit::compute((float) removeCommaFromNumbers((string) ($input['standard_charge'] ?? 0)), $policy, $departmentId, [
+        $gross = (float) removeCommaFromNumbers((string) ($input['standard_charge'] ?? 0));
+        $followup = self::followupFactor($input, $visitId);
+        $split = PriceSplit::compute($gross * ($followup ?? 1), $policy, $departmentId, [
             'date' => $input['appointment_date'] ?? now(),
             'voucher_number' => $input['voucher_number'] ?? null,
             'ignore_visit_id' => $visitId,
         ]);
+        if ($followup !== null) {
+            $split['warnings'][] = $followup == 0 ? 'followup_free' : 'followup_reduced';
+        }
+        $split['is_followup'] = $followup !== null;
 
         return [$policy, $split];
+    }
+
+    /**
+     * Follow-up rule (Settings > Cash registers): a consultation with the same doctor within the
+     * validity days of a paid consultation is free or reduced. Returns the price factor, or null.
+     * ponytail: "same condition" cannot be checked by the system; the cashier decides by removing the doctor or the visit.
+     */
+    public static function followupFactor(array $input, ?int $visitId = null): ?float
+    {
+        $settings = Setting::whereIn('key', ['followup_mode', 'followup_percent', 'receipt_followup_days'])->pluck('value', 'key');
+        $mode = $settings['followup_mode'] ?? 'off';
+        $days = (int) ($settings['receipt_followup_days'] ?? 0);
+        if (! in_array($mode, ['free', 'percent']) || $days <= 0 || empty($input['patient_id']) || empty($input['doctor_id'])) {
+            return null;
+        }
+        $date = Carbon::parse($input['appointment_date'] ?? now());
+        $previous = self::where('patient_id', (int) $input['patient_id'])->where('doctor_id', (int) $input['doctor_id'])
+            ->where('is_followup', false)
+            ->when($visitId, fn ($q) => $q->where('id', '!=', $visitId))
+            ->whereBetween('appointment_date', [$date->copy()->subDays($days)->startOfDay(), $date])
+            ->pluck('id');
+        $paid = $previous->isNotEmpty() && ReceiptLine::where('payable_type', 'opd_visit')->whereIn('payable_id', $previous)
+            ->whereHas('receipt', fn ($q) => $q->whereNull('voided_at')->whereDoesntHave('refund'))->exists();
+        if (! $paid) {
+            return null;
+        }
+
+        return $mode === 'free' ? 0.0 : max(0, 1 - min(100, (float) ($settings['followup_percent'] ?? 0)) / 100);
     }
 
     /** Form input with the split columns filled in, ready to save. */
     public static function withSplit(array $input, ?int $visitId = null): array
     {
         [$policy, $split] = self::splitFor($input, $visitId);
+        PriceSplit::assertPolicyAllowed($split);
 
         return array_merge($input, [
+            'is_followup' => $split['is_followup'],
             'standard_charge' => $split['gross'],
             'patient_insurance_id' => $policy?->id,
             'discount_percent' => $split['discount_percent'],
@@ -190,6 +227,7 @@ class OpdPatientDepartment extends Model
         'discount_amount' => 'float',
         'payer_amount' => 'float',
         'patient_amount' => 'float',
+        'is_followup' => 'boolean',
         'custom_field' => 'array',
     ];
 
