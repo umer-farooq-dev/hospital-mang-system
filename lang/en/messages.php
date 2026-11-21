@@ -469,6 +469,7 @@ return [
             'insurer' => 'Insurance company',
             'company' => 'Partner company',
             'mutual' => 'Mutual / public scheme',
+            'staff' => 'Staff and next of kin',
         ],
         'price_list_id' => 'Price list',
         'price_list_default' => 'Default price list',

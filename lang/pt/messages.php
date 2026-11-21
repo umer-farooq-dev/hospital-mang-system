@@ -424,6 +424,7 @@ return [
             'insurer' => 'Seguradora',
             'company' => 'Empresa parceira',
             'mutual' => 'Mútua / regime público',
+            'staff' => 'Pessoal e familiares',
         ],
         'price_list_id' => 'Tabela de preços',
         'price_list_default' => 'Tabela padrão',

@@ -464,6 +464,7 @@ return [
             'insurer' => 'Sigorta şirketi',
             'company' => 'Partner şirket',
             'mutual' => 'Yardımlaşma sandığı / kamu',
+            'staff' => 'Personel ve yakınları',
         ],
         'price_list_id' => 'Fiyat listesi',
         'price_list_default' => 'Varsayılan liste',

@@ -444,6 +444,7 @@ return [
             'insurer' => '保险公司',
             'company' => '合作企业',
             'mutual' => '互助会 / 公共计划',
+            'staff' => '员工及其家属',
         ],
         'price_list_id' => '价目表',
         'price_list_default' => '默认价目表',
