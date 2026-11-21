@@ -1,1 +1,1 @@
-{{ localization('expense_head',App\Models\Expense::FILTER_EXPENSE_HEAD[$row->expense_head]) }}
+{{ \App\Models\MasterListItem::label('expense_head', $row->expense_head, __('messages.common.n/a')) }}

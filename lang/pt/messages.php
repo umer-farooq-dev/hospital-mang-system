@@ -2365,4 +2365,26 @@ return [
         'role_has_users' => 'Esta função tem usuários. Mova-os para outra função antes de excluí-la.',
         'no_permission' => 'Você não tem permissão para abrir esta página.',
     ],
+
+    'master_list' => [
+        'master_lists' => 'Listas mestras',
+        'item' => 'Item da lista',
+        'new_item' => 'Novo item',
+        'edit_item' => 'Editar item',
+        'name' => 'Nome',
+        'sort_order' => 'Ordem de exibição',
+        'active' => 'Ativo',
+        'inactive' => 'Inativo',
+        'in_use' => 'Este item é usado em registros salvos. Desative-o em vez de excluí-lo.',
+        'inactive_hint' => 'Itens inativos permanecem nos registros antigos, mas não aparecem mais nos formulários.',
+        'types' => [
+            'income_head' => 'Categorias de receita',
+            'expense_head' => 'Categorias de despesa',
+            'charge_type' => 'Tipos de cobrança',
+            'visitor_purpose' => 'Motivos de visita',
+            'dose_interval' => 'Intervalos de dose',
+            'dose_duration' => 'Durações de dose',
+            'meal_timing' => 'Horários das refeições',
+        ],
+    ],
 ];

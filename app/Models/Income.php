@@ -46,20 +46,7 @@ class Income extends Model implements HasMedia
 
     const PATH = 'income';
 
-    const INCOME_HEAD = [
-        1 => 'Canteen Rent',
-        2 => 'Hospital Charges',
-        3 => 'Special Campaign',
-        4 => 'Vehicle Stand Charges',
-    ];
 
-    const FILTER_INCOME_HEAD = [
-        0 => 'All',
-        2 => 'Hospital Charges',
-        3 => 'Special Campaign',
-        1 => 'Canteen Rent',
-        4 => 'Vehicle Stand Charges',
-    ];
 
     public $fillable = [
         'income_head',

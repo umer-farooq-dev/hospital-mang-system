@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\MasterListItem;
 use App\Models\Accountant;
 use App\Models\Income;
 use App\Models\Notification;
@@ -79,6 +80,7 @@ class IncomeRepository extends BaseRepository
         try {
             $accountant = Accountant::pluck('user_id', 'id')->toArray();
 
+            $userIds = []; // stays empty when there is nobody to notify
             foreach ($accountant as $key => $userId) {
                 $userIds[$userId] = Notification::NOTIFICATION_FOR[Notification::ACCOUNTANT];
             }
@@ -92,7 +94,7 @@ class IncomeRepository extends BaseRepository
                     Notification::NOTIFICATION_TYPE['Income'],
                     $key,
                     $notification,
-                    Income::INCOME_HEAD[$input['income_head']].' income added.',
+                    MasterListItem::label('income_head', $input['income_head'], '').' income added.',
                 ]);
             }
 

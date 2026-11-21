@@ -2367,4 +2367,26 @@ return [
         'role_has_users' => 'Dieser Rolle sind Benutzer zugeordnet. Verschieben Sie sie in eine andere Rolle, bevor Sie sie löschen.',
         'no_permission' => 'Sie haben keine Berechtigung, diese Seite zu öffnen.',
     ],
+
+    'master_list' => [
+        'master_lists' => 'Stammlisten',
+        'item' => 'Listeneintrag',
+        'new_item' => 'Neuer Eintrag',
+        'edit_item' => 'Eintrag bearbeiten',
+        'name' => 'Name',
+        'sort_order' => 'Anzeigereihenfolge',
+        'active' => 'Aktiv',
+        'inactive' => 'Inaktiv',
+        'in_use' => 'Dieser Eintrag wird in gespeicherten Datensätzen verwendet. Deaktivieren Sie ihn, statt ihn zu löschen.',
+        'inactive_hint' => 'Inaktive Einträge bleiben in alten Datensätzen erhalten, werden in Formularen aber nicht mehr angeboten.',
+        'types' => [
+            'income_head' => 'Einnahmearten',
+            'expense_head' => 'Ausgabearten',
+            'charge_type' => 'Gebührenarten',
+            'visitor_purpose' => 'Besuchszwecke',
+            'dose_interval' => 'Dosierungsintervalle',
+            'dose_duration' => 'Einnahmedauern',
+            'meal_timing' => 'Einnahmezeitpunkte',
+        ],
+    ],
 ];

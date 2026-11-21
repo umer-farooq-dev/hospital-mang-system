@@ -1,3 +1,3 @@
 <div class="d-flex align-items-center mt-3">
-    {{ localization('incomes',App\Models\Income::FILTER_INCOME_HEAD[$row->income_head]) }}
+    {{ \App\Models\MasterListItem::label('income_head', $row->income_head, __('messages.common.n/a')) }}
 </div>

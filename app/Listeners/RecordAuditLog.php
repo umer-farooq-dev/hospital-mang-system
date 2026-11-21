@@ -16,7 +16,10 @@ use Illuminate\Support\Facades\Schema;
 class RecordAuditLog
 {
     // Field names (or Setting keys) whose values must never be stored in clear text.
-    const SENSITIVE = '/password|secret|token|salt|_key$/i';
+    const SENSITIVE = '/password|secret|token|salt|api_key|private_key|access_key/i';
+
+    // Setting rows (key/value) whose key matches hold credentials, e.g. open_ai_key, stripe_secret.
+    const SENSITIVE_SETTING = '/password|secret|token|salt|_key$/i';
 
     const MASK = '******';
 
@@ -86,7 +89,7 @@ class RecordAuditLog
     {
         // Settings store credentials as key/value rows, e.g. key=stripe_secret.
         $settingKey = $model->getAttributes()['key'] ?? null;
-        $maskValue = is_string($settingKey) && preg_match(self::SENSITIVE, $settingKey);
+        $maskValue = is_string($settingKey) && preg_match(self::SENSITIVE_SETTING, $settingKey);
 
         foreach ($values as $field => $value) {
             $sensitive = preg_match(self::SENSITIVE, $field) || ($maskValue && $field === 'value');

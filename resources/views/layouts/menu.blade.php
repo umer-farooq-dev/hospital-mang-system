@@ -538,6 +538,18 @@
             @endcanroute
         @endmodule
 
+        {{-- Master Lists --}}
+        @module('Master Lists', $modules)
+            @canroute('master-lists.index')
+            <li class="nav-item  {{ Request::is('master-lists*') ? 'active' : '' }}">
+                <a class="nav-link  d-flex align-items-center py-3" href="{{ route('master-lists.index') }}">
+                    <span class="aside-menu-icon me-3"><i class="fas fa-list-ul"></i></span>
+                    <span class="aside-menu-title">{{ __('messages.master_list.master_lists') }}</span>
+                </a>
+            </li>
+            @endcanroute
+        @endmodule
+
         {{-- Settings --}}
         @canroute('settings.edit')
         <li

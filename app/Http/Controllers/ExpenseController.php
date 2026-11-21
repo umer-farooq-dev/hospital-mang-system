@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MasterListItem;
 use App\Exports\ExpenseExport;
 use App\Http\Requests\CreateExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
@@ -26,10 +27,8 @@ class ExpenseController extends AppBaseController
 
     public function index()
     {
-        $expenseHeads = Expense::EXPENSE_HEAD;
-        asort($expenseHeads);
-        $filterExpenseHeads = Expense::FILTER_EXPENSE_HEAD;
-        asort($filterExpenseHeads);
+        $expenseHeads = MasterListItem::options('expense_head');
+        $filterExpenseHeads = MasterListItem::filterOptions('expense_head');
 
         return view('expenses.index', compact('expenseHeads', 'filterExpenseHeads'));
     }
@@ -47,8 +46,7 @@ class ExpenseController extends AppBaseController
     public function show(Expense $expense)
     {
         $expenses = $this->expenseRepository->find($expense->id);
-        $expenseHeads = Expense::EXPENSE_HEAD;
-        asort($expenseHeads);
+        $expenseHeads = MasterListItem::labels('expense_head');
 
         return view('expenses.show', compact('expenses', 'expenseHeads'));
     }

@@ -13,7 +13,7 @@
             <div class="p-5">
                 <div class="mb-5">
                     <label for="exampleInputSelect2" class="form-label">{{ __('messages.common.status') . ':' }}</label>
-                    {{ Form::select('charge_type', localization("charge",$filterHeads[0]), null, ['id' => 'filterChargeType', 'data-control' => 'select2', 'class' => 'form-select status-filter status-selector select2-hidden-accessible data-allow-clear="true"']) }}
+                    {{ Form::select('charge_type', $filterHeads[0], null, ['id' => 'filterChargeType', 'data-control' => 'select2', 'class' => 'form-select status-filter status-selector select2-hidden-accessible data-allow-clear="true"']) }}
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="reset" id="chargesResetFilter"

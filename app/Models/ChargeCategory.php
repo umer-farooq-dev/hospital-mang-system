@@ -32,22 +32,7 @@ class ChargeCategory extends Model
 {
     public $table = 'charge_categories';
 
-    const CHARGE_TYPES = [
-        1 => 'Investigations',
-        2 => 'Operation Theatre',
-        3 => 'Others',
-        4 => 'Procedures',
-        5 => 'Supplier',
-    ];
 
-    const FILTER_CHARGE_TYPES = [
-        0 => 'All',
-        4 => 'Procedures',
-        1 => 'Investigations',
-        5 => 'Supplier',
-        2 => 'Operation Theatre',
-        3 => 'Others',
-    ];
 
     public $fillable = [
         'name',

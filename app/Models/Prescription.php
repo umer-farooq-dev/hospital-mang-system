@@ -180,10 +180,6 @@ class Prescription extends Model
 
     const BEFORE_MEAL = 1;
 
-    const MEAL_ARR = [
-        self::AFETR_MEAL => 'After Meal',
-        self::BEFORE_MEAL => 'Before Meal',
-    ];
 
     const ONE_TIME = 1;
 
@@ -193,12 +189,6 @@ class Prescription extends Model
 
     const FOUR_TIME = 4;
 
-    const DOSE_INTERVAL = [
-        self::ONE_TIME => 'Daily morning',
-        self::TWO_TIME => 'Daily morning and evening',
-        self::THREE_TIME => 'Daily morning, noon, and evening',
-        self::FOUR_TIME => '4 times in a day',
-    ];
 
     const ONE_DAY = 1;
 
@@ -210,13 +200,6 @@ class Prescription extends Model
 
     const ONE_MONTH = 30;
 
-    const DOSE_DURATION = [
-        self::ONE_DAY => 'Only one day',
-        self::THREE_DAY => 'Upto Three days',
-        self::ONE_WEEK => 'Upto One week',
-        self::TWO_WEEK => 'Upto two week',
-        self::ONE_MONTH => 'Upto one month',
-    ];
 
     public function patient(): BelongsTo
     {

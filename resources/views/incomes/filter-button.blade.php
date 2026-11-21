@@ -14,7 +14,7 @@
                 <div class="mb-5">
                     <label for="exampleInputSelect2" class="form-label">{{ __('messages.common.status') . ':' }}</label>
                     {{-- {{ Form::select('income_head', $filterHeads[0], null, ['id' => 'incomeHead', 'data-control' => 'select2', 'class' => 'form-select status-filter']) }} --}}
-                    {{ Form::select('income_head', localization('incomes', $filterHeads[0]), null, ['id' => 'incomeHead', 'data-control' => 'select2', 'class' => 'form-select status-filter']) }}
+                    {{ Form::select('income_head', $filterHeads[0], null, ['id' => 'incomeHead', 'data-control' => 'select2', 'class' => 'form-select status-filter']) }}
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="reset" class="btn btn-secondary"

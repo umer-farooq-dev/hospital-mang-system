@@ -212,7 +212,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        {{ App\Models\Prescription::DOSE_INTERVAL[$ipdPrescriptionItem->dose_interval] ?? 'N\A' }}
+                                        {{ \App\Models\MasterListItem::label('dose_interval', $ipdPrescriptionItem->dose_interval, 'N\A') }}
                                     </td>
                                     <td>{!! !empty($ipdPrescriptionItem->instruction)
                                         ? nl2br(e($ipdPrescriptionItem->instruction))
@@ -381,7 +381,7 @@
                         @endif
                     </td>
                     <td class="text-start pt-6">
-                        {{ App\Models\Prescription::DOSE_INTERVAL[$ipdPrescriptionItem->dose_interval] ?? 'N\A' }}
+                        {{ \App\Models\MasterListItem::label('dose_interval', $ipdPrescriptionItem->dose_interval, 'N\A') }}
                     </td>
                     <td class="text-start pt-6">{!! !empty($ipdPrescriptionItem->instruction)
                         ? nl2br(e($ipdPrescriptionItem->instruction))

@@ -45,6 +45,11 @@ class AuditLogTest extends TestCase
         $name->touch(); // timestamp-only change is not logged
         $this->assertSame($count, AuditLog::count());
 
+        // Settings named *_key hold credentials; ordinary *_key fields are not secrets.
+        $aiKey = AuditTestSetting::create(['key' => 'open_ai_key', 'value' => 'sk-live-1']);
+        $this->assertSame('******', AuditLog::where('auditable_id', $aiKey->id)->first()->new_values['value']);
+        $this->assertSame('open_ai_key', AuditLog::where('auditable_id', $aiKey->id)->first()->new_values['key']);
+
         $secret->delete();
         $deleted = AuditLog::where('event', 'deleted')->first();
         $this->assertSame('******', $deleted->old_values['value']);

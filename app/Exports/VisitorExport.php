@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\MasterListItem;
 use App\Models\Visitor;
 use Closure;
 use Illuminate\Contracts\View\View;
@@ -18,7 +19,7 @@ class VisitorExport implements FromView, WithTitle, ShouldAutoSize, WithEvents
 {
     public function view(): View
     {
-        $visitorHead = Visitor::PURPOSE;
+        $visitorHead = MasterListItem::labels('visitor_purpose');
 
         return view('exports.visitors', ['visitors' => Visitor::all(), 'visitorHead' => $visitorHead]);
     }

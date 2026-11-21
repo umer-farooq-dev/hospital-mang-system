@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Charge;
+use App\Models\MasterListItem;
 use App\Models\ChargeCategory;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -19,7 +20,12 @@ class ChargeTable extends LivewireTableComponent
 
     public $buttonComponent = 'charges.templates.button.add-button';
 
-    public $FilterComponent = ['charges.templates.button.filter-button', ChargeCategory::FILTER_CHARGE_TYPES];
+    public $FilterComponent = ['charges.templates.button.filter-button', []];
+
+    public function mount(): void
+    {
+        $this->FilterComponent[1] = MasterListItem::filterOptions('charge_type');
+    }
 
     public $statusFilter;
 
@@ -105,22 +111,9 @@ class ChargeTable extends LivewireTableComponent
     {
         $query = Charge::whereHas('chargeCategory')->with('chargeCategory')->select('charges.*');
 
-        $query->when(isset($this->statusFilter), function (Builder $q) {
-            if ($this->statusFilter == 1) {
-                $q->where('charges.charge_type', 1);
-            }
-            if ($this->statusFilter == 2) {
-                $q->where('charges.charge_type', 2);
-            }
-            if ($this->statusFilter == 3) {
-                $q->where('charges.charge_type', 3);
-            }
-            if ($this->statusFilter == 4) {
-                $q->where('charges.charge_type', 4);
-            }
-            if ($this->statusFilter == 5) {
-                $q->where('charges.charge_type', 5);
-            }
+        // 0 = all charge types; any other value is a charge type code from Master Lists.
+        $query->when(! empty($this->statusFilter), function (Builder $q) {
+            $q->where('charges.charge_type', $this->statusFilter);
         });
 
         return $query;

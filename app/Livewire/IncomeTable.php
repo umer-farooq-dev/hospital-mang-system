@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Income;
+use App\Models\MasterListItem;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\WithPagination;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -19,7 +20,12 @@ class IncomeTable extends LivewireTableComponent
 
     public $buttonComponent = 'incomes.add-button';
 
-    public $FilterComponent = ['incomes.filter-button', Income::FILTER_INCOME_HEAD];
+    public $FilterComponent = ['incomes.filter-button', []];
+
+    public function mount(): void
+    {
+        $this->FilterComponent[1] = MasterListItem::filterOptions('income_head');
+    }
 
     public $statusFilter;
 

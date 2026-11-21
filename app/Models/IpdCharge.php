@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\MasterListItem;
 use Eloquent as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -47,13 +48,6 @@ class IpdCharge extends Model
 {
     public $table = 'ipd_charges';
 
-    const  CHARGE_TYPES = [
-        1 => 'Investigations',
-        2 => 'Operation Theatre',
-        3 => 'Others',
-        4 => 'Procedures',
-        5 => 'Supplier',
-    ];
 
     public $fillable = [
         'ipd_patient_department_id',
@@ -105,6 +99,6 @@ class IpdCharge extends Model
 
     public function getChargeTypeAttribute()
     {
-        return self::CHARGE_TYPES[$this->charge_type_id];
+        return MasterListItem::label('charge_type', $this->charge_type_id, '');
     }
 }

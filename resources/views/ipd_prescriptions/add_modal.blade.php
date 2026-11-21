@@ -66,13 +66,13 @@
                                             {{ Form::text('dosage[]', null, ['placeholder' => __('messages.ipd_patient_prescription.dosage'),'class' => 'form-control dosage', 'required', 'onkeypress' => 'return avoidSpace(event);']) }}
                                         </td>
                                         <td>
-                                            {{ Form::select('day[]', \App\Models\Prescription::DOSE_DURATION, null, ['placeholder' => __('messages.purchase_medicine.dose_duration'),'class' => 'form-select select2Selector ipdDoseDuration']) }}
+                                            {{ Form::select('day[]', \App\Models\MasterListItem::options('dose_duration'), null, ['placeholder' => __('messages.purchase_medicine.dose_duration'),'class' => 'form-select select2Selector ipdDoseDuration']) }}
                                         </td>
                                         <td>
-                                            {{ Form::select('dose_interval[]', \App\Models\Prescription::DOSE_INTERVAL, null, ['placeholder' => __('messages.medicine_bills.dose_interval'),'class' => 'form-select select2Selector ipdDoseInterval']) }}
+                                            {{ Form::select('dose_interval[]', \App\Models\MasterListItem::options('dose_interval'), null, ['placeholder' => __('messages.medicine_bills.dose_interval'),'class' => 'form-select select2Selector ipdDoseInterval']) }}
                                         </td>
                                         <td>
-                                            {{ Form::select('time[]', \App\Models\Prescription::MEAL_ARR, null, ['placeholder' => __('messages.prescription.time'),'class' => 'form-select prescriptionMedicineMealId']) }}
+                                            {{ Form::select('time[]', \App\Models\MasterListItem::options('meal_timing'), null, ['placeholder' => __('messages.prescription.time'),'class' => 'form-select prescriptionMedicineMealId']) }}
                                         </td>
                                         <td>
                                             {{ Form::textarea('instruction[]', null, ['placeholder' => __('messages.ipd_patient_prescription.instruction'),'class' => 'form-control instruction', 'rows' => 1, 'required', 'onkeypress' => 'return avoidSpace(event);']) }}

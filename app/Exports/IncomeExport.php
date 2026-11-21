@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\MasterListItem;
 use App\Models\Income;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -14,7 +15,7 @@ class IncomeExport implements FromView, WithTitle, ShouldAutoSize, WithEvents
 {
     public function view(): View
     {
-        $incomeHead = Income::INCOME_HEAD;
+        $incomeHead = MasterListItem::labels('income_head');
 
         return view('exports.incomes', ['incomes' => Income::all(), 'incomeHead' => $incomeHead]);
     }

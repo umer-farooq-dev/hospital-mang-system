@@ -39,6 +39,7 @@ class NoticeBoardRepository extends BaseRepository
                 ->pluck('owner_type', 'id')
                 ->toArray();
 
+            $userIds = []; // stays empty when there is nobody to notify
             foreach ($users as $key => $ownerType) {
                 $userIds[$key] = Notification::NOTIFICATION_FOR[User::getOwnerType($ownerType)];
             }

@@ -52,18 +52,7 @@ class Visitor extends Model implements HasMedia
 
     const PATH = 'visitors';
 
-    const PURPOSE = [
-        3 => 'Visit',
-        1 => 'Enquiry',
-        2 => 'Seminar',
-    ];
 
-    const FILTER_PURPOSE = [
-        0 => 'All',
-        3 => 'Visit',
-        1 => 'Enquiry',
-        2 => 'Seminar',
-    ];
 
     protected $fillable = [
         'purpose',

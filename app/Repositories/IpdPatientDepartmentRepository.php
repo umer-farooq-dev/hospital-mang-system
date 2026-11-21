@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\MasterListItem;
 use App;
 use App\Models\Bed;
 use App\Models\BedAssign;
@@ -345,7 +346,7 @@ class IpdPatientDepartmentRepository extends BaseRepository
 
     public function getDoseDurationList()
     {
-        $result = Prescription::DOSE_DURATION;
+        $result = MasterListItem::options('dose_duration');
 
         $doseDuration = [];
         foreach ($result as $key => $item) {
@@ -360,7 +361,7 @@ class IpdPatientDepartmentRepository extends BaseRepository
 
     public function getDoseIntervalList()
     {
-        $result = Prescription::DOSE_INTERVAL;
+        $result = MasterListItem::options('dose_interval');
 
         $doseInterval = [];
         foreach ($result as $key => $item) {
@@ -375,7 +376,7 @@ class IpdPatientDepartmentRepository extends BaseRepository
 
     public function getMealList()
     {
-        $result = Prescription::MEAL_ARR;
+        $result = MasterListItem::options('meal_timing');
 
         $meal = [];
         foreach ($result as $key => $item) {
