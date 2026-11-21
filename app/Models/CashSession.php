@@ -51,13 +51,34 @@ class CashSession extends Model
             ->groupBy('payment_method')->pluck('total', 'payment_method')->map(fn ($t) => (float) $t)->all();
     }
 
-    /** What is in the register per payment method: receipts minus refunds. */
+    public function transfersOut(): HasMany
+    {
+        return $this->hasMany(FundTransfer::class, 'from_session_id');
+    }
+
+    public function transfersIn(): HasMany
+    {
+        return $this->hasMany(FundTransfer::class, 'to_session_id');
+    }
+
+    private static function sumByMethod($query): array
+    {
+        return $query->selectRaw('payment_method, SUM(amount) as total')->groupBy('payment_method')
+            ->pluck('total', 'payment_method')->map(fn ($t) => (float) $t)->all();
+    }
+
+    /** What is in the register per payment method: receipts - refunds - transfers out + transfers in. */
     public function netByMethod(): array
     {
         $net = $this->totalsByMethod();
-        foreach ($this->refundsByMethod() as $method => $amount) {
-            $net[$method] = ($net[$method] ?? 0) - $amount;
-        }
+        $add = function (array $amounts, int $sign) use (&$net) {
+            foreach ($amounts as $method => $amount) {
+                $net[$method] = round(($net[$method] ?? 0) + $sign * $amount, 2);
+            }
+        };
+        $add($this->refundsByMethod(), -1);
+        $add(self::sumByMethod($this->transfersOut()), -1);
+        $add(self::sumByMethod($this->transfersIn()), 1);
 
         return $net;
     }

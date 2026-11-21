@@ -76,6 +76,22 @@
         </tbody>
     </table>
 @endif
+@if ($session->transfersOut->isNotEmpty() || $session->transfersIn->isNotEmpty())
+    <h2>{{ __('messages.fund_transfer.list') }}</h2>
+    <table>
+        <thead><tr><th>{{ __('messages.cashier.time') }}</th><th>{{ __('messages.cash_journal.label') }}</th><th>{{ __('messages.cashier.payment_method') }}</th><th class="num">{{ __('messages.cashier.amount') }}</th></tr></thead>
+        <tbody>
+            @foreach ($session->transfersOut as $t)
+                <tr><td>{{ $t->created_at->format('H:i') }}</td><td>{{ __('messages.fund_transfer.out', ['to' => $t->destination_name]) }}</td>
+                    <td>{{ \App\Models\PaymentMethod::label($t->payment_method) }}</td><td class="num">-{{ formatMoney($t->amount) }}</td></tr>
+            @endforeach
+            @foreach ($session->transfersIn as $t)
+                <tr><td>{{ $t->created_at->format('H:i') }}</td><td>{{ __('messages.fund_transfer.in', ['from' => $t->fromCounter->code . ' · ' . $t->fromCounter->name]) }}</td>
+                    <td>{{ \App\Models\PaymentMethod::label($t->payment_method) }}</td><td class="num">{{ formatMoney($t->amount) }}</td></tr>
+            @endforeach
+        </tbody>
+    </table>
+@endif
 @if ($session->notes)
     <p class="muted">{{ $session->notes }}</p>
 @endif

@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\CashSession;
 use App\Models\ExamOrder;
 use App\Models\ExamOrderItem;
+use App\Models\FundTransfer;
 use App\Models\OpdPatientDepartment;
 use App\Models\Patient;
 use App\Models\Receipt;
@@ -202,6 +203,45 @@ class CashierRepository
             $receipt->update(['payment_method' => $method]);
 
             return $receipt;
+        });
+    }
+
+    /**
+     * Move money out of the session: to another register's open session or to a destination
+     * (safe, bank). Never more than the register holds in that payment method.
+     */
+    public function transfer(CashSession $session, User $user, array $data): FundTransfer
+    {
+        return DB::transaction(function () use ($session, $user, $data) {
+            $session = CashSession::lockForUpdate()->findOrFail($session->id);
+            $method = (int) $data['payment_method'];
+            $amount = round((float) $data['amount'], 2);
+            $available = ($method === self::cashMethod() ? $session->opening_float : 0) + ($session->netByMethod()[$method] ?? 0);
+            if ($amount <= 0 || $amount > $available) {
+                throw ValidationException::withMessages(['amount' => __('messages.fund_transfer.too_much', ['amount' => formatAmount($available)])]);
+            }
+            $toSession = null;
+            if (! empty($data['to_counter_id'])) {
+                if ((int) $data['to_counter_id'] === $session->cash_counter_id) {
+                    throw ValidationException::withMessages(['to' => __('messages.fund_transfer.same_register')]);
+                }
+                $toSession = CashSession::where('cash_counter_id', (int) $data['to_counter_id'])->whereNull('closed_at')->first();
+                if (! $toSession) {
+                    throw ValidationException::withMessages(['to' => __('messages.fund_transfer.target_closed')]);
+                }
+            }
+
+            return FundTransfer::create([
+                'from_session_id' => $session->id,
+                'from_counter_id' => $session->cash_counter_id,
+                'to_session_id' => $toSession?->id,
+                'to_counter_id' => $toSession?->cash_counter_id,
+                'destination' => $toSession ? null : (int) $data['destination'],
+                'payment_method' => $method,
+                'amount' => $amount,
+                'user_id' => $user->id,
+                'notes' => $data['notes'] ?? null,
+            ]);
         });
     }
 

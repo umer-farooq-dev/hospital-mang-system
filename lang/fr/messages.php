@@ -2620,6 +2620,7 @@ return [
             'emergency_level' => 'Niveaux d\'urgence',
             'referrer' => 'Apporteurs',
             'refund_reason' => 'Motifs de remboursement',
+            'transfer_destination' => 'Destinations des transferts',
         ],
     ],
 
@@ -2980,5 +2981,22 @@ return [
         'saved' => 'Demande d\'examens enregistrée. Part patient : :amount.',
         'no_valid_test' => 'Aucun des examens choisis n\'existe plus.',
         'none' => 'Aucune demande d\'examens pour le moment.',
+    ],
+    'fund_transfer' => [
+        'title' => 'Transfert de fonds',
+        'to' => 'Destinataire',
+        'to_hint' => 'Une autre caisse ouverte, ou une destination définie dans les listes (coffre-fort, banque).',
+        'send' => 'Transférer',
+        'list' => 'Liste des transferts',
+        'out' => 'Transfert vers :to',
+        'in' => 'Transfert depuis :from',
+        'done' => ':amount transféré vers :to.',
+        'too_much' => 'Pas plus de :amount disponible dans cette caisse pour ce mode.',
+        'same_register' => 'Choisissez une autre caisse.',
+        'target_closed' => 'Cette caisse n\'est pas ouverte.',
+        'destinations' => [
+            'safe' => 'Coffre-fort',
+            'bank' => 'Banque',
+        ],
     ],
 ];

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\CashSession;
+use App\Models\FundTransfer;
+use App\Models\MasterListItem;
 use App\Models\PaymentMethod;
 use App\Models\Receipt;
 use App\Models\Setting;
@@ -39,10 +41,25 @@ class CashierController extends AppBaseController
             'items' => $session && $patientId ? $this->cashierRepository->unpaidItems($patientId) : collect(),
             'paymentMethods' => PaymentMethod::options(),
             'totals' => $session ? $session->netByMethod() : [],
+            'transferTargets' => $session ? $this->transferTargets($session) : [],
             'recentReceipts' => $session ? $session->receipts()->with('patient.patientUser')->latest('id')->take(10)->get() : collect(),
         ];
 
         return view('cashier.index', $data);
+    }
+
+    /** Other registers with an open session, then the admin's destinations (safe, bank...). */
+    private function transferTargets(CashSession $session): array
+    {
+        $targets = [];
+        foreach (CashSession::with('counter')->whereNull('closed_at')->where('cash_counter_id', '!=', $session->cash_counter_id)->get() as $open) {
+            $targets['counter:'.$open->cash_counter_id] = $open->counter->code.' · '.$open->counter->name;
+        }
+        foreach (MasterListItem::options(FundTransfer::DESTINATION_LIST) as $code => $label) {
+            $targets['destination:'.$code] = $label;
+        }
+
+        return $targets;
     }
 
     public function openSession(Request $request)
@@ -78,6 +95,33 @@ class CashierController extends AppBaseController
         return redirect(route('cashier.index', ['print' => $receipt->id]));
     }
 
+    public function transfer(Request $request)
+    {
+        $session = $this->cashierRepository->openSessionFor(Auth::user());
+        if (! $session) {
+            Flash::error(__('messages.cashier.open_first'));
+
+            return redirect(route('cashier.index'));
+        }
+        $input = $request->validate([
+            'target' => ['required', 'string', 'regex:/^(counter|destination):\d+$/'],
+            'payment_method' => ['required', 'integer', Rule::in(array_keys(PaymentMethod::options()))],
+            'amount' => 'required|numeric|min:1',
+            'notes' => 'nullable|string|max:1000',
+        ], [], ['target' => __('messages.fund_transfer.to')]);
+        [$kind, $id] = explode(':', $input['target']);
+        if ($kind === 'destination' && ! array_key_exists((int) $id, MasterListItem::options(FundTransfer::DESTINATION_LIST))) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['target' => __('messages.fund_transfer.to')]);
+        }
+        $transfer = $this->cashierRepository->transfer($session, Auth::user(), $input + [
+            'to_counter_id' => $kind === 'counter' ? (int) $id : null,
+            'destination' => $kind === 'destination' ? (int) $id : null,
+        ]);
+        Flash::success(__('messages.fund_transfer.done', ['amount' => formatMoney($transfer->amount), 'to' => $transfer->destination_name]));
+
+        return redirect(route('cashier.index'));
+    }
+
     public function closeSession(Request $request)
     {
         $session = $this->cashierRepository->openSessionFor(Auth::user());
@@ -104,7 +148,7 @@ class CashierController extends AppBaseController
 
     public function printSession(CashSession $cashSession)
     {
-        $cashSession->load('counter', 'user', 'receipts.patient.patientUser', 'refunds.receipt.patient.patientUser');
+        $cashSession->load('counter', 'user', 'receipts.patient.patientUser', 'refunds.receipt.patient.patientUser', 'transfersOut.toCounter', 'transfersIn.fromCounter');
         $settings = getSettingValue();
 
         return view('cashier.session_report', ['session' => $cashSession, 'settings' => $settings,

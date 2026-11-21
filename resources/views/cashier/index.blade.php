@@ -143,6 +143,9 @@
                                         <tr><td class="text-muted">{{ __('messages.cashier.no_receipt_yet') }}</td></tr>
                                     @endforelse
                                 </table>
+                                @canroute('cashier.transfer')
+                                <button type="button" class="btn btn-light-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#cashierTransferModal">{{ __('messages.fund_transfer.title') }}</button>
+                                @endcanroute
                                 @canroute('cashier.close')
                                 <button type="button" class="btn btn-light-danger w-100" data-bs-toggle="modal" data-bs-target="#cashierCloseModal">{{ __('messages.cashier.close_session') }}</button>
                                 @endcanroute
@@ -163,6 +166,42 @@
                                     <div class="text-muted">{{ __('messages.cashier.no_receipt_yet') }}</div>
                                 @endforelse
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cashierTransferModal" class="modal fade" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            {{ Form::open(['route' => 'cashier.transfer', 'method' => 'post']) }}
+                            <div class="modal-header">
+                                <h2>{{ __('messages.fund_transfer.title') }}</h2>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-5">
+                                    {{ Form::label('target', __('messages.fund_transfer.to') . ':', ['class' => 'form-label']) }}<span class="required"></span>
+                                    {{ Form::select('target', $transferTargets, null, ['class' => 'form-select', 'required', 'placeholder' => __('messages.common.choose')]) }}
+                                    <div class="form-text">{{ __('messages.fund_transfer.to_hint') }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 mb-5">
+                                        {{ Form::label('payment_method', __('messages.cashier.payment_method') . ':', ['class' => 'form-label']) }}
+                                        {{ Form::select('payment_method', $paymentMethods, \App\Repositories\CashierRepository::cashMethod(), ['class' => 'form-select', 'required']) }}
+                                    </div>
+                                    <div class="col-6 mb-5">
+                                        {{ Form::label('amount', __('messages.cashier.amount') . ':', ['class' => 'form-label']) }}<span class="required"></span>
+                                        {{ Form::number('amount', null, ['class' => 'form-control', 'min' => 1, 'step' => 'any', 'required']) }}
+                                    </div>
+                                </div>
+                                {{ Form::label('notes', __('messages.cashier.notes') . ':', ['class' => 'form-label']) }}
+                                {{ Form::textarea('notes', null, ['class' => 'form-control', 'rows' => 2, 'maxlength' => 1000]) }}
+                            </div>
+                            <div class="modal-footer">
+                                {{ Form::submit(__('messages.fund_transfer.send'), ['class' => 'btn btn-primary']) }}
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('messages.common.cancel') }}</button>
+                            </div>
+                            {{ Form::close() }}
                         </div>
                     </div>
                 </div>

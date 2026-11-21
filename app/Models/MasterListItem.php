@@ -39,6 +39,7 @@ class MasterListItem extends Model
         'emergency_level' => ['opd_patient_departments', 'emergency_level'],
         'referrer' => ['opd_patient_departments', 'referrer'],
         'refund_reason' => ['refunds', 'reason'],
+        'transfer_destination' => ['fund_transfers', 'destination'],
     ];
 
     // Other tables that also store codes of a list.

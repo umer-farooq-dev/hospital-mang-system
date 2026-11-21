@@ -2629,6 +2629,7 @@ return [
             'emergency_level' => 'Emergency levels',
             'referrer' => 'Referrers',
             'refund_reason' => 'Refund reasons',
+            'transfer_destination' => 'Transfer destinations',
         ],
     ],
 
@@ -2989,5 +2990,22 @@ return [
         'saved' => 'Exam request saved. The patient pays :amount.',
         'no_valid_test' => 'None of the chosen exams exists any more.',
         'none' => 'No exam request yet.',
+    ],
+    'fund_transfer' => [
+        'title' => 'Fund transfer',
+        'to' => 'Send to',
+        'to_hint' => 'Another register with an open session, or a destination set in Master Lists (safe, bank).',
+        'send' => 'Transfer',
+        'list' => 'Fund transfers',
+        'out' => 'Transfer to :to',
+        'in' => 'Transfer from :from',
+        'done' => ':amount transferred to :to.',
+        'too_much' => 'Not more than :amount is available in this register for that method.',
+        'same_register' => 'Choose another register.',
+        'target_closed' => 'That register has no open session.',
+        'destinations' => [
+            'safe' => 'Safe',
+            'bank' => 'Bank',
+        ],
     ],
 ];

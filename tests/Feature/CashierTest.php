@@ -121,6 +121,19 @@ class CashierTest extends TestCase
             $t->decimal('patient_amount', 15, 2);
             $t->timestamps();
         });
+        Schema::create('fund_transfers', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('from_session_id');
+            $t->unsignedBigInteger('from_counter_id');
+            $t->unsignedBigInteger('to_session_id')->nullable();
+            $t->unsignedBigInteger('to_counter_id')->nullable();
+            $t->unsignedInteger('destination')->nullable();
+            $t->unsignedInteger('payment_method');
+            $t->decimal('amount', 15, 2);
+            $t->unsignedBigInteger('user_id');
+            $t->text('notes')->nullable();
+            $t->timestamps();
+        });
         Schema::create('master_list_items', function (Blueprint $t) {
             $t->id();
             $t->string('type');
@@ -296,5 +309,30 @@ class CashierTest extends TestCase
         $this->assertSame(['exam_item', 'exam_item'], $receipt->lines->pluck('payable_type')->all());
         $this->assertSame('Dr Ouattara', $receipt->lines->first()->payable->doctor->doctorUser->full_name, 'the prescriber is named on the receipt');
         $this->assertSame(['opd_visit:1', 'opd_visit:2'], $this->cashier->unpaidItems(7)->pluck('key')->all());
+    }
+
+    public function test_fund_transfer_moves_cash_between_registers_and_to_the_safe(): void
+    {
+        $other = CashCounter::create(['code' => 'C.PH', 'name' => 'Caisse pharmacie']);
+        $colleague = User::unguarded(fn () => User::create(['first_name' => 'Ali', 'last_name' => 'Pharma', 'cash_counter_id' => $other->id]));
+        $mine = $this->cashier->open($this->user, 10000);
+        $theirs = $this->cashier->open($colleague, 0);
+        $this->cashier->collect($mine, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]); // drawer: 10 000 + 6 000
+
+        $this->cashier->transfer($mine, $this->user, ['to_counter_id' => $other->id, 'payment_method' => 1, 'amount' => 5000]);
+        $this->cashier->transfer($mine, $this->user, ['destination' => 1, 'payment_method' => 1, 'amount' => 8000]);
+
+        $this->assertSame([1 => -7000.0], $mine->fresh()->netByMethod(), '6 000 in, 13 000 out');
+        $this->assertSame([1 => 5000.0], $theirs->fresh()->netByMethod());
+        $this->assertSame(3000.0, $this->cashier->close($mine, 3000, null)->expected_cash, 'float 10 000 - 7 000');
+
+        try {
+            $this->cashier->transfer($theirs, $colleague, ['destination' => 2, 'payment_method' => 1, 'amount' => 5001]);
+            $this->fail('more than the register holds');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('amount', $e->errors());
+        }
+        $this->expectException(ValidationException::class);
+        $this->cashier->transfer($theirs, $colleague, ['to_counter_id' => $mine->cash_counter_id, 'payment_method' => 1, 'amount' => 100]); // closed now
     }
 }
