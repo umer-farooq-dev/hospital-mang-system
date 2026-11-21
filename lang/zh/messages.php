@@ -1695,6 +1695,20 @@ return [
         'visits' => '来访',
         'revisits' => '重访',
         'total_visits' => '总造访',
+        'patient_origin' => '患者来源',
+        'emergency_level' => '紧急程度',
+        'referrer' => '转介人',
+        'origins' => [
+            'self' => '自行就诊',
+            'referred' => '转诊',
+            'evacuated' => '后送',
+            'transferred' => '转院',
+        ],
+        'emergency_levels' => [
+            'not_urgent' => '非紧急',
+            'urgent' => '紧急',
+            'vital' => '危及生命',
+        ],
     ],
 
     'opd_payments' => [
@@ -2408,6 +2422,9 @@ return [
             'id_document_type' => '身份证件类型',
             'payment_method' => '支付方式',
             'payer_type' => '付款方类型',
+            'patient_origin' => '患者来源',
+            'emergency_level' => '紧急程度',
+            'referrer' => '转介人',
         ],
     ],
 
@@ -2449,6 +2466,9 @@ return [
             'passport' => '护照',
             'driving_licence' => '驾驶证',
         ],
+        'queue' => '排队',
+        'queue_card_count' => '排队号牌数量',
+        'queue_card_count_hint' => '前台发放的可重复使用的号牌。号码每天从 1 开始，循环使用，并跳过患者仍持有的号牌。0 = 不用号牌：号码依次递增。',
     ],
 
     'reception_desk' => [

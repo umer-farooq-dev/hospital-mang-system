@@ -1708,6 +1708,20 @@ return [
         'visits' => 'Visits',
         'revisits' => 'Revisit',
         'total_visits' => 'Total Visits',
+        'patient_origin' => 'Patient origin',
+        'emergency_level' => 'Emergency level',
+        'referrer' => 'Referred by',
+        'origins' => [
+            'self' => 'Self-referred',
+            'referred' => 'Referred',
+            'evacuated' => 'Evacuated',
+            'transferred' => 'Transferred',
+        ],
+        'emergency_levels' => [
+            'not_urgent' => 'Not urgent',
+            'urgent' => 'Urgent',
+            'vital' => 'Life-threatening',
+        ],
     ],
 
     'opd_payments' => [
@@ -2594,6 +2608,9 @@ return [
             'id_document_type' => 'ID Document Types',
             'payment_method' => 'Payment Methods',
             'payer_type' => 'Payer types',
+            'patient_origin' => 'Patient origins',
+            'emergency_level' => 'Emergency levels',
+            'referrer' => 'Referrers',
         ],
     ],
 
@@ -2635,6 +2652,9 @@ return [
             'passport' => 'Passport',
             'driving_licence' => 'Driving licence',
         ],
+        'queue' => 'Queue',
+        'queue_card_count' => 'Number of queue cards',
+        'queue_card_count_hint' => 'Reusable numbered cards handed out at reception. Numbers start at 1 every day, go round, and skip a card a patient still holds. 0 = no cards: numbers simply count up.',
     ],
 
     'reception_desk' => [

@@ -35,6 +35,9 @@ class MasterListItem extends Model
         'id_document_type' => ['patients', 'id_document_type'],
         'payment_method' => ['opd_patient_departments', 'payment_mode'],
         'payer_type' => ['insurances', 'payer_type'],
+        'patient_origin' => ['opd_patient_departments', 'patient_origin'],
+        'emergency_level' => ['opd_patient_departments', 'emergency_level'],
+        'referrer' => ['opd_patient_departments', 'referrer'],
     ];
 
     // Other tables that also store codes of a list.

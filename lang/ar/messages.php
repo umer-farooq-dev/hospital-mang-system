@@ -1701,6 +1701,20 @@ return [
         'visits' => 'الزيارات',
         'revisits' => 'إعادة النظر',
         'total_visits' => 'إجمالي عدد الزيارات',
+        'patient_origin' => 'مصدر المريض',
+        'emergency_level' => 'مستوى الطوارئ',
+        'referrer' => 'المُحيل',
+        'origins' => [
+            'self' => 'حضر من تلقاء نفسه',
+            'referred' => 'مُحال',
+            'evacuated' => 'مُخلى',
+            'transferred' => 'منقول',
+        ],
+        'emergency_levels' => [
+            'not_urgent' => 'غير عاجل',
+            'urgent' => 'عاجل',
+            'vital' => 'خطر على الحياة',
+        ],
     ],
 
     'opd_payments' => [
@@ -2414,6 +2428,9 @@ return [
             'id_document_type' => 'أنواع وثائق الهوية',
             'payment_method' => 'طرق الدفع',
             'payer_type' => 'أنواع الجهات الدافعة',
+            'patient_origin' => 'مصادر المرضى',
+            'emergency_level' => 'مستويات الطوارئ',
+            'referrer' => 'المُحيلون',
         ],
     ],
 
@@ -2455,6 +2472,9 @@ return [
             'passport' => 'جواز السفر',
             'driving_licence' => 'رخصة القيادة',
         ],
+        'queue' => 'قائمة الانتظار',
+        'queue_card_count' => 'عدد بطاقات الانتظار',
+        'queue_card_count_hint' => 'بطاقات مرقمة قابلة لإعادة الاستخدام تُسلَّم في الاستقبال. تبدأ الأرقام من 1 كل يوم وتدور وتتخطى بطاقة لا يزال يحملها مريض. 0 = بدون بطاقات: تتوالى الأرقام.',
     ],
 
     'reception_desk' => [

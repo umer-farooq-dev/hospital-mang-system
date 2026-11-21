@@ -1708,6 +1708,20 @@ return [
         'visits' => 'Besuche',
         'revisits' => 'Wiederholen',
         'total_visits' => 'Gesamtzahl der Besuche',
+        'patient_origin' => 'Herkunft des Patienten',
+        'emergency_level' => 'Dringlichkeitsstufe',
+        'referrer' => 'Zuweiser',
+        'origins' => [
+            'self' => 'Selbstvorstellung',
+            'referred' => 'Überwiesen',
+            'evacuated' => 'Evakuiert',
+            'transferred' => 'Verlegt',
+        ],
+        'emergency_levels' => [
+            'not_urgent' => 'Nicht dringend',
+            'urgent' => 'Dringend',
+            'vital' => 'Lebensbedrohlich',
+        ],
     ],
 
     'opd_payments' => [
@@ -2410,6 +2424,9 @@ return [
             'id_document_type' => 'Ausweisarten',
             'payment_method' => 'Zahlungsarten',
             'payer_type' => 'Kostenträgertypen',
+            'patient_origin' => 'Patientenherkunft',
+            'emergency_level' => 'Dringlichkeitsstufen',
+            'referrer' => 'Zuweiser',
         ],
     ],
 
@@ -2451,6 +2468,9 @@ return [
             'passport' => 'Reisepass',
             'driving_licence' => 'Führerschein',
         ],
+        'queue' => 'Warteschlange',
+        'queue_card_count' => 'Anzahl der Wartekarten',
+        'queue_card_count_hint' => 'Wiederverwendbare nummerierte Karten am Empfang. Die Nummern beginnen jeden Tag bei 1, laufen im Kreis und überspringen eine Karte, die ein Patient noch hat. 0 = keine Karten: die Nummern zählen einfach hoch.',
     ],
 
     'reception_desk' => [

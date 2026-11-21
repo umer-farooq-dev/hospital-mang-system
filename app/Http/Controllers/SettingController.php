@@ -50,6 +50,7 @@ class SettingController extends AppBaseController
             'patient_duplicate_check' => ['required', Rule::in(Patient::DUPLICATE_MODES)],
             'patient_duplicate_fields' => 'nullable|array',
             'patient_duplicate_fields.*' => Rule::in(Patient::DUPLICATE_FIELDS),
+            'queue_card_count' => 'required|integer|min:0|max:9999',
         ]);
 
         $values = [
@@ -58,6 +59,7 @@ class SettingController extends AppBaseController
             'patient_duplicate_check' => $input['patient_duplicate_check'],
             'patient_duplicate_fields' => implode(',', $input['patient_duplicate_fields'] ?? []),
             'reception_webcam' => $request->boolean('reception_webcam') ? '1' : '0',
+            'queue_card_count' => (string) $input['queue_card_count'],
         ];
         foreach ($values as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);

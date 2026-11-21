@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -71,6 +72,9 @@ class OpdPatientDepartment extends Model
         'doctor_id',
         'standard_charge',
         'payment_mode',
+        'patient_origin',
+        'emergency_level',
+        'referrer',
         'currency_symbol',
         'custom_field',
     ];
@@ -88,6 +92,16 @@ class OpdPatientDepartment extends Model
 
     protected $appends = ['payment_mode_name'];
 
+    /** Visit details picked from Master Lists, as on the old reception screen; the column is named after the list. */
+    const VISIT_LISTS = ['patient_origin', 'emergency_level', 'referrer'];
+
+    public static function visitListRules(): array
+    {
+        return collect(self::VISIT_LISTS)
+            ->mapWithKeys(fn ($list) => [$list => ['nullable', 'integer', Rule::in(array_keys(MasterListItem::labels($list)))]])
+            ->all();
+    }
+
     protected $casts = [
         'id' => 'integer',
         'patient_id' => 'integer',
@@ -103,6 +117,9 @@ class OpdPatientDepartment extends Model
         'doctor_id' => 'integer',
         'standard_charge' => 'double',
         'payment_mode' => 'integer',
+        'patient_origin' => 'integer',
+        'emergency_level' => 'integer',
+        'referrer' => 'integer',
         'custom_field' => 'array',
     ];
 

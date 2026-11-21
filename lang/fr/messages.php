@@ -1697,6 +1697,20 @@ return [
         'visits' => 'Visites',
         'revisits' => 'Revisiter',
         'total_visits' => 'Total des visites',
+        'patient_origin' => 'Provenance du patient',
+        'emergency_level' => 'Niveau d\'urgence',
+        'referrer' => 'Apporteur',
+        'origins' => [
+            'self' => 'Auto-orienté',
+            'referred' => 'Référé',
+            'evacuated' => 'Évacué',
+            'transferred' => 'Transféré',
+        ],
+        'emergency_levels' => [
+            'not_urgent' => 'Non urgent',
+            'urgent' => 'Urgent',
+            'vital' => 'Urgence vitale',
+        ],
     ],
 
     'opd_payments' => [
@@ -2585,6 +2599,9 @@ return [
             'id_document_type' => 'Types de pièces d\'identité',
             'payment_method' => 'Modes de paiement',
             'payer_type' => 'Types de payeur',
+            'patient_origin' => 'Provenances des patients',
+            'emergency_level' => 'Niveaux d\'urgence',
+            'referrer' => 'Apporteurs',
         ],
     ],
 
@@ -2626,6 +2643,9 @@ return [
             'passport' => 'Passeport',
             'driving_licence' => 'Permis de conduire',
         ],
+        'queue' => 'File d\'attente',
+        'queue_card_count' => 'Nombre de cartes de file d\'attente',
+        'queue_card_count_hint' => 'Cartes numérotées réutilisables remises à l\'accueil. Les numéros repartent de 1 chaque jour, tournent en boucle et sautent une carte encore détenue par un patient. 0 = pas de cartes : les numéros se suivent.',
     ],
 
     'reception_desk' => [
