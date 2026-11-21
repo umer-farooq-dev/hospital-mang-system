@@ -20,7 +20,7 @@ class CreateOpdPatientDepartmentRequest extends FormRequest
      */
     public function rules(): array
     {
-        return OpdPatientDepartment::$rules + OpdPatientDepartment::visitListRules();
+        return OpdPatientDepartment::$rules + OpdPatientDepartment::visitListRules() + OpdPatientDepartment::payerRules();
     }
 
     public function messages(): array

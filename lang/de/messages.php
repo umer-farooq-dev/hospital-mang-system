@@ -480,7 +480,9 @@ return [
         'edit_doctor_department' => 'Arztabteilung bearbeiten',
         'title' => 'Titel',
         'description' => 'Beschreibung',
-        'doctor_field_required' => 'Das Feld „Arzt“ ist erforderlich'
+        'doctor_field_required' => 'Das Feld „Arzt“ ist erforderlich',
+        'discount_percent' => 'Rabatt',
+        'discount_hint' => 'Rabatt in % auf die Besuche dieser Abteilung, zusätzlich zum Rabatt des Kostenträgers.',
     ],
 
     // investigation reports
@@ -2616,5 +2618,34 @@ return [
             'affiliate' => 'Mitglied',
             'weekend' => 'Wochenende',
         ],
+    ],
+    'split' => [
+        'payer' => 'Kostenträger',
+        'price_list' => 'Preisliste',
+        'voucher_number' => 'Gutschein-Nr.',
+        'voucher_hint' => 'Genehmigungsnummer des Versicherers',
+        'gross' => 'Gesamt',
+        'discount' => 'Rabatt',
+        'payer_share' => 'Anteil Kostenträger',
+        'patient_share' => 'Patient zahlt',
+        'warnings' => [
+            'policy_not_valid' => 'Die Police ist am Besuchstag nicht gültig: der Patient zahlt alles.',
+            'not_covered' => 'Dieser Kostenträger deckt diese Abteilung nicht.',
+            'approval_needed' => 'Dieser Kostenträger verlangt eine Genehmigung: Gutschein-Nr. eingeben, um die Deckung anzuwenden.',
+            'limit_reached' => 'Das Limit der Police ist erreicht: der Rest ist Patientenanteil.',
+        ],
+    ],
+    'coverage' => [
+        'title' => 'Deckung nach Abteilung',
+        'hint' => 'Eine Zeile ohne Abteilung und Kategorie gilt für alles andere: als „nicht gedeckt“ markieren, um nur die gelisteten Abteilungen zu decken. Ein leerer % nimmt den des Kostenträgers oder der Police.',
+        'department' => 'Abteilung',
+        'charge_category' => 'Gebührenkategorie',
+        'percent' => 'Deckung',
+        'not_covered' => 'Nicht gedeckt',
+        'needs_approval' => 'Genehmigung nötig',
+        'max_amount' => 'Maximum pro Leistung',
+        'all_departments' => 'Alle anderen Abteilungen',
+        'any_category' => 'Jede Kategorie',
+        'payer_percent' => '% des Kostenträgers',
     ],
 ];

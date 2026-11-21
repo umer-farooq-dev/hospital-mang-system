@@ -465,7 +465,9 @@ return [
         'edit_doctor_department' => '编辑医生部门',
         'title' => '标题',
         'description' => '描述',
-        'doctor_field_required' => '醫生欄位為必填項'
+        'doctor_field_required' => '醫生欄位為必填項',
+        'discount_percent' => '减免',
+        'discount_hint' => '该科室就诊的百分比减免，在付款方减免之后再叠加。',
     ],
 
     // investigation reports
@@ -2614,5 +2616,34 @@ return [
             'affiliate' => '协作单位价',
             'weekend' => '周末',
         ],
+    ],
+    'split' => [
+        'payer' => '付款方',
+        'price_list' => '价目表',
+        'voucher_number' => '凭单号',
+        'voucher_hint' => '保险公司批准号',
+        'gross' => '总额',
+        'discount' => '减免',
+        'payer_share' => '付款方承担',
+        'patient_share' => '患者支付',
+        'warnings' => [
+            'policy_not_valid' => '保单在就诊日期无效：患者支付全部费用。',
+            'not_covered' => '该付款方不承保此科室。',
+            'approval_needed' => '该付款方需要批准：请输入凭单号以应用承保。',
+            'limit_reached' => '已达到保单限额：其余由患者支付。',
+        ],
+    ],
+    'coverage' => [
+        'title' => '按科室承保',
+        'hint' => '未填科室和类别的行适用于其他所有项目：将其设为“不承保”即可只承保所列科室。百分比留空则使用付款方或保单的比例。',
+        'department' => '科室',
+        'charge_category' => '收费类别',
+        'percent' => '承保比例',
+        'not_covered' => '不承保',
+        'needs_approval' => '需批准',
+        'max_amount' => '单项上限',
+        'all_departments' => '其他所有科室',
+        'any_category' => '任意类别',
+        'payer_percent' => '付款方比例',
     ],
 ];

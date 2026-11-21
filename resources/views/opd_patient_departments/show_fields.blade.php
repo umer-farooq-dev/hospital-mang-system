@@ -136,6 +136,26 @@
                                        class="pb-2 fs-5 text-gray-600">{{ __('messages.ipd_payments.payment_mode') }}</label>
                                 <span class="fs-5 text-gray-800">{{ !empty($opdPatientDepartment->payment_mode_name) ? $opdPatientDepartment->payment_mode_name : __('messages.common.n/a') }}</span>
                             </div>
+                            @if ($opdPatientDepartment->patient_amount !== null)
+                                <div class="col-sm-6 d-flex flex-column mb-md-10 mb-5">
+                                    <label class="pb-2 fs-5 text-gray-600">{{ __('messages.split.payer') }}</label>
+                                    <span class="fs-5 text-gray-800">{{ $opdPatientDepartment->patientInsurance?->option_label ?? __('messages.patient_insurance.self_pay') }}
+                                        @if ($opdPatientDepartment->voucher_number)
+                                            <span class="text-muted fs-7">· {{ __('messages.split.voucher_number') }} {{ $opdPatientDepartment->voucher_number }}</span>
+                                        @endif
+                                    </span>
+                                </div>
+                                <div class="col-sm-6 d-flex flex-column mb-md-10 mb-5">
+                                    <label class="pb-2 fs-5 text-gray-600">{{ __('messages.split.price_list') }}</label>
+                                    <span class="fs-5 text-gray-800">{{ $opdPatientDepartment->priceList?->label ?? __('messages.common.n/a') }}</span>
+                                </div>
+                                <div class="col-sm-12 mb-md-10 mb-5">
+                                    @include('opd_patient_departments.split_summary', ['split' => [
+                                        'gross' => $opdPatientDepartment->standard_charge, 'discount_percent' => $opdPatientDepartment->discount_percent,
+                                        'discount_amount' => $opdPatientDepartment->discount_amount, 'payer_amount' => $opdPatientDepartment->payer_amount,
+                                        'patient_amount' => $opdPatientDepartment->patient_amount, 'coverage_percent' => null, 'warnings' => []]])
+                                </div>
+                            @endif
                             @foreach (\App\Models\OpdPatientDepartment::VISIT_LISTS as $list)
                                 <div class="col-sm-6 d-flex flex-column mb-md-10 mb-5">
                                     <label class="pb-2 fs-5 text-gray-600">{{ __('messages.opd_patient.' . $list) }}</label>

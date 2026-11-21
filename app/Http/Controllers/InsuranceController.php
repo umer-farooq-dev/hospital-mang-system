@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Exports\InsuranceExport;
 use App\Http\Requests\CreateInsuranceRequest;
 use App\Http\Requests\UpdateInsuranceRequest;
+use App\Models\ChargeCategory;
+use App\Models\DoctorDepartment;
 use App\Models\Insurance;
 use App\Models\MasterListItem;
 use App\Models\PatientAdmission;
@@ -44,6 +46,8 @@ class InsuranceController extends AppBaseController
             'payerTypes' => MasterListItem::options(Insurance::PAYER_TYPE, $insurance->payer_type ?? null),
             'billingOptions' => Insurance::billingOptions(),
             'priceLists' => PriceList::options($insurance->price_list_id ?? null),
+            'departments' => DoctorDepartment::orderBy('title')->pluck('title', 'id')->all(),
+            'chargeCategories' => ChargeCategory::orderBy('name')->pluck('name', 'id')->all(),
         ];
     }
 
@@ -61,9 +65,7 @@ class InsuranceController extends AppBaseController
         } catch (Exception $e) {
             DB::rollBack();
 
-            Flash::error($e->getMessage());
-
-            return redirect(route('insurances.store'));
+            return redirect()->back()->withInput()->withErrors(['insurance' => $e->getMessage()]);
         }
 
         Flash::success(__('messages.insurance.insurance') . ' ' . __('messages.common.saved_successfully'));
@@ -98,8 +100,7 @@ class InsuranceController extends AppBaseController
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-
-            return $this->sendError($e->getMessage());
+            return redirect()->back()->withInput()->withErrors(['insurance' => $e->getMessage()]);
         }
 
         Flash::success(__('messages.insurance.insurance') . ' ' . __('messages.common.updated_successfully'));

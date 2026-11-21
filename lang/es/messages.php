@@ -532,6 +532,8 @@ return [
         'title' => 'Título',
         'description' => 'Descripción',
         'doctor_field_required' => 'Se requiere campo médico',
+        'discount_percent' => 'Descuento',
+        'discount_hint' => 'Descuento en % en las consultas de este departamento, además del descuento del pagador.',
     ],
 
     // investigation reports
@@ -2666,5 +2668,34 @@ return [
             'affiliate' => 'Afiliado',
             'weekend' => 'Fin de semana',
         ],
+    ],
+    'split' => [
+        'payer' => 'Pagador',
+        'price_list' => 'Lista de precios',
+        'voucher_number' => 'N.º de bono',
+        'voucher_hint' => 'N.º de autorización de la aseguradora',
+        'gross' => 'Total',
+        'discount' => 'Descuento',
+        'payer_share' => 'Parte del pagador',
+        'patient_share' => 'Paga el paciente',
+        'warnings' => [
+            'policy_not_valid' => 'La póliza no es válida en la fecha de la visita: el paciente paga todo.',
+            'not_covered' => 'Este pagador no cubre este departamento.',
+            'approval_needed' => 'Este pagador exige autorización: introduzca el n.º de bono para aplicar la cobertura.',
+            'limit_reached' => 'Se alcanzó el límite de la póliza: el resto lo paga el paciente.',
+        ],
+    ],
+    'coverage' => [
+        'title' => 'Cobertura por departamento',
+        'hint' => 'Una fila sin departamento ni categoría es la regla para todo lo demás: márquela «no cubierto» para cubrir solo los departamentos listados. Un % vacío usa el del pagador o de la póliza.',
+        'department' => 'Departamento',
+        'charge_category' => 'Categoría de cargo',
+        'percent' => 'Cobertura',
+        'not_covered' => 'No cubierto',
+        'needs_approval' => 'Requiere autorización',
+        'max_amount' => 'Máximo por acto',
+        'all_departments' => 'Todos los demás departamentos',
+        'any_category' => 'Cualquier categoría',
+        'payer_percent' => '% del pagador',
     ],
 ];

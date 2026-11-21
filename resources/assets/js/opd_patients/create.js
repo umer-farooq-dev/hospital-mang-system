@@ -120,23 +120,10 @@ listenChange("#opdPatientId,#editOpdPatientId", function () {
     });
 });
 
+// The fee comes from the doctor's OPD charge in the chosen price list (opd_patients/split.js).
 listenChange("#opdDoctorId,#editOpdDoctorId", function () {
     if ($(this).val() !== "") {
-        $.ajax({
-            url: $(".doctorOpdChargeUrl").val(),
-            type: "get",
-            dataType: "json",
-            data: { id: $(this).val() },
-            success: function (data) {
-                if (data.data.length !== 0) {
-                    $("#opdStandardCharge,#editOpdStandardCharge").val(
-                        data.data[0].standard_charge.toFixed(2)
-                    );
-                } else {
-                    $("#opdStandardCharge,#editOpdStandardCharge").val(0);
-                }
-            },
-        });
+        refreshOpdQuote(true);
     }
 });
 

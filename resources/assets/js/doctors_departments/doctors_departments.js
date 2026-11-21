@@ -51,6 +51,7 @@ function renderDoctorDepartmentData (id) {
                 $('#doctorDepartmentId').val(result.data.id);
                 $('#editDoctorDepartmentTitle').val(result.data.title);
                 $('#editDoctorDepartmentDescription').val(result.data.description);
+                $('#editDoctorDepartmentDiscount').val(result.data.discount_percent);
                 $('#edit_doctor_departments_modal').modal('show');
                 ajaxCallCompleted();
             }

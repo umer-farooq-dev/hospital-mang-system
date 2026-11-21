@@ -88,6 +88,54 @@
                 tabindex="8" {{ !isset($insurance) ? 'checked' : ($insurance->status ? 'checked' : '') }}>
         </div>
     </div>
+    <div class="col-sm-12 mt-3 mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <div class="h5 mb-1">{{ __('messages.coverage.title') }}</div>
+                <div class="text-muted fs-7">{{ __('messages.coverage.hint') }}</div>
+            </div>
+            <button type="button" class="btn btn-primary" id="addCoverageRule">{{ __('messages.common.add') }}</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped align-middle" id="coverageRulesTable" data-next-index="{{ isset($insurance) ? $insurance->coverageRules->count() : 0 }}">
+                <thead>
+                    <tr class="text-muted fw-bolder fs-7 text-uppercase">
+                        <th>{{ __('messages.coverage.department') }}</th>
+                        <th>{{ __('messages.coverage.charge_category') }}</th>
+                        <th style="width: 130px">{{ __('messages.coverage.percent') }} %</th>
+                        <th class="text-center">{{ __('messages.coverage.not_covered') }}</th>
+                        <th class="text-center">{{ __('messages.coverage.needs_approval') }}</th>
+                        <th style="width: 140px">{{ __('messages.coverage.max_amount') }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (isset($insurance) ? $insurance->coverageRules : [] as $rule)
+<tr class="coverage-row">
+    <td>{{ Form::select('coverage[' . $loop->index . '][doctor_department_id]', $departments, $rule->doctor_department_id, ['class' => 'form-select form-select-sm', 'placeholder' => __('messages.coverage.all_departments')]) }}</td>
+    <td>{{ Form::select('coverage[' . $loop->index . '][charge_category_id]', $chargeCategories, $rule->charge_category_id, ['class' => 'form-select form-select-sm', 'placeholder' => __('messages.coverage.any_category')]) }}</td>
+    <td><input type="number" class="form-control form-control-sm" name="coverage[{{ $loop->index }}][coverage_percent]" value="{{ $rule->coverage_percent !== null ? $rule->coverage_percent + 0 : '' }}" min="0" max="100" step="0.01" placeholder="{{ __('messages.coverage.payer_percent') }}"></td>
+    <td class="text-center"><input type="checkbox" class="form-check-input" name="coverage[{{ $loop->index }}][not_covered]" value="1" {{ $rule->not_covered ? 'checked' : '' }}></td>
+    <td class="text-center"><input type="checkbox" class="form-check-input" name="coverage[{{ $loop->index }}][needs_approval]" value="1" {{ $rule->needs_approval ? 'checked' : '' }}></td>
+    <td><input type="number" class="form-control form-control-sm" name="coverage[{{ $loop->index }}][max_amount]" value="{{ $rule->max_amount !== null ? $rule->max_amount + 0 : '' }}" min="0" step="any"></td>
+    <td class="text-center"><a href="javascript:void(0)" class="delete-coverage-rule btn px-1 text-danger fs-3" title="{{ __('messages.common.delete') }}"><i class="fa-solid fa-trash"></i></a></td>
+</tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <template id="coverageRuleTemplate">
+<tr class="coverage-row">
+    <td>{{ Form::select('coverage[__INDEX__][doctor_department_id]', $departments, null, ['class' => 'form-select form-select-sm', 'placeholder' => __('messages.coverage.all_departments')]) }}</td>
+    <td>{{ Form::select('coverage[__INDEX__][charge_category_id]', $chargeCategories, null, ['class' => 'form-select form-select-sm', 'placeholder' => __('messages.coverage.any_category')]) }}</td>
+    <td><input type="number" class="form-control form-control-sm" name="coverage[__INDEX__][coverage_percent]" value="" min="0" max="100" step="0.01" placeholder="{{ __('messages.coverage.payer_percent') }}"></td>
+    <td class="text-center"><input type="checkbox" class="form-check-input" name="coverage[__INDEX__][not_covered]" value="1" ></td>
+    <td class="text-center"><input type="checkbox" class="form-check-input" name="coverage[__INDEX__][needs_approval]" value="1" ></td>
+    <td><input type="number" class="form-control form-control-sm" name="coverage[__INDEX__][max_amount]" value="" min="0" step="any"></td>
+    <td class="text-center"><a href="javascript:void(0)" class="delete-coverage-rule btn px-1 text-danger fs-3" title="{{ __('messages.common.delete') }}"><i class="fa-solid fa-trash"></i></a></td>
+</tr>
+        </template>
+    </div>
     <div class="col-sm-12 mt-3">
         <div class="row">
             <div class="col-lg-8 mb-3 h5">

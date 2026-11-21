@@ -166,6 +166,11 @@ class Insurance extends Model
         return $this->belongsTo(PriceList::class);
     }
 
+    public function coverageRules(): HasMany
+    {
+        return $this->hasMany(CoverageRule::class, 'insurance_id')->orderByRaw('doctor_department_id IS NULL, charge_category_id IS NULL')->orderBy('id');
+    }
+
     public function patientInsurances(): HasMany
     {
         return $this->hasMany(PatientInsurance::class, 'insurance_id');

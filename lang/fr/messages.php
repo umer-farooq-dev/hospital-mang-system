@@ -481,7 +481,9 @@ return [
         'edit_doctor_department' => 'Modifier le département de médecin',
         'title' => 'Titre',
         'description' => 'La description',
-        'doctor_field_required' => 'Le champ Médecin est obligatoire'
+        'doctor_field_required' => 'Le champ Médecin est obligatoire',
+        'discount_percent' => 'Réduction',
+        'discount_hint' => 'Réduction en % sur les consultations de ce service, appliquée en plus de la réduction du payeur.',
     ],
 
     // investigation reports
@@ -2792,5 +2794,34 @@ return [
             'affiliate' => 'Affilié',
             'weekend' => 'Week-end',
         ],
+    ],
+    'split' => [
+        'payer' => 'Payeur',
+        'price_list' => 'Grille tarifaire',
+        'voucher_number' => 'N° de bon',
+        'voucher_hint' => 'N° de bon de prise en charge',
+        'gross' => 'Montant total',
+        'discount' => 'Réduction',
+        'payer_share' => 'Part assureur',
+        'patient_share' => 'Part patient',
+        'warnings' => [
+            'policy_not_valid' => 'La police n\'est pas valable à la date de la visite : le patient paie tout.',
+            'not_covered' => 'Ce payeur ne prend pas en charge ce service.',
+            'approval_needed' => 'Ce payeur exige un accord : saisissez le n° de bon pour appliquer la prise en charge.',
+            'limit_reached' => 'Le plafond de la police est atteint : le reste est à la charge du patient.',
+        ],
+    ],
+    'coverage' => [
+        'title' => 'Prise en charge par service',
+        'hint' => 'Une ligne sans service ni catégorie s\'applique à tout le reste : cochez « non pris en charge » pour ne couvrir que les services listés. Un % vide reprend celui du payeur ou de la police.',
+        'department' => 'Service',
+        'charge_category' => 'Catégorie d\'acte',
+        'percent' => 'Prise en charge',
+        'not_covered' => 'Non pris en charge',
+        'needs_approval' => 'Accord préalable',
+        'max_amount' => 'Plafond par acte',
+        'all_departments' => 'Tous les autres services',
+        'any_category' => 'Toute catégorie',
+        'payer_percent' => '% du payeur',
     ],
 ];

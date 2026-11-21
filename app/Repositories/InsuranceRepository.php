@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\CoverageRule;
 use App\Models\Insurance;
 use App\Models\InsuranceDisease;
 use Arr;
@@ -37,7 +38,8 @@ class InsuranceRepository extends BaseRepository
     {
         $diseaseItemInputArray = Arr::only($input, ['disease_name', 'disease_charge']);
 
-        $insurance = Insurance::create(Arr::except($input, ['disease_name', 'disease_charge']));
+        $insurance = Insurance::create(Arr::except($input, ['disease_name', 'disease_charge', 'coverage']));
+        $this->syncCoverageRules($insurance, $input['coverage'] ?? []);
 
         $diseaseItemInput = $this->prepareInputForDiseaseItem($diseaseItemInputArray);
 
@@ -53,6 +55,30 @@ class InsuranceRepository extends BaseRepository
         }
 
         return true;
+    }
+
+    /** Replace the payer's coverage rules with the rows of the form. */
+    public function syncCoverageRules(Insurance $insurance, array $rows): void
+    {
+        $insurance->coverageRules()->delete();
+        foreach ($rows as $row) {
+            $row = array_map(fn ($v) => $v === '' ? null : $v, (array) $row);
+            $validator = Validator::make($row, CoverageRule::rules(), [], [
+                'coverage_percent' => __('messages.coverage.percent'), 'max_amount' => __('messages.coverage.max_amount'),
+            ]);
+            if ($validator->fails()) {
+                throw new UnprocessableEntityHttpException($validator->errors()->first());
+            }
+            CoverageRule::create([
+                'insurance_id' => $insurance->id,
+                'doctor_department_id' => $row['doctor_department_id'] ?? null,
+                'charge_category_id' => $row['charge_category_id'] ?? null,
+                'coverage_percent' => $row['coverage_percent'] ?? null,
+                'not_covered' => ! empty($row['not_covered']),
+                'needs_approval' => ! empty($row['needs_approval']),
+                'max_amount' => $row['max_amount'] ?? null,
+            ]);
+        }
     }
 
     public function prepareInputForDiseaseItem($input)
@@ -86,7 +112,8 @@ class InsuranceRepository extends BaseRepository
     {
         $diseaseItemInputArray = Arr::only($input, ['disease_name', 'disease_charge']);
 
-        $insurance->update($input);
+        $insurance->update(Arr::except($input, ['coverage']));
+        $this->syncCoverageRules($insurance, $input['coverage'] ?? []);
 
         $disease = InsuranceDisease::whereInsuranceId($insurance->id);
         $disease->delete();

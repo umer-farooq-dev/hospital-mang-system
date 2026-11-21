@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Utils\PriceSplit;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -75,6 +76,13 @@ class OpdPatientDepartment extends Model
         'patient_origin',
         'emergency_level',
         'referrer',
+        'price_list_id',
+        'patient_insurance_id',
+        'voucher_number',
+        'discount_percent',
+        'discount_amount',
+        'payer_amount',
+        'patient_amount',
         'currency_symbol',
         'custom_field',
     ];
@@ -94,6 +102,62 @@ class OpdPatientDepartment extends Model
 
     /** Visit details picked from Master Lists, as on the old reception screen; the column is named after the list. */
     const VISIT_LISTS = ['patient_origin', 'emergency_level', 'referrer'];
+
+    /** Payer, price list and voucher number chosen at reception. */
+    public static function payerRules(): array
+    {
+        return [
+            'patient_insurance_id' => 'nullable|integer|exists:patient_insurances,id',
+            'price_list_id' => 'nullable|integer|exists:price_lists,id',
+            'voucher_number' => 'nullable|string|max:50',
+        ];
+    }
+
+    /**
+     * The payer/patient split of a visit from the form input. Only a policy of the visit's
+     * own patient counts; the doctor's department brings its discount and coverage rule.
+     *
+     * @return array{0: ?PatientInsurance, 1: array}
+     */
+    public static function splitFor(array $input, ?int $visitId = null): array
+    {
+        $policy = filled($input['patient_insurance_id'] ?? null)
+            ? PatientInsurance::with('insurance')->where('patient_id', (int) ($input['patient_id'] ?? 0))->find($input['patient_insurance_id'])
+            : null;
+        $departmentId = Doctor::whereKey((int) ($input['doctor_id'] ?? 0))->value('doctor_department_id');
+        $split = PriceSplit::compute((float) removeCommaFromNumbers((string) ($input['standard_charge'] ?? 0)), $policy, $departmentId, [
+            'date' => $input['appointment_date'] ?? now(),
+            'voucher_number' => $input['voucher_number'] ?? null,
+            'ignore_visit_id' => $visitId,
+        ]);
+
+        return [$policy, $split];
+    }
+
+    /** Form input with the split columns filled in, ready to save. */
+    public static function withSplit(array $input, ?int $visitId = null): array
+    {
+        [$policy, $split] = self::splitFor($input, $visitId);
+
+        return array_merge($input, [
+            'standard_charge' => $split['gross'],
+            'patient_insurance_id' => $policy?->id,
+            'discount_percent' => $split['discount_percent'],
+            'discount_amount' => $split['discount_amount'],
+            'payer_amount' => $split['payer_amount'],
+            'patient_amount' => $split['patient_amount'],
+        ]);
+    }
+
+    public function patientInsurance(): BelongsTo
+    {
+        return $this->belongsTo(PatientInsurance::class);
+    }
+
+    public function priceList(): BelongsTo
+    {
+        return $this->belongsTo(PriceList::class);
+    }
 
     public static function visitListRules(): array
     {
@@ -120,6 +184,12 @@ class OpdPatientDepartment extends Model
         'patient_origin' => 'integer',
         'emergency_level' => 'integer',
         'referrer' => 'integer',
+        'price_list_id' => 'integer',
+        'patient_insurance_id' => 'integer',
+        'discount_percent' => 'float',
+        'discount_amount' => 'float',
+        'payer_amount' => 'float',
+        'patient_amount' => 'float',
         'custom_field' => 'array',
     ];
 
