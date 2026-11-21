@@ -70,7 +70,7 @@ class PathologyTestController extends AppBaseController
 
         Flash::success(__('messages.pathology_tests') . ' ' . __('messages.common.saved_successfully'));
 
-        return redirect(route('pathology.test.index'));
+        return redirect(afterSaveUrl(route('pathology.test.index')));
     }
 
     public function show(PathologyTest $pathologyTest)

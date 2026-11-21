@@ -28,6 +28,8 @@
 
                 <div class="card-body">
                     {{ Form::open(['route' => ['opd.patient.store'], 'method'=>'post', 'id' => 'createOpdPatientForm']) }}
+                    {{ Form::hidden('from', request('from')) }}
+                    {{ Form::hidden('appointment_id', $data['appointment']->id ?? null) }}
                     @include('opd_patient_departments.fields')
                     {{ Form::close() }}
                 </div>

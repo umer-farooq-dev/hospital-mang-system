@@ -739,6 +739,16 @@ function getCurrencySymbol()
 /**
  * @return array
  */
+/**
+ * Where to go after saving a form. Forms opened from the Reception Desk return there.
+ */
+function afterSaveUrl(string $default, array $deskParameters = []): string
+{
+    return request('from') === 'reception-desk' && canAccessRoute('reception-desk.index')
+        ? route('reception-desk.index', $deskParameters)
+        : $default;
+}
+
 function getSettingValue()
 {
     return Setting::all()->keyBy('key');

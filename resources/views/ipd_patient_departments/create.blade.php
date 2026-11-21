@@ -27,6 +27,7 @@
 
                 <div class="card-body">
                     {{ Form::open(['route' => ['ipd.patient.store'], 'method'=>'post', 'files' => true, 'id' => 'createIpdPatientForm']) }}
+                    {{ Form::hidden('from', request('from')) }}
                     @include('ipd_patient_departments.fields')
                     {{ Form::close() }}
                 </div>

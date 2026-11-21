@@ -88,7 +88,7 @@ class PatientRepository extends BaseRepository
             throw new UnprocessableEntityHttpException($e->getMessage());
         }
 
-        return true;
+        return $patient;
     }
 
     public function update($input, $patient)

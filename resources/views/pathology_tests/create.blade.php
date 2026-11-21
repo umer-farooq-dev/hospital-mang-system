@@ -26,6 +26,7 @@
                 {{ Form::hidden('associateParameters',json_encode($parameterList),['class'=>'associateParameters'])}}
                 <div class="card-body p-12">
                     {{ Form::open(['route' => 'pathology.test.store', 'id' => 'createPathologyTest']) }}
+                    {{ Form::hidden('from', request('from')) }}
 
                     @include('pathology_tests.fields')
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateOpdPatientDepartmentRequest;
 use App\Http\Requests\UpdateOpdPatientDepartmentRequest;
 use App\Models\AddCustomFields;
+use App\Models\Appointment;
+use App\Models\PatientQueue;
 use App\Models\DoctorOPDCharge;
 use App\Models\OpdPatientDepartment;
 use App\Repositories\OpdPatientDepartmentRepository;
@@ -34,6 +36,15 @@ class OpdPatientDepartmentController extends AppBaseController
         if ($data['revisit']) {
             $id = $data['revisit'];
             $data['last_visit'] = OpdPatientDepartment::find($id);
+        } elseif ($request->filled('patient_id')) {
+            // Opened from the Reception Desk: the patient (and an appointment being checked in) is known.
+            $data['appointment'] = $request->filled('appointment_id')
+                ? Appointment::where('patient_id', $request->integer('patient_id'))->find($request->integer('appointment_id'))
+                : null;
+            $data['last_visit'] = new OpdPatientDepartment([
+                'patient_id' => $request->integer('patient_id'),
+                'doctor_id' => $data['appointment']->doctor_id ?? null,
+            ]);
         }
 
         return view('opd_patient_departments.create', compact('data', 'customField'));
@@ -46,9 +57,18 @@ class OpdPatientDepartmentController extends AppBaseController
         $input['standard_charge'] = removeCommaFromNumbers($input['standard_charge']);
         $this->opdPatientDepartmentRepository->store($input);
         $this->opdPatientDepartmentRepository->createNotification($input);
-        Flash::success(__('messages.opd_patient.opd_patient').' '.__('messages.common.saved_successfully'));
+        $message = __('messages.opd_patient.opd_patient').' '.__('messages.common.saved_successfully');
 
-        return redirect(route('opd.patient.index'));
+        // Checking in an appointment puts it in today's patient queue.
+        $appointment = ! empty($input['appointment_id'])
+            ? Appointment::where('patient_id', $input['patient_id'])->where('is_completed', Appointment::STATUS_PENDING)->find($input['appointment_id'])
+            : null;
+        if ($appointment) {
+            $message .= ' '.__('messages.reception_desk.queue_token', ['no' => PatientQueue::enqueue($appointment)->no]);
+        }
+        Flash::success($message);
+
+        return redirect(afterSaveUrl(route('opd.patient.index')));
     }
 
     public function show(OpdPatientDepartment $opdPatientDepartment)

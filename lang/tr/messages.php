@@ -2423,4 +2423,28 @@ return [
             'driving_licence' => 'Sürücü belgesi',
         ],
     ],
+
+    'reception_desk' => [
+        'reception_desk' => 'Kayıt Masası',
+        'search_placeholder' => 'Ad, telefon, hasta numarası, belge numarası veya hasta kartını okutun',
+        'search_hint' => 'En az 2 karakter yazın. Kart okuyucu doğrudan bu alanda kullanılabilir.',
+        'today_appointments' => 'Bugünkü randevular',
+        'no_appointments' => 'Bugün randevu yok.',
+        'time' => 'Saat',
+        'check_in' => 'Giriş yap',
+        'recent_patients' => 'Son kaydedilenler',
+        'no_patient_found' => 'Hasta bulunamadı.',
+        'consultation' => 'Muayene',
+        'exams' => 'Tetkikler',
+        'hospitalisation' => 'Yatış',
+        'patient_file' => 'Hasta dosyası',
+        'queue_token' => 'Sıra numarası :no.',
+        'status' => [
+            0 => 'Bekliyor',
+            1 => 'Tamamlandı',
+            3 => 'İptal edildi',
+            4 => 'Sırada',
+            5 => 'Doktorda',
+        ],
+    ],
 ];

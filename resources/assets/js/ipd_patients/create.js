@@ -60,6 +60,10 @@ function loadIpdPatientCreate() {
     } else {
         admissionFlatPicker.setDate(new Date());
         admissionFlatPicker.set("minDate", new Date());
+        // Patient chosen on the Reception Desk: load their cases.
+        if ($(".ipdPatientId").val()) {
+            $(".ipdPatientId").trigger("change");
+        }
     }
 }
 

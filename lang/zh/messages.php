@@ -2420,4 +2420,28 @@ return [
             'driving_licence' => '驾驶证',
         ],
     ],
+
+    'reception_desk' => [
+        'reception_desk' => '前台服务台',
+        'search_placeholder' => '姓名、电话、患者编号、证件号码，或扫描患者卡',
+        'search_hint' => '请至少输入 2 个字符。读卡器可直接在此框中使用。',
+        'today_appointments' => '今日预约',
+        'no_appointments' => '今天没有预约。',
+        'time' => '时间',
+        'check_in' => '签到',
+        'recent_patients' => '最近登记',
+        'no_patient_found' => '未找到患者。',
+        'consultation' => '门诊',
+        'exams' => '检查',
+        'hospitalisation' => '住院',
+        'patient_file' => '患者档案',
+        'queue_token' => '排队号 :no。',
+        'status' => [
+            0 => '待处理',
+            1 => '已完成',
+            3 => '已取消',
+            4 => '排队中',
+            5 => '就诊中',
+        ],
+    ],
 ];

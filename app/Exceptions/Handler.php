@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -44,6 +45,14 @@ class Handler extends ExceptionHandler
             $message = $exception->getMessage();
             if ($code < 100 || $code >= 600) {
                 $code = ResponseAlias::HTTP_INTERNAL_SERVER_ERROR;
+            }
+
+            // 403/404/419 and the like carry their status here; getCode() is 0 for them.
+            if ($exception instanceof HttpExceptionInterface) {
+                $code = $exception->getStatusCode();
+            }
+            if ($exception instanceof AuthenticationException) {
+                $code = 401;
             }
 
             if ($exception instanceof ModelNotFoundException) {
@@ -94,6 +103,14 @@ class Handler extends ExceptionHandler
             $message = $exception->getMessage();
             if ($code < 100 || $code >= 600) {
                 $code = \Illuminate\Http\Response::HTTP_INTERNAL_SERVER_ERROR;
+            }
+
+            // 403/404/419 and the like carry their status here; getCode() is 0 for them.
+            if ($exception instanceof HttpExceptionInterface) {
+                $code = $exception->getStatusCode();
+            }
+            if ($exception instanceof AuthenticationException) {
+                $code = 401;
             }
 
             if ($exception instanceof ModelNotFoundException) {

@@ -4,7 +4,7 @@
             <div class="mb-5">
                 {{ Form::label('patient_id', __('messages.ipd_patient.patient_id') . ':', ['class' => 'form-label']) }}
                 <span class="required"></span>
-                {{ Form::select('patient_id', $data['patients'], null, ['class' => 'form-select ipdPatientId', 'required', 'id' => 'ipdPatientId', 'placeholder' => __('messages.document.select_patient'), 'tabindex' => '1', 'data-control' => 'select2']) }}
+                {{ Form::select('patient_id', $data['patients'], request('patient_id'), ['class' => 'form-select ipdPatientId', 'required', 'id' => 'ipdPatientId', 'placeholder' => __('messages.document.select_patient'), 'tabindex' => '1', 'data-control' => 'select2']) }}
             </div>
         </div>
     </div>

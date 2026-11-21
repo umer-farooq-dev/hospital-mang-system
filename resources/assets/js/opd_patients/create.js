@@ -51,6 +51,9 @@ function loadOpdPatientData() {
             .val($(".lastVisit").val())
             .trigger("change");
         $("#opdPatientId,#editOpdPatientId").attr("disabled", true);
+        if ($("#opdDoctorId").val()) {
+            $("#opdDoctorId").trigger("change");
+        }
     }
 
     if ($(".isEdit").val()) {

@@ -3,7 +3,7 @@
         <div class="form-group mb-5">
             {{ Form::label('patient_name', __('messages.case.patient') . ':', ['class' => 'form-label']) }}
             <span class="required"></span>
-            {{ Form::select('patient_id', $patients, null, ['class' => 'form-select', 'required', 'id' => 'pathologyTestPatientId', 'placeholder' => __('messages.document.select_patient'), 'data-control' => 'select2']) }}
+            {{ Form::select('patient_id', $patients, request('patient_id'), ['class' => 'form-select', 'required', 'id' => 'pathologyTestPatientId', 'placeholder' => __('messages.document.select_patient'), 'data-control' => 'select2']) }}
         </div>
     </div>
     <div class="col-md-3">
