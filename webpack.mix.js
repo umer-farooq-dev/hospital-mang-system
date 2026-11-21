@@ -18,6 +18,8 @@ mix.copyDirectory(
 );
 
 mix.copyDirectory("resources/assets/img", "public/assets/img");
+// Camera QR/barcode reader, loaded only on pages that scan (Reception Desk).
+mix.copy("node_modules/html5-qrcode/dist/html5-qrcode.min.js", "public/assets/js/html5-qrcode.min.js");
 mix.copyDirectory("resources/assets/theme/images", "public/assets/images");
 mix.copyDirectory("resources/assets/theme/webfonts", "public/webfonts");
 mix.copyDirectory("resources/assets/theme/fonts", "public/fonts");

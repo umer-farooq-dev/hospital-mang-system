@@ -79,3 +79,62 @@ function checkPatientDuplicates(form, box) {
         error: function () {},
     });
 }
+
+// Patient photo from the webcam: the captured image goes into the form's normal
+// profile picture input, so saving works exactly like an uploaded file.
+let webcamStream = null;
+let webcamForm = null;
+
+listenClick(".webcam-photo-open", function () {
+    webcamForm = $(this).closest("form");
+    let modal = $("#webcamPhotoModal").appendTo("body");
+    let errorBox = modal.find(".webcam-error").addClass("d-none");
+    modal.modal("show");
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        errorBox.text(errorBox.data("https")).removeClass("d-none");
+        return;
+    }
+    navigator.mediaDevices
+        .getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 480 } }, audio: false })
+        .then(function (stream) {
+            webcamStream = stream;
+            modal.find(".webcam-video")[0].srcObject = stream;
+        })
+        .catch(function () {
+            errorBox.text(errorBox.data("denied")).removeClass("d-none");
+        });
+});
+
+function stopWebcam() {
+    if (webcamStream) {
+        webcamStream.getTracks().forEach((track) => track.stop());
+        webcamStream = null;
+    }
+}
+
+listenHiddenBsModal("#webcamPhotoModal", stopWebcam);
+
+listenClick(".webcam-capture", function () {
+    let modal = $("#webcamPhotoModal");
+    let video = modal.find(".webcam-video")[0];
+    if (!webcamStream || !video.videoWidth || !webcamForm) {
+        return;
+    }
+    let canvas = modal.find(".webcam-canvas")[0];
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+    canvas.toBlob(
+        function (blob) {
+            let transfer = new DataTransfer();
+            transfer.items.add(new File([blob], "webcam-photo.jpg", { type: "image/jpeg" }));
+            webcamForm.find("input[name=image]")[0].files = transfer.files;
+            webcamForm.find("input[name=avatar_remove]").val("");
+            webcamForm.find(".previewImage").css("background-image", "url(" + canvas.toDataURL("image/jpeg") + ")");
+            modal.modal("hide");
+        },
+        "image/jpeg",
+        0.9
+    );
+});

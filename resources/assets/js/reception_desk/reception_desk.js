@@ -42,3 +42,46 @@ function receptionDeskSearch(term) {
         },
     });
 }
+
+// Scan the hospital patient card (QR) with the webcam; the result goes into the search.
+let deskScanner = null;
+
+listenClick("#receptionScanCard", function () {
+    let modal = $("#receptionScanModal").appendTo("body");
+    let errorBox = modal.find(".webcam-error").addClass("d-none");
+    modal.modal("show");
+
+    if (typeof Html5Qrcode === "undefined" || !navigator.mediaDevices) {
+        errorBox.text(errorBox.data("https")).removeClass("d-none");
+        return;
+    }
+    deskScanner = new Html5Qrcode("receptionQrReader");
+    deskScanner
+        .start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            function (text) {
+                stopDeskScanner();
+                modal.modal("hide");
+                // The card holds a link ending with the patient number.
+                let value = /^https?:\/\//i.test(text) ? text.replace(/\/+$/, "").split("/").pop() : text;
+                $("#receptionDeskSearch").val(value);
+                receptionDeskSearch(value);
+            },
+            function () {}
+        )
+        .catch(function () {
+            deskScanner = null;
+            errorBox.text(errorBox.data("denied")).removeClass("d-none");
+        });
+});
+
+function stopDeskScanner() {
+    if (deskScanner) {
+        let scanner = deskScanner;
+        deskScanner = null;
+        scanner.stop().then(() => scanner.clear()).catch(() => {});
+    }
+}
+
+listenHiddenBsModal("#receptionScanModal", stopDeskScanner);

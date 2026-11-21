@@ -20,13 +20,20 @@
             @include('flash::message')
             <div class="card mb-7">
                 <div class="card-body">
-                    <div class="position-relative">
-                        <span class="position-absolute top-50 translate-middle-y ms-4 text-gray-500">
-                            <i class="fas fa-search fs-4"></i>
-                        </span>
-                        <input type="search" id="receptionDeskSearch" class="form-control form-control-lg ps-12"
-                            autocomplete="off" autofocus data-url="{{ route('reception-desk.search') }}"
-                            placeholder="{{ __('messages.reception_desk.search_placeholder') }}">
+                    <div class="d-flex gap-3">
+                        <div class="position-relative flex-grow-1">
+                            <span class="position-absolute top-50 translate-middle-y ms-4 text-gray-500">
+                                <i class="fas fa-search fs-4"></i>
+                            </span>
+                            <input type="search" id="receptionDeskSearch" class="form-control form-control-lg ps-12"
+                                autocomplete="off" autofocus data-url="{{ route('reception-desk.search') }}"
+                                placeholder="{{ __('messages.reception_desk.search_placeholder') }}">
+                        </div>
+                        @if ($webcam)
+                            <button type="button" class="btn btn-light-primary text-nowrap" id="receptionScanCard">
+                                <i class="fas fa-qrcode me-1"></i>{{ __('messages.reception.scan_card') }}
+                            </button>
+                        @endif
                     </div>
                     <div class="text-muted fs-7 mt-2">{{ __('messages.reception_desk.search_hint') }}</div>
                     <div id="receptionDeskResults" class="mt-5">
@@ -116,5 +123,28 @@
             </div>
         </div>
     </div>
+    @if ($webcam)
+        <div id="receptionScanModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>{{ __('messages.reception.scan_card') }}</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-danger d-none webcam-error" data-https="{{ __('messages.reception.camera_https') }}"
+                            data-denied="{{ __('messages.reception.camera_denied') }}"></div>
+                        <div id="receptionQrReader" class="w-100"></div>
+                        <div class="text-muted fs-7 mt-3">{{ __('messages.reception.scan_card_hint') }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+@endsection
+@section('page_scripts')
+    @if ($webcam)
+        <script src="{{ asset('assets/js/html5-qrcode.min.js') }}"></script>
+    @endif
 @endsection
 {{-- JS File :- assets/js/reception_desk/reception_desk.js --}}

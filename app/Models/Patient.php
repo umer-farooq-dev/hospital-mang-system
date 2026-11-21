@@ -109,7 +109,7 @@ class Patient extends Model
     {
         if (self::$registrationSettings === null) {
             $values = Setting::whereIn('key', [
-                'patient_required_fields', 'patient_portal_login', 'patient_duplicate_check', 'patient_duplicate_fields',
+                'patient_required_fields', 'patient_portal_login', 'patient_duplicate_check', 'patient_duplicate_fields', 'reception_webcam',
             ])->pluck('value', 'key');
             $list = fn ($key, $allowed) => array_values(array_intersect($allowed, explode(',', (string) $values->get($key, ''))));
 
@@ -118,6 +118,7 @@ class Patient extends Model
                 'portal_login' => (bool) $values->get('patient_portal_login', 1),
                 'duplicate_check' => in_array($values->get('patient_duplicate_check'), self::DUPLICATE_MODES) ? $values->get('patient_duplicate_check') : 'off',
                 'duplicate_fields' => $list('patient_duplicate_fields', self::DUPLICATE_FIELDS),
+                'webcam' => (bool) $values->get('reception_webcam', 1),
             ];
         }
 

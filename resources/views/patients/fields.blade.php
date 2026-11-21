@@ -123,6 +123,11 @@
                     </div>
                 </div>
             </div>
+            @if (\App\Models\Patient::registrationSettings()['webcam'])
+                <button type="button" class="btn btn-sm btn-light-primary mt-3 webcam-photo-open">
+                    <i class="fas fa-camera me-1"></i>{{ __('messages.reception.take_photo') }}
+                </button>
+            @endif
         </div>
     </div>
     <hr>
@@ -196,3 +201,7 @@
         {{ Form::submit(__('messages.common.save'), ['class' => 'btn btn-primary me-2', 'id' => 'patientSave']) }}
         <a href="{{ route('patients.index') }}" class="btn btn-secondary me-2">{!! __('messages.common.cancel') !!}</a>
     </div>
+
+@if (\App\Models\Patient::registrationSettings()['webcam'])
+    @include('patients.webcam_photo_modal')
+@endif
