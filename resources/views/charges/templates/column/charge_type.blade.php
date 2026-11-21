@@ -1,11 +1,7 @@
-@if($row->charge_type == 1)
-    <span class="badge bg-light-primary">{{__('messages.charge.Investigations')}}</span>
-@elseif($row->charge_type == 2)
-    <span class="badge bg-light-info">{{__('messages.charge.Operation Theatre')}}</span>
-@elseif($row->charge_type == 3)
-    <span class="badge bg-light-success">{{__('messages.charge.Others')}}</span>
-@elseif($row->charge_type == 4)
-    <span class="badge bg-light-danger">{{__('messages.charge.Procedures')}}</span>
-@else
-    <span class="badge bg-light-warning">{{__('messages.charge.Supplier')}}</span>
-@endif
+@php
+    // Badge colour follows the charge type code, as before (1 primary, 2 info, 3 success, 4 danger, 5 warning...).
+    $chargeTypeColours = ['primary', 'info', 'success', 'danger', 'warning'];
+@endphp
+<span class="badge bg-light-{{ $chargeTypeColours[max((int) $row->charge_type - 1, 0) % 5] }}">
+    {{ \App\Models\MasterListItem::label('charge_type', $row->charge_type, __('messages.common.n/a')) }}
+</span>

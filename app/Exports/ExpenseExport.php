@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\MasterListItem;
 use App\Models\Expense;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -14,7 +15,7 @@ class ExpenseExport implements FromView, WithTitle, ShouldAutoSize, WithEvents
 {
     public function view(): View
     {
-        $expenseHead = Expense::EXPENSE_HEAD;
+        $expenseHead = MasterListItem::labels('expense_head');
 
         return view('exports.expenses', ['expenses' => Expense::all(), 'expenseHead' => $expenseHead]);
     }

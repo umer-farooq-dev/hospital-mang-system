@@ -46,24 +46,7 @@ class Expense extends Model implements HasMedia
 
     const PATH = 'expenses';
 
-    const EXPENSE_HEAD = [
-        1 => 'Building Rent',
-        3 => 'Equipments',
-        2 => 'Electricity Bill',
-        4 => 'Power Generator Fuel Charge',
-        6 => 'Telephone Bill',
-        5 => 'Tea Expense',
-    ];
 
-    const FILTER_EXPENSE_HEAD = [
-        0 => 'All',
-        1 => 'Building Rent',
-        3 => 'Equipments',
-        2 => 'Electricity Bill',
-        6 => 'Telephone Bill',
-        4 => 'Power Generator Fuel Charge',
-        5 => 'Tea Expense',
-    ];
 
     public $fillable = [
         'expense_head',

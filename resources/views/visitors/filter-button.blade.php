@@ -16,10 +16,9 @@
                     {{-- {{ Form::select('purpose', $filterHeads[0],null, ['id' => 'visitorsHead', 'data-control' =>'select2', 'class' => 'form-select status-selector select2-hidden-accessible data-allow-clear="true"']) }} --}}
                     <select class="form-select status-selector " id="visitorsHead" data-control="select2"
                         name="purpose">
-                        <option value="0">{{ __('messages.filter.All') }}</option>
-                        <option value="3">{{ __('messages.visitor.visit') }}</option>
-                        <option value="1">{{ __('messages.visitor.enquiry') }}</option>
-                        <option value="2">{{ __('messages.visitor.seminar') }}</option>
+                        @foreach ($filterHeads[0] as $purposeCode => $purposeLabel)
+                            <option value="{{ $purposeCode }}">{{ $purposeLabel }}</option>
+                        @endforeach
                     </select>
 
                 </div>

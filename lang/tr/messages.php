@@ -2368,4 +2368,26 @@ return [
         'role_has_users' => 'Bu rolün kullanıcıları var. Silmeden önce onları başka bir role taşıyın.',
         'no_permission' => 'Bu sayfayı açma izniniz yok.',
     ],
+
+    'master_list' => [
+        'master_lists' => 'Ana Listeler',
+        'item' => 'Liste öğesi',
+        'new_item' => 'Yeni Öğe',
+        'edit_item' => 'Öğeyi Düzenle',
+        'name' => 'Ad',
+        'sort_order' => 'Görüntüleme Sırası',
+        'active' => 'Aktif',
+        'inactive' => 'Pasif',
+        'in_use' => 'Bu öğe kayıtlı verilerde kullanılıyor. Silmek yerine pasif yapın.',
+        'inactive_hint' => 'Pasif öğeler eski kayıtlarda kalır ancak formlarda artık sunulmaz.',
+        'types' => [
+            'income_head' => 'Gelir Kalemleri',
+            'expense_head' => 'Gider Kalemleri',
+            'charge_type' => 'Ücret Türleri',
+            'visitor_purpose' => 'Ziyaret Amaçları',
+            'dose_interval' => 'Doz Aralıkları',
+            'dose_duration' => 'Doz Süreleri',
+            'meal_timing' => 'Öğün Zamanları',
+        ],
+    ],
 ];

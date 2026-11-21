@@ -2365,4 +2365,26 @@ return [
         'role_has_users' => '此角色下有用户。删除前请先将他们移到其他角色。',
         'no_permission' => '您没有打开此页面的权限。',
     ],
+
+    'master_list' => [
+        'master_lists' => '主数据列表',
+        'item' => '列表项',
+        'new_item' => '新建项目',
+        'edit_item' => '编辑项目',
+        'name' => '名称',
+        'sort_order' => '显示顺序',
+        'active' => '启用',
+        'inactive' => '停用',
+        'in_use' => '此项目已在保存的记录中使用。请停用而不是删除。',
+        'inactive_hint' => '停用的项目会保留在旧记录中，但不再在表单中提供。',
+        'types' => [
+            'income_head' => '收入项目',
+            'expense_head' => '支出项目',
+            'charge_type' => '收费类型',
+            'visitor_purpose' => '来访目的',
+            'dose_interval' => '用药间隔',
+            'dose_duration' => '用药疗程',
+            'meal_timing' => '用餐时间',
+        ],
+    ],
 ];

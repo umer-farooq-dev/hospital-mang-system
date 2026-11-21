@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Visitor;
+use App\Models\MasterListItem;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Livewire\Attributes\Lazy;
@@ -18,7 +19,12 @@ class VisitorTable extends LivewireTableComponent
 
     public $buttonComponent = 'visitors.add-button';
 
-    public $FilterComponent = ['visitors.filter-button', Visitor::FILTER_PURPOSE];
+    public $FilterComponent = ['visitors.filter-button', []];
+
+    public function mount(): void
+    {
+        $this->FilterComponent[1] = MasterListItem::filterOptions('visitor_purpose');
+    }
     public $statusFilter;
     protected $listeners = ['refresh' => '$refresh', 'changeFilter', 'resetPage'];
 

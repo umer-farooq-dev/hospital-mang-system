@@ -232,7 +232,7 @@
                                     </td>
                                     <td class="py-4 border-bottom-0">{{ $medicine->day }} Day</td>
                                     @if ($medicine->dose_interval != 0)
-                                    <td class="py-4 border-bottom-0">{{ App\Models\Prescription::DOSE_INTERVAL[$medicine->dose_interval] }}</td>
+                                    <td class="py-4 border-bottom-0">{{ \App\Models\MasterListItem::label('dose_interval', $medicine->dose_interval, 'N/A') }}</td>
                                     @endif
                                 </tr>
 {{--                            @endforeach--}}

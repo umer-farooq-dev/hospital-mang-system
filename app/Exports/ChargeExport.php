@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\MasterListItem;
 use App\Models\Charge;
 use App\Models\ChargeCategory;
 use Illuminate\Contracts\View\View;
@@ -15,7 +16,7 @@ class ChargeExport implements FromView, WithTitle, ShouldAutoSize, WithEvents
 {
     public function view(): View
     {
-        $chargeTypes = ChargeCategory::CHARGE_TYPES;
+        $chargeTypes = MasterListItem::labels('charge_type');
 
         return view('exports.receptionists.charges',
             ['charges' => Charge::with('chargeCategory')->get(), 'chargeTypes' => $chargeTypes]);

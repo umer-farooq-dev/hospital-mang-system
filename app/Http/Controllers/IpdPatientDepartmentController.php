@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MasterListItem;
 use App\Http\Requests\CreateIpdPatientDepartmentRequest;
 use App\Http\Requests\UpdateIpdPatientDepartmentRequest;
 use App\Models\AddCustomFields;
@@ -82,7 +83,7 @@ class IpdPatientDepartmentController extends AppBaseController
         $doseIntervalList = $this->ipdPatientDepartmentRepository->getDoseIntervalList();
         $ipdPatientDepartmentRepository = App::make(IpdBillRepository::class);
         $bill = $ipdPatientDepartmentRepository->getBillList($ipdPatientDepartment);
-        $chargeTypes = IpdCharge::CHARGE_TYPES;
+        $chargeTypes = MasterListItem::options('charge_type');
         $paymentModes = IpdPayment::PAYMENT_MODES;
 
         return view('ipd_patient_departments.show',

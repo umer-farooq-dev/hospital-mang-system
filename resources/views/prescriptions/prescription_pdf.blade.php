@@ -351,7 +351,7 @@
                                     {{ __('messages.appointment.day') }}
                                 </td>
                                 <td class="py-4 border-bottom-0">
-                                    {{ App\Models\Prescription::DOSE_INTERVAL[$medicine->dose_interval] }}</td>
+                                    {{ \App\Models\MasterListItem::label('dose_interval', $medicine->dose_interval, 'N/A') }}</td>
                             </tr>
                         @break
                     @endforeach

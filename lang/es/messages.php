@@ -2417,4 +2417,26 @@ return [
         'role_has_users' => 'Este rol tiene usuarios. Muévalos a otro rol antes de eliminarlo.',
         'no_permission' => 'No tiene permiso para abrir esta página.',
     ],
+
+    'master_list' => [
+        'master_lists' => 'Listas maestras',
+        'item' => 'Elemento de lista',
+        'new_item' => 'Nuevo elemento',
+        'edit_item' => 'Editar elemento',
+        'name' => 'Nombre',
+        'sort_order' => 'Orden de visualización',
+        'active' => 'Activo',
+        'inactive' => 'Inactivo',
+        'in_use' => 'Este elemento se usa en registros guardados. Desactívelo en lugar de eliminarlo.',
+        'inactive_hint' => 'Los elementos inactivos permanecen en los registros antiguos, pero ya no se ofrecen en los formularios.',
+        'types' => [
+            'income_head' => 'Conceptos de ingreso',
+            'expense_head' => 'Conceptos de gasto',
+            'charge_type' => 'Tipos de cargo',
+            'visitor_purpose' => 'Motivos de visita',
+            'dose_interval' => 'Intervalos de dosis',
+            'dose_duration' => 'Duraciones de dosis',
+            'meal_timing' => 'Momentos de comida',
+        ],
+    ],
 ];

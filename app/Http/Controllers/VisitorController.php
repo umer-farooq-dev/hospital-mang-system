@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MasterListItem;
 use App\Exports\VisitorExport;
 use App\Http\Requests\CreateVisitorRequest;
 use App\Http\Requests\UpdateVisitorRequest;
@@ -24,14 +25,14 @@ class VisitorController extends AppBaseController
 
     public function index()
     {
-        $purpose = Visitor::FILTER_PURPOSE;
+        $purpose = MasterListItem::filterOptions('visitor_purpose');
 
         return view('visitors.index', compact('purpose'));
     }
 
     public function create()
     {
-        $purpose = Visitor::PURPOSE;
+        $purpose = MasterListItem::options('visitor_purpose');
         $isEdit = false;
 
         return view('visitors.create', compact('purpose', 'isEdit'));
@@ -61,7 +62,7 @@ class VisitorController extends AppBaseController
 
     public function edit(Visitor $visitor)
     {
-        $purpose = Visitor::PURPOSE;
+        $purpose = MasterListItem::options('visitor_purpose', $visitor->purpose);
         $fileExt = pathinfo($visitor->document_url, PATHINFO_EXTENSION);
         $isEdit = true;
 

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Expense;
+use App\Models\MasterListItem;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\WithPagination;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -23,7 +24,12 @@ class ExpenseTable extends LivewireTableComponent
 
     public $buttonComponent = 'expenses.add-button';
 
-    public $FilterComponent = ['expenses.filter-button', Expense::FILTER_EXPENSE_HEAD];
+    public $FilterComponent = ['expenses.filter-button', []];
+
+    public function mount(): void
+    {
+        $this->FilterComponent[1] = MasterListItem::filterOptions('expense_head');
+    }
 
     public $statusFilter;
 

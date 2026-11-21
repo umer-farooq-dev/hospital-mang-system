@@ -145,7 +145,7 @@
                             @endif
                         </td>
                         <td class="{{getCurrentLoginUserLanguageName() == 'ar' ? 'text-end' : 'text-start'}} pt-6">
-                            {{ App\Models\Prescription::DOSE_INTERVAL[$ipdPrescriptionItem->dose_interval] ?? 'N\A' }}
+                            {{ \App\Models\MasterListItem::label('dose_interval', $ipdPrescriptionItem->dose_interval, 'N\A') }}
                         </td>
                         <td class="{{getCurrentLoginUserLanguageName() == 'ar' ? 'text-end' : 'text-start'}} pt-6">{!! !empty($ipdPrescriptionItem->instruction)
                             ? nl2br(e($ipdPrescriptionItem->instruction))

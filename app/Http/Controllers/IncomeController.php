@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MasterListItem;
 use App\Exports\IncomeExport;
 use App\Http\Requests\CreateIncomeRequest;
 use App\Http\Requests\UpdateIncomeRequest;
@@ -26,10 +27,8 @@ class IncomeController extends AppBaseController
 
     public function index()
     {
-        $incomeHeads = Income::INCOME_HEAD;
-        asort($incomeHeads);
-        $filterIncomeHeads = Income::FILTER_INCOME_HEAD;
-        asort($filterIncomeHeads);
+        $incomeHeads = MasterListItem::options('income_head');
+        $filterIncomeHeads = MasterListItem::filterOptions('income_head');
 
         return view('incomes.index', compact('incomeHeads', 'filterIncomeHeads'));
     }
@@ -47,8 +46,7 @@ class IncomeController extends AppBaseController
     public function show(Income $income)
     {
         $incomes = $this->incomeRepository->find($income->id);
-        $incomeHeads = Income::INCOME_HEAD;
-        asort($incomeHeads);
+        $incomeHeads = MasterListItem::labels('income_head');
 
         return view('incomes.show', compact('incomes', 'incomeHeads'));
     }

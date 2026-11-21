@@ -48,13 +48,13 @@
                                     {{ Form::text('dosage[]', $prescription->dosage, ['class' => 'form-control', 'id' => 'prescriptionMedicineNameId']) }}
                                 </td>
                                 <td>
-                                    {{ Form::select('day[]', \App\Models\Prescription::DOSE_DURATION, $prescription->day, ['class' => 'form-select prescriptionMedicineMealId']) }}
+                                    {{ Form::select('day[]', \App\Models\MasterListItem::options('dose_duration', $prescription->day), $prescription->day, ['class' => 'form-select prescriptionMedicineMealId']) }}
                                 </td>
                                 <td>
-                                    {{ Form::select('time[]', \App\Models\Prescription::MEAL_ARR, $prescription->time, ['class' => 'form-select prescriptionMedicineMealId']) }}
+                                    {{ Form::select('time[]', \App\Models\MasterListItem::options('meal_timing', $prescription->time), $prescription->time, ['class' => 'form-select prescriptionMedicineMealId']) }}
                                 </td>
                                 <td>
-                                    {{ Form::select('dose_interval[]', \App\Models\Prescription::DOSE_INTERVAL, $prescription->dose_interval, ['class' => 'form-select prescriptionMedicineMealId']) }}
+                                    {{ Form::select('dose_interval[]', \App\Models\MasterListItem::options('dose_interval', $prescription->dose_interval), $prescription->dose_interval, ['class' => 'form-select prescriptionMedicineMealId']) }}
                                 </td>
                                 <td>
                                     {{ Form::textarea('comment[]', $prescription->comment, ['class' => 'form-control', 'rows' => 1, 'placeholder' => __('messages.prescription.comment')]) }}
@@ -79,13 +79,13 @@
                                 {{ Form::text('dosage[]', null, ['class' => 'form-control', 'id' => 'prescriptionMedicineNameId', 'placeholder' => __('messages.ipd_patient_prescription.dosage')]) }}
                             </td>
                             <td>
-                                {{ Form::select('day[]', \App\Models\Prescription::DOSE_DURATION, null, ['class' => 'form-select prescriptionMedicineMealId']) }}
+                                {{ Form::select('day[]', \App\Models\MasterListItem::options('dose_duration'), null, ['class' => 'form-select prescriptionMedicineMealId']) }}
                             </td>
                             <td>
-                                {{ Form::select('time[]', \App\Models\Prescription::MEAL_ARR, null, ['class' => 'form-select prescriptionMedicineMealId']) }}
+                                {{ Form::select('time[]', \App\Models\MasterListItem::options('meal_timing'), null, ['class' => 'form-select prescriptionMedicineMealId']) }}
                             </td>
                             <td>
-                                {{ Form::select('dose_interval[]', \App\Models\Prescription::DOSE_INTERVAL, null, ['class' => 'form-select prescriptionMedicineMealId']) }}
+                                {{ Form::select('dose_interval[]', \App\Models\MasterListItem::options('dose_interval'), null, ['class' => 'form-select prescriptionMedicineMealId']) }}
                             </td>
                             <td>
                                 {{ Form::textarea('comment[]', null, ['class' => 'form-control', 'rows' => 1, 'placeholder' => __('messages.prescription.comment')]) }}

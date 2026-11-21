@@ -73,6 +73,7 @@ use App\Http\Controllers\LiveConsultationController;
 use App\Http\Controllers\LiveMeetingController;
 use App\Http\Controllers\LunchBreakController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\MasterListController;
 use App\Http\Controllers\ManualBillPaymentController;
 use App\Http\Controllers\MedicineBillController;
 use App\Http\Controllers\MedicineController;
@@ -1581,6 +1582,15 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
         Route::patch('roles/{role}', [RoleController::class, 'update'])->name('roles.update');
         Route::delete('roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+
+        // Master Lists (admin-managed dropdown lists)
+        Route::get('master-lists', [MasterListController::class, 'index'])
+            ->name('master-lists.index')
+            ->middleware('modules');
+        Route::post('master-lists', [MasterListController::class, 'store'])->name('master-lists.store');
+        Route::get('master-lists/{masterListItem}/edit', [MasterListController::class, 'edit'])->name('master-lists.edit');
+        Route::put('master-lists/{masterListItem}', [MasterListController::class, 'update'])->name('master-lists.update');
+        Route::delete('master-lists/{masterListItem}', [MasterListController::class, 'destroy'])->name('master-lists.destroy');
     });
 
     Route::middleware('access:Admin')->group(function () {

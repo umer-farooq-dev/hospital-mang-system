@@ -206,6 +206,7 @@ return [
         // settings
         'settings' => 'settings',
         'roles' => 'settings',
+        'master_lists' => 'settings',
         'audit_logs' => 'settings',
         'email_templates' => 'settings',
         'hospital_schedules' => 'settings',
@@ -339,6 +340,7 @@ return [
         Controllers\Patient\VaccinatedController::class => 'my_vaccinations',
         Controllers\SettingController::class => 'settings',
         Controllers\RoleController::class => 'roles',
+        Controllers\MasterListController::class => 'master_lists',
         Controllers\AuditLogController::class => 'audit_logs',
         Controllers\EmailTemplateController::class => 'email_templates',
         Controllers\HospitalScheduleController::class => 'hospital_schedules',

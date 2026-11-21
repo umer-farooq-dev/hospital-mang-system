@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MasterListItem;
 use App\Exports\ChargeExport;
 use App\Http\Requests\CreateChargeRequest;
 use App\Http\Requests\UpdateChargeRequest;
@@ -24,9 +25,9 @@ class ChargeController extends AppBaseController
 
     public function index()
     {
-        $chargeTypes = ChargeCategory::CHARGE_TYPES;
+        $chargeTypes = MasterListItem::options('charge_type');
         asort($chargeTypes);
-        $filterChargeTypes = ChargeCategory::FILTER_CHARGE_TYPES;
+        $filterChargeTypes = MasterListItem::filterOptions('charge_type');
         asort($filterChargeTypes);
 
         return view('charges.index', compact('chargeTypes', 'filterChargeTypes'));
@@ -43,7 +44,7 @@ class ChargeController extends AppBaseController
 
     public function show(Charge $charge)
     {
-        $chargeTypes = ChargeCategory::CHARGE_TYPES;
+        $chargeTypes = MasterListItem::labels('charge_type');
         asort($chargeTypes);
 
         return view('charges.show', compact('charge', 'chargeTypes'));

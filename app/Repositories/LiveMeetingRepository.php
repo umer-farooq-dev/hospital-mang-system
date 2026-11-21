@@ -107,6 +107,7 @@ class LiveMeetingRepository extends BaseRepository
                 $users[$value] = User::where('id', $value)->pluck('owner_type', 'id')->first();
             }
 
+            $userIds = []; // stays empty when there is nobody to notify
             foreach ($users as $key => $userId) {
                 $userIds[$key] = Notification::NOTIFICATION_FOR[User::getOwnerType($userId)];
             }

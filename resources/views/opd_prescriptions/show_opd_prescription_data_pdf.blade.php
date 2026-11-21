@@ -211,7 +211,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        {{ App\Models\Prescription::DOSE_INTERVAL[$opdPrescriptionItem->dose_interval] ?? 'N\A' }}
+                                        {{ \App\Models\MasterListItem::label('dose_interval', $opdPrescriptionItem->dose_interval, 'N\A') }}
                                     </td>
                                     <td>{!! !empty($opdPrescriptionItem->instruction)
                                         ? nl2br(e($opdPrescriptionItem->instruction))
