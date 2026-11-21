@@ -2656,4 +2656,7 @@ return [
     'cash_journal' => [
         'title' => '现金日记账',
     ],
+    'exam_orders' => [
+        'title' => '检查申请',
+    ],
 ];

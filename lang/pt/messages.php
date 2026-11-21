@@ -2656,4 +2656,7 @@ return [
     'cash_journal' => [
         'title' => 'Diário de caixa',
     ],
+    'exam_orders' => [
+        'title' => 'Pedidos de exames',
+    ],
 ];

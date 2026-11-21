@@ -745,6 +745,7 @@ mix.js(
         "resources/assets/js/opd_patients/create.js",
         "resources/assets/js/opd_patients/split.js",
         "resources/assets/js/cashier/cashier.js",
+        "resources/assets/js/exam_orders/exam_orders.js",
         "resources/assets/js/opd_patients/visits.js",
         "resources/assets/js/opd_diagnosis/opd_diagnosis.js",
         "resources/assets/js/opd_timelines/opd_timelines.js",

@@ -2658,4 +2658,7 @@ return [
     'cash_journal' => [
         'title' => 'Kassenbuch',
     ],
+    'exam_orders' => [
+        'title' => 'Untersuchungsaufträge',
+    ],
 ];

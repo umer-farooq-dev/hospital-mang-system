@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\CashSession;
+use App\Models\ExamOrder;
+use App\Models\ExamOrderItem;
 use App\Models\OpdPatientDepartment;
 use App\Models\Patient;
 use App\Models\Receipt;
@@ -38,50 +40,76 @@ class CashierRepository
         });
     }
 
-    /** Amount already paid per OPD visit (valid receipts only). */
-    private function paidPerVisit(array $visitIds): Collection
+    /** Amount already paid per item of one type (valid receipts only, not refunded). */
+    private function paid(string $type, array $ids): Collection
     {
-        return ReceiptLine::where('payable_type', 'opd_visit')->whereIn('payable_id', $visitIds)
+        return ReceiptLine::where('payable_type', $type)->whereIn('payable_id', $ids)
             ->whereHas('receipt', fn ($q) => $q->whereNull('voided_at')->whereDoesntHave('refund'))
             ->selectRaw('payable_id, SUM(amount) as paid')->groupBy('payable_id')->pluck('paid', 'payable_id');
     }
 
-    /** The patient's visits with a share still to pay, each with its outstanding amount. */
-    public function unpaidVisits(int $patientId): Collection
+    /**
+     * Everything the patient still has to pay: OPD visits and requested exams, oldest first.
+     * Each item: key ("opd_visit:12"), type, id, date, description, detail, total, discount, payer, outstanding.
+     */
+    public function unpaidItems(int $patientId): Collection
     {
         $visits = OpdPatientDepartment::with('doctor.doctorUser', 'doctor.department')
-            ->where('patient_id', $patientId)->whereNotNull('patient_amount')->where('patient_amount', '>', 0)
-            ->orderBy('appointment_date')->get();
-        $paid = $this->paidPerVisit($visits->pluck('id')->all());
+            ->where('patient_id', $patientId)->whereNotNull('patient_amount')->where('patient_amount', '>', 0)->get();
+        $exams = ExamOrderItem::with('order.doctor.doctorUser')->where('patient_amount', '>', 0)
+            ->whereHas('order', fn ($q) => $q->where('patient_id', $patientId))->get();
+        $paidVisits = $this->paid('opd_visit', $visits->pluck('id')->all());
+        $paidExams = $this->paid('exam_item', $exams->pluck('id')->all());
 
-        return $visits->each(fn ($v) => $v->outstanding = round($v->patient_amount - (float) ($paid[$v->id] ?? 0), 2))
-            ->filter(fn ($v) => $v->outstanding > 0)->values();
+        $items = $visits->map(fn ($v) => [
+            'type' => 'opd_visit', 'id' => $v->id, 'date' => $v->appointment_date,
+            'description' => __('messages.cashier.consultation').' · '.($v->doctor->doctorUser->full_name ?? ''),
+            'detail' => trim(($v->doctor->department->title ?? '').' · '.$v->opd_number, ' ·'),
+            'total' => (float) $v->standard_charge, 'discount' => (float) $v->discount_amount, 'payer' => (float) $v->payer_amount,
+            'outstanding' => round($v->patient_amount - (float) ($paidVisits[$v->id] ?? 0), 2),
+        ])->concat($exams->map(fn ($e) => [
+            'type' => 'exam_item', 'id' => $e->id, 'date' => $e->order->ordered_at,
+            'description' => $e->description,
+            'detail' => __('messages.exam_orders.exam').($e->order->doctor ? ' · '.$e->order->doctor->doctorUser->full_name : ''),
+            'total' => $e->total, 'discount' => $e->discount_amount, 'payer' => $e->payer_amount,
+            'outstanding' => round($e->patient_amount - (float) ($paidExams[$e->id] ?? 0), 2),
+        ]));
+
+        return $items->filter(fn ($i) => $i['outstanding'] > 0)
+            ->map(fn ($i) => $i + ['key' => $i['type'].':'.$i['id']])
+            ->sortBy('date')->values();
     }
 
-    /** Patients with something to pay, for the cashier's list. */
+    /**
+     * Patients with something to pay in the last 90 days, for the cashier's list.
+     * ponytail: checks each candidate patient one by one; fine for a day's patients, add a summary query if it gets slow.
+     */
     public function patientsToCollect(): array
     {
-        $visits = OpdPatientDepartment::whereNotNull('patient_amount')->where('patient_amount', '>', 0)
-            ->whereDate('appointment_date', '>=', now()->subDays(90))->get(['id', 'patient_id', 'patient_amount']);
-        $paid = $this->paidPerVisit($visits->pluck('id')->all());
-        $patientIds = $visits->filter(fn ($v) => $v->patient_amount - (float) ($paid[$v->id] ?? 0) > 0)->pluck('patient_id')->unique();
+        $since = now()->subDays(90);
+        $candidates = OpdPatientDepartment::where('patient_amount', '>', 0)->where('appointment_date', '>=', $since)->pluck('patient_id')
+            ->merge(ExamOrder::where('ordered_at', '>=', $since)->whereHas('items', fn ($q) => $q->where('patient_amount', '>', 0))->pluck('patient_id'))
+            ->unique();
+        $patientIds = $candidates->filter(fn ($id) => $this->unpaidItems((int) $id)->isNotEmpty());
 
         return Patient::with('patientUser')->whereIn('id', $patientIds)->get()
             ->mapWithKeys(fn ($p) => [$p->id => $p->patientUser->full_name.' · '.$p->patient_unique_id])->all();
     }
 
     /**
-     * Collect the full outstanding share of the chosen visits on one receipt.
+     * Collect the full outstanding share of the chosen items on one receipt.
      * ponytail: the outstanding amount is always paid in full; add partial payments if the client needs them.
+     *
+     * @param  string[]  $keys  item keys from unpaidItems(), e.g. "opd_visit:12", "exam_item:4"
      */
-    public function collect(CashSession $session, User $user, int $patientId, array $visitIds, array $payment): Receipt
+    public function collect(CashSession $session, User $user, int $patientId, array $keys, array $payment): Receipt
     {
-        return DB::transaction(function () use ($session, $user, $patientId, $visitIds, $payment) {
-            $visits = $this->unpaidVisits($patientId)->whereIn('id', array_map('intval', $visitIds));
-            if ($visits->isEmpty()) {
-                throw ValidationException::withMessages(['visits' => __('messages.cashier.nothing_selected')]);
+        return DB::transaction(function () use ($session, $user, $patientId, $keys, $payment) {
+            $items = $this->unpaidItems($patientId)->whereIn('key', $keys);
+            if ($items->isEmpty()) {
+                throw ValidationException::withMessages(['items' => __('messages.cashier.nothing_selected')]);
             }
-            $total = round($visits->sum('outstanding'), 2);
+            $total = round($items->sum('outstanding'), 2);
             $received = isset($payment['amount_received']) && $payment['amount_received'] !== '' ? (float) $payment['amount_received'] : $total;
             if ($received < $total) {
                 throw ValidationException::withMessages(['amount_received' => __('messages.cashier.received_too_low')]);
@@ -100,15 +128,15 @@ class CashierRepository
                 'cheque_number' => $payment['cheque_number'] ?? null,
                 'cheque_drawer' => $payment['cheque_drawer'] ?? null,
             ]);
-            foreach ($visits as $visit) {
+            foreach ($items as $item) {
                 $receipt->lines()->create([
-                    'payable_type' => 'opd_visit',
-                    'payable_id' => $visit->id,
-                    'description' => __('messages.cashier.consultation').' · '.($visit->doctor->doctorUser->full_name ?? ''),
-                    'total' => $visit->standard_charge,
-                    'discount_amount' => $visit->discount_amount,
-                    'payer_amount' => $visit->payer_amount,
-                    'amount' => $visit->outstanding,
+                    'payable_type' => $item['type'],
+                    'payable_id' => $item['id'],
+                    'description' => $item['description'],
+                    'total' => $item['total'],
+                    'discount_amount' => $item['discount'],
+                    'payer_amount' => $item['payer'],
+                    'amount' => $item['outstanding'],
                 ]);
             }
 

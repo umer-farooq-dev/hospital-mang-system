@@ -63,9 +63,9 @@
                                     </select>
                                 </form>
 
-                                @if ($patientId && $visits->isEmpty())
+                                @if ($patientId && $items->isEmpty())
                                     <div class="text-muted py-5 text-center">{{ __('messages.cashier.nothing_to_pay') }}</div>
-                                @elseif ($visits->isNotEmpty())
+                                @elseif ($items->isNotEmpty())
                                     {{ Form::open(['route' => 'cashier.collect', 'method' => 'post', 'id' => 'cashierCollectForm']) }}
                                     {{ Form::hidden('patient_id', $patientId) }}
                                     <div class="table-responsive">
@@ -82,18 +82,18 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($visits as $visit)
+                                                @foreach ($items as $item)
                                                     <tr>
-                                                        <td><input type="checkbox" class="form-check-input cashier-line" name="visits[]" value="{{ $visit->id }}" data-amount="{{ $visit->outstanding }}" checked></td>
-                                                        <td class="text-nowrap">{{ $visit->appointment_date->format('d/m/Y H:i') }}</td>
+                                                        <td><input type="checkbox" class="form-check-input cashier-line" name="items[]" value="{{ $item['key'] }}" data-amount="{{ $item['outstanding'] }}" checked></td>
+                                                        <td class="text-nowrap">{{ $item['date']->format('d/m/Y H:i') }}</td>
                                                         <td>
-                                                            {{ __('messages.cashier.consultation') }} · {{ $visit->doctor->doctorUser->full_name ?? '' }}
-                                                            <div class="text-muted fs-7">{{ $visit->doctor->department->title ?? '' }} · {{ $visit->opd_number }}</div>
+                                                            {{ $item['description'] }}
+                                                            <div class="text-muted fs-7">{{ $item['detail'] }}</div>
                                                         </td>
-                                                        <td class="text-end text-nowrap">{{ formatMoney($visit->standard_charge) }}</td>
-                                                        <td class="text-end text-nowrap">{{ formatMoney($visit->discount_amount) }}</td>
-                                                        <td class="text-end text-nowrap">{{ formatMoney($visit->payer_amount) }}</td>
-                                                        <td class="text-end text-nowrap fw-bold">{{ formatMoney($visit->outstanding) }}</td>
+                                                        <td class="text-end text-nowrap">{{ formatMoney($item['total']) }}</td>
+                                                        <td class="text-end text-nowrap">{{ formatMoney($item['discount']) }}</td>
+                                                        <td class="text-end text-nowrap">{{ formatMoney($item['payer']) }}</td>
+                                                        <td class="text-end text-nowrap fw-bold">{{ formatMoney($item['outstanding']) }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -119,7 +119,7 @@
                                     </div>
                                     <div class="d-flex flex-wrap justify-content-between align-items-center mt-6 gap-3">
                                         <div class="fs-4">
-                                            {{ __('messages.cashier.total_to_pay') }}: @php($fmt = currencyFormatSettings())<span class="fw-bolder text-primary" id="cashierTotal" data-symbol="{{ getCurrencySymbol() }}" data-decimals="{{ $fmt['decimals'] }}" data-dec="{{ $fmt['decimal_separator'] }}" data-thousands="{{ $fmt['thousands_separator'] }}" data-position="{{ $fmt['symbol_position'] }}">{{ formatMoney($visits->sum('outstanding')) }}</span>
+                                            {{ __('messages.cashier.total_to_pay') }}: @php($fmt = currencyFormatSettings())<span class="fw-bolder text-primary" id="cashierTotal" data-symbol="{{ getCurrencySymbol() }}" data-decimals="{{ $fmt['decimals'] }}" data-dec="{{ $fmt['decimal_separator'] }}" data-thousands="{{ $fmt['thousands_separator'] }}" data-position="{{ $fmt['symbol_position'] }}">{{ formatMoney($items->sum('outstanding')) }}</span>
                                             <span class="ms-6 text-muted fs-6">{{ __('messages.cashier.change') }}: <span id="cashierChange">{{ formatMoney(0) }}</span></span>
                                         </div>
                                         {{ Form::submit(__('messages.cashier.validate'), ['class' => 'btn btn-primary']) }}

@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use App\Models\CoverageRule;
 use App\Models\DoctorDepartment;
+use App\Models\ExamOrderItem;
 use App\Models\OpdPatientDepartment;
 use App\Models\PatientInsurance;
 use Illuminate\Support\Carbon;
@@ -81,6 +82,8 @@ class PriceSplit
         $used = OpdPatientDepartment::where('patient_insurance_id', $policy->id)
             ->whereYear('appointment_date', $date->year)
             ->when($ignoreVisitId, fn ($q) => $q->where('id', '!=', $ignoreVisitId))
+            ->sum('payer_amount');
+        $used += ExamOrderItem::whereHas('order', fn ($q) => $q->where('patient_insurance_id', $policy->id)->whereYear('ordered_at', $date->year))
             ->sum('payer_amount');
 
         return max(0, $policy->annual_limit - (float) $used);

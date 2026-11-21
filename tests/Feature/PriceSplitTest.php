@@ -70,6 +70,16 @@ class PriceSplitTest extends TestCase
             $t->dateTime('appointment_date');
             $t->decimal('payer_amount', 15, 2)->default(0);
         });
+        Schema::create('exam_orders', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('patient_insurance_id')->nullable();
+            $t->dateTime('ordered_at');
+        });
+        Schema::create('exam_order_items', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('exam_order_id');
+            $t->decimal('payer_amount', 15, 2)->default(0);
+        });
         Schema::create('users', fn (Blueprint $t) => $t->id());
         (require base_path('database/migrations/2026_11_20_120000_create_audit_logs_table.php'))->up();
 

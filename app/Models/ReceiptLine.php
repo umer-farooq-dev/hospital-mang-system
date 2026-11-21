@@ -25,6 +25,7 @@ class ReceiptLine extends Model
     /** Billable types the cashier collects: type => model. */
     const PAYABLE_TYPES = [
         'opd_visit' => OpdPatientDepartment::class,
+        'exam_item' => ExamOrderItem::class,
     ];
 
     public function receipt(): BelongsTo

@@ -43,6 +43,17 @@
         @endcanroute
     @endmodule
 
+    {{-- Exam requests --}}
+    @module('Exam Requests', $modules)
+        @canroute('exam-orders.index')
+        <li class="nav-item {{ Request::is('exam-orders*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('exam-orders.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-vials"></i></span>
+                <span class="aside-menu-title">{{ __('messages.exam_orders.title') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
     {{-- Cashier --}}
     @module('Cashier', $modules)
         @canroute('cashier.index')
@@ -951,6 +962,17 @@
                 @endcanroute
             @endmodule
 
+            {{-- Exam requests --}}
+            @module('Exam Requests', $modules)
+                @canroute('exam-orders.index')
+                <li class="nav-item {{ Request::is('exam-orders*') ? 'active' : '' }}">
+                    <a class="nav-link  d-flex align-items-center py-3" href="{{ route('exam-orders.index') }}">
+                        <span class="aside-menu-icon me-3"><i class="fas fa-vials"></i></span>
+                        <span class="aside-menu-title">{{ __('messages.exam_orders.title') }}</span>
+                    </a>
+                </li>
+                @endcanroute
+            @endmodule
             {{-- Cashier --}}
             @module('Cashier', $modules)
                 @canroute('cashier.index')
