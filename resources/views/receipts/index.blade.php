@@ -15,6 +15,7 @@
         $canVoid = canAccessRoute('receipts.void');
         $canRefund = canAccessRoute('receipts.refund');
         $canMethod = canAccessRoute('receipts.method');
+        $canDoctor = canAccessRoute('receipts.doctor');
         $badges = ['valid' => 'success', 'voided' => 'danger', 'refunded' => 'warning'];
     @endphp
     <div class="container-fluid">
@@ -89,6 +90,10 @@
                                                 <button type="button" class="btn btn-sm btn-light-primary receipt-action" data-bs-toggle="modal" data-bs-target="#receiptMethodModal"
                                                         data-url="{{ route('receipts.method', $receipt->id) }}" data-number="{{ $receipt->receipt_number }}" title="{{ __('messages.receipts.change_method') }}"><i class="fas fa-exchange-alt"></i></button>
                                             @endif
+                                            @if ($canDoctor && $receipt->status === 'valid' && $receipt->lines->contains('payable_type', 'opd_visit'))
+                                                <button type="button" class="btn btn-sm btn-light-info receipt-action" data-bs-toggle="modal" data-bs-target="#receiptDoctorModal"
+                                                        data-url="{{ route('receipts.doctor', $receipt->id) }}" data-number="{{ $receipt->receipt_number }}" title="{{ __('messages.receipts.change_doctor') }}"><i class="fas fa-user-md"></i></button>
+                                            @endif
                                             @if ($open && $canVoid)
                                                 <button type="button" class="btn btn-sm btn-light-danger receipt-action" data-bs-toggle="modal" data-bs-target="#receiptReasonModal"
                                                         data-url="{{ route('receipts.void', $receipt->id) }}" data-number="{{ $receipt->receipt_number }}" data-title="{{ __('messages.receipts.void') }}" title="{{ __('messages.receipts.void') }}"><i class="fas fa-ban"></i></button>
@@ -132,6 +137,26 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-danger">{{ __('messages.common.save') }}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('messages.common.cancel') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="receiptDoctorModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="POST" class="modal-content">
+                @csrf
+                <div class="modal-header">
+                    <h2>{{ __('messages.receipts.change_doctor') }}</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">{{ __('messages.cashier.receipt_no') }} <b class="receipt-modal-number"></b></p>
+                    {{ Form::select('doctor_id', $doctors, null, ['class' => 'form-select', 'required', 'placeholder' => __('messages.common.choose')]) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">{{ __('messages.common.save') }}</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('messages.common.cancel') }}</button>
                 </div>
             </form>

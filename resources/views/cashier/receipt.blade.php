@@ -60,6 +60,9 @@
         <div class="void" style="color:#111; border-color:#111">{{ __('messages.receipts.duplicate_mark') }}</div>
     @endif
 
+    @if ($receipt->patient->patient_unique_id)
+        <div style="float:right; margin-left:8px">{!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(64)->generate(route('qrcode.patient.show', $receipt->patient->patient_unique_id)) !!}</div>
+    @endif
     <table class="info">
         <tr>
             <td><b>{{ __('messages.cashier.patient') }}:</b> {{ $user->full_name }}</td>
@@ -114,7 +117,8 @@
     </table>
 
     @if ($isConsultation && $followupDays > 0)
-        <div class="footer">{{ __('messages.cashier.followup_footer', ['days' => $followupDays, 'date' => $receipt->created_at->copy()->addDays($followupDays)->format('d/m/Y')]) }}</div>
+        @php($footerVars = ['days' => $followupDays, 'date' => $receipt->created_at->copy()->addDays($followupDays)->format('d/m/Y')])
+        <div class="footer">{{ $footerText ? strtr($footerText, [':days' => $footerVars['days'], ':date' => $footerVars['date']]) : __('messages.cashier.followup_footer', $footerVars) }}</div>
     @endif
 
     <div class="sign">

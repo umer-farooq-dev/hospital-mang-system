@@ -33,6 +33,7 @@ class ExamOrderTest extends TestCase
                 $t->decimal('coverage_percent', 5, 2)->nullable(), $t->boolean('not_covered')->default(false), $t->boolean('needs_approval')->default(false),
                 $t->decimal('max_amount', 15, 2)->nullable(), $t->timestamps()],
             'doctor_departments' => fn ($t) => [$t->string('title'), $t->decimal('discount_percent', 5, 2)->nullable()],
+            'packages' => fn ($t) => [$t->string('name'), $t->double('total_amount'), $t->timestamps()],
             'users' => fn ($t) => [],
         ];
         foreach ($tables as $name => $columns) {
@@ -61,6 +62,10 @@ class ExamOrderTest extends TestCase
         $this->assertSame(['NFS', 'G.E. avec frottis'], array_column($lines, 'description'), 'unknown or malformed tests are dropped');
         $this->assertSame([4025.0, 3220.0, 805.0], [$lines[0]['split']['gross'], $lines[0]['split']['payer_amount'], $lines[0]['split']['patient_amount']], 'insured list +15%, insurer 80%');
         $this->assertSame([1725.0, 0.0, 1725.0, ['not_covered']], [$lines[1]['split']['gross'], $lines[1]['split']['payer_amount'], $lines[1]['split']['patient_amount'], $lines[1]['split']['warnings']]);
+
+        DB::table('packages')->insert(['id' => 1, 'name' => 'Check-up adulte', 'total_amount' => 20000]);
+        $checkup = ExamOrder::priceTests(['package:1'], ['patient_id' => 7, 'patient_insurance_id' => $policy->id]);
+        $this->assertSame(['Check-up adulte', 23000.0, 18400.0], [$checkup[0]['description'], $checkup[0]['split']['gross'], $checkup[0]['split']['payer_amount']], 'a check-up package is priced and split like an exam');
 
         $selfPay = ExamOrder::priceTests(['pathology_test:1'], ['patient_id' => 7, 'patient_insurance_id' => $policy->id + 50]);
         $this->assertSame([3500.0, 3500.0], [$selfPay[0]['split']['gross'], $selfPay[0]['split']['patient_amount']], "another patient's policy is ignored: cash price");

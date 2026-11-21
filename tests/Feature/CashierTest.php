@@ -335,4 +335,22 @@ class CashierTest extends TestCase
         $this->expectException(ValidationException::class);
         $this->cashier->transfer($theirs, $colleague, ['to_counter_id' => $mine->cash_counter_id, 'payment_method' => 1, 'amount' => 100]); // closed now
     }
+
+    public function test_cumulative_journal_adds_every_register_and_hides_internal_transfers(): void
+    {
+        $other = CashCounter::create(['code' => 'C.PH', 'name' => 'Caisse pharmacie']);
+        $colleague = User::unguarded(fn () => User::create(['first_name' => 'Ali', 'last_name' => 'Pharma', 'cash_counter_id' => $other->id]));
+        $mine = $this->cashier->open($this->user, 0);
+        $theirs = $this->cashier->open($colleague, 0);
+        $this->cashier->collect($mine, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]);
+        $this->cashier->collect($theirs, $colleague, 7, ['opd_visit:2'], ['payment_method' => 1]);
+        $this->cashier->transfer($mine, $this->user, ['to_counter_id' => $other->id, 'payment_method' => 1, 'amount' => 1000]);
+        $this->cashier->transfer($theirs, $colleague, ['destination' => 1, 'payment_method' => 1, 'amount' => 500]);
+
+        $repo = app(\App\Repositories\CashJournalRepository::class);
+        $journal = $repo->journal($repo->filters(['counter' => 'all'], $this->user));
+
+        $this->assertSame(3, $journal['rows']->count(), '2 receipts + the transfer to the safe; the register-to-register transfer is internal');
+        $this->assertSame(6742.0, $journal['closing'], '6 000 + 1 242 - 500');
+    }
 }

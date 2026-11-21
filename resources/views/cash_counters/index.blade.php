@@ -111,6 +111,11 @@
                                 <div class="form-text">{{ __('messages.cashier.receipt_followup_hint') }}</div>
                             </div>
                             <div class="mb-5">
+                                {{ Form::label('receipt_footer_text', __('messages.cashier.receipt_footer_text') . ':', ['class' => 'form-label']) }}
+                                {{ Form::textarea('receipt_footer_text', $settings['receipt_footer_text'] ?? '', ['class' => 'form-control', 'rows' => 3, 'maxlength' => 500, 'placeholder' => __('messages.cashier.followup_footer'), ] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                                <div class="form-text">{{ __('messages.cashier.receipt_footer_hint') }}</div>
+                            </div>
+                            <div class="mb-5">
                                 {{ Form::label('cash_payment_method', __('messages.cashier.cash_payment_method') . ':', ['class' => 'form-label']) }}
                                 {{ Form::select('cash_payment_method', \App\Models\PaymentMethod::options([], $settings['cash_payment_method'] ?? 1), $settings['cash_payment_method'] ?? 1, ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
                                 <div class="form-text">{{ __('messages.cashier.cash_payment_method_hint') }}</div>

@@ -31,7 +31,7 @@ class ReceiptController extends AppBaseController
     public function index(Request $request)
     {
         $number = $request->integer('number') ?: null;
-        $receipts = Receipt::with('patient.patientUser', 'user', 'counter', 'session', 'refund')
+        $receipts = Receipt::with('patient.patientUser', 'user', 'counter', 'session', 'refund', 'lines')
             ->when($number, fn ($q) => $q->where('receipt_number', $number))
             ->when(! $number && $request->filled('from'), fn ($q) => $q->whereDate('created_at', '>=', $request->get('from')))
             ->when(! $number && $request->filled('to'), fn ($q) => $q->whereDate('created_at', '<=', $request->get('to')))
@@ -44,6 +44,7 @@ class ReceiptController extends AppBaseController
             'counters' => CashCounter::orderBy('code')->pluck('code', 'id')->all(),
             'methods' => PaymentMethod::options(),
             'reasons' => MasterListItem::options(Refund::REASON_LIST),
+            'doctors' => \App\Models\Doctor::with('doctorUser')->get()->where('doctorUser.status', 1)->pluck('doctorUser.full_name', 'id')->sort()->all(),
         ]);
     }
 
@@ -69,6 +70,22 @@ class ReceiptController extends AppBaseController
         $input = $this->reason($request);
         $this->cashierRepository->refund($receipt, Auth::user(), (int) $input['reason'], $input['notes'] ?? null);
         Flash::success(__('messages.receipts.refunded', ['number' => $receipt->receipt_number, 'amount' => formatMoney($receipt->amount)]));
+
+        return redirect()->back();
+    }
+
+    /** Credit the consultation(s) of a receipt to another doctor, as the old "Changer médecin". */
+    public function changeDoctor(Request $request, Receipt $receipt)
+    {
+        $input = $request->validate(['doctor_id' => 'required|integer|exists:doctors,id']);
+        $visitIds = $receipt->lines()->where('payable_type', 'opd_visit')->pluck('payable_id');
+        if ($visitIds->isEmpty()) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['doctor_id' => __('messages.receipts.no_consultation')]);
+        }
+        foreach (\App\Models\OpdPatientDepartment::whereIn('id', $visitIds)->get() as $visit) {
+            $visit->update(['doctor_id' => (int) $input['doctor_id']]); // audited by the model listener
+        }
+        Flash::success(__('messages.receipts.doctor_changed', ['number' => $receipt->receipt_number]));
 
         return redirect()->back();
     }

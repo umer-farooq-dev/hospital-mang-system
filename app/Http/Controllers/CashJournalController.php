@@ -28,8 +28,8 @@ class CashJournalController extends AppBaseController
         return [
             'filters' => $filters,
             'journal' => $this->journalRepository->journal($filters),
-            'counters' => CashCounter::orderBy('code')->get()->mapWithKeys(fn ($c) => [$c->id => $c->code.' · '.$c->name])->all(),
-            'sessions' => CashSession::where('cash_counter_id', $filters['counter'])->whereNotNull('closing_number')
+            'counters' => ['all' => __('messages.cash_journal.all_registers')] + CashCounter::orderBy('code')->get()->mapWithKeys(fn ($c) => [$c->id => $c->code.' · '.$c->name])->all(),
+            'sessions' => $filters['counter'] === 'all' ? [] : CashSession::where('cash_counter_id', $filters['counter'])->whereNotNull('closing_number')
                 ->latest('id')->take(100)->get()->mapWithKeys(fn ($s) => [$s->id => 'N° '.$s->closing_number.' · '.$s->closed_at->format('d/m/Y H:i')])->all(),
         ];
     }
