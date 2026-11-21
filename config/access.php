@@ -93,6 +93,7 @@ return [
         'receipts' => 'billing',
         'cash_journal' => 'billing',
         'exam_orders' => 'laboratory',
+        'patient_flow' => 'reports',
         'accounts' => 'billing',
         'invoices' => 'billing',
         'bills' => 'billing',
@@ -291,6 +292,7 @@ return [
         Controllers\ReceiptController::class => 'receipts',
         Controllers\CashJournalController::class => 'cash_journal',
         Controllers\ExamOrderController::class => 'exam_orders',
+        Controllers\PatientFlowController::class => 'patient_flow',
         Controllers\InsuranceController::class => 'insurances',
         Controllers\PackageController::class => 'packages',
         Controllers\ServiceController::class => 'services',
@@ -393,6 +395,7 @@ return [
         Controllers\ReceiptController::class.'@changeMethod' => ['receipts', 'edit'],
         Controllers\ReceiptController::class.'@changeDoctor' => ['receipts', 'edit'],
         Controllers\CashJournalController::class.'@print' => ['cash_journal', 'list'],
+        Controllers\PatientFlowController::class.'@print' => ['patient_flow', 'list'],
 
         // Staff answer a complaint; only the patient edits it.
         Controllers\ComplaintController::class.'@responseEdit' => ['complaint_responses', 'edit'],

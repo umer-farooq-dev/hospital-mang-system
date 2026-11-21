@@ -2521,6 +2521,7 @@ return [
             'receipts' => 'Receipts',
             'cash_journal' => 'Cash journal',
             'exam_orders' => 'Exam requests',
+            'patient_flow' => 'Patient flow',
             'insurances' => 'Insurances',
             'packages' => 'Packages',
             'services' => 'Services',
@@ -3030,6 +3031,19 @@ return [
         'destinations' => [
             'safe' => 'Safe',
             'bank' => 'Bank',
+        ],
+    ],
+    'patient_flow' => [
+        'title' => 'Patient flow',
+        'service' => 'Service',
+        'count' => 'Items',
+        'empty' => 'Nothing paid in this period.',
+        'tabs' => [
+            'detailed' => 'Detailed (list of acts)',
+            'general' => 'General',
+            'patient_shares' => 'Patient shares (tickets modérateurs)',
+            'without_insurance' => 'Payments without insurance',
+            'by_service' => 'By service',
         ],
     ],
 ];
