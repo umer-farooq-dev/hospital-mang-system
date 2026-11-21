@@ -104,7 +104,7 @@ class OpdPatientDepartmentRepository extends BaseRepository
             }
             $input['custom_field'] = !empty($jsonFields) ? $jsonFields : null;
 
-            OpdPatientDepartment::create($input);
+            OpdPatientDepartment::create(OpdPatientDepartment::withSplit($input));
         } catch (Exception $e) {
             throw new UnprocessableEntityHttpException($e->getMessage());
         }
@@ -126,7 +126,7 @@ class OpdPatientDepartmentRepository extends BaseRepository
             }
             $input['custom_field'] = !empty($jsonFields) ? $jsonFields : null;
 
-            $opdPatientDepartment->update($input);
+            $opdPatientDepartment->update(OpdPatientDepartment::withSplit($input, $opdPatientDepartment->id));
         } catch (Exception $e) {
             throw new UnprocessableEntityHttpException($e->getMessage());
         }

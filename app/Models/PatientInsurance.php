@@ -30,6 +30,9 @@ class PatientInsurance extends Model
 {
     protected $table = 'patient_insurances';
 
+    /** Same defaults as the table, so a policy just created is active right away. */
+    protected $attributes = ['is_active' => true, 'priority' => 1];
+
     protected $fillable = [
         'patient_id',
         'insurance_id',
@@ -109,20 +112,40 @@ class PatientInsurance extends Model
         return $this->coverage_percent ?? $this->insurance->coverage_percent ?? null;
     }
 
-    /** 'valid', 'expired', 'not_started' or 'inactive', for the badge shown to staff. */
-    public function getValidityStatusAttribute(): string
+    /** 'valid', 'expired', 'not_started' or 'inactive' on a given day. */
+    public function statusOn($date = null): string
     {
-        $today = now()->startOfDay();
+        $day = Carbon::parse($date ?? now())->startOfDay();
         if (! $this->is_active || ! $this->insurance || $this->insurance->status != Insurance::ACTIVE) {
             return 'inactive';
         }
-        if ($this->valid_to && $this->valid_to->lt($today)) {
+        if ($this->valid_to && $this->valid_to->lt($day)) {
             return 'expired';
         }
-        if ($this->valid_from && $this->valid_from->gt($today)) {
+        if ($this->valid_from && $this->valid_from->gt($day)) {
             return 'not_started';
         }
 
         return 'valid';
+    }
+
+    public function isValidOn($date = null): bool
+    {
+        return $this->statusOn($date) === 'valid';
+    }
+
+    /** Today's status, for the badge shown to staff. */
+    public function getValidityStatusAttribute(): string
+    {
+        return $this->statusOn();
+    }
+
+    /** Label for a payer dropdown: payer, number and share. */
+    public function getOptionLabelAttribute(): string
+    {
+        $number = $this->policy_number ?: $this->member_number;
+
+        return trim($this->insurance->name.($number ? ' · '.$number : '')
+            .($this->effective_coverage !== null ? ' · '.formatPercent($this->effective_coverage) : ''));
     }
 }

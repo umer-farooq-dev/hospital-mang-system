@@ -743,6 +743,7 @@ mix.js(
         "resources/assets/js/ipd_bills/ipd_bills.js",
         "resources/assets/js/opd_patients/opd_patients.js",
         "resources/assets/js/opd_patients/create.js",
+        "resources/assets/js/opd_patients/split.js",
         "resources/assets/js/opd_patients/visits.js",
         "resources/assets/js/opd_diagnosis/opd_diagnosis.js",
         "resources/assets/js/opd_timelines/opd_timelines.js",

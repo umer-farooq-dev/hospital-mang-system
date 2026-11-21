@@ -17,6 +17,11 @@
                         <span class="required"></span>
                         {{ Form::text('title', null, ['class' => 'form-control','required','id' =>'editDoctorDepartmentTitle','placeholder' => __('messages.appointment.doctor_department')]) }}
                     </div>
+                    <div class="form-group col-sm-12 mb-5">
+                        {{ Form::label('discount_percent', __('messages.doctor_department.discount_percent').(':'), ['class' => 'form-label']) }}
+                        {{ Form::number('discount_percent', null, ['class' => 'form-control', 'min' => 0, 'max' => 100, 'step' => '0.01', 'id' => 'editDoctorDepartmentDiscount', 'placeholder' => '0']) }}
+                        <div class="form-text">{{ __('messages.doctor_department.discount_hint') }}</div>
+                    </div>
                     <div class="form-group col-sm-12">
                         {{ Form::label('description', __('messages.doctor_department.description').(':'),['class' => 'form-label']) }}
                         {{ Form::textarea('description', null, ['class' => 'form-control' ,'rows' => '5','id' =>'editDoctorDepartmentDescription','placeholder' => __('messages.doctor_department.description')]) }}

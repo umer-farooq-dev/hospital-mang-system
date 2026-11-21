@@ -43,6 +43,7 @@ class DoctorDepartment extends Model
     public $fillable = [
         'title',
         'description',
+        'discount_percent',
     ];
 
     protected $casts = [
@@ -53,6 +54,7 @@ class DoctorDepartment extends Model
 
     public static $rules = [
         'title' => 'required|unique:doctor_departments,title',
+        'discount_percent' => 'nullable|numeric|min:0|max:100',
     ];
 
     public function doctors(): HasMany

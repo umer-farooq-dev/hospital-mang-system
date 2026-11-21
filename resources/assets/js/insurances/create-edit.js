@@ -126,3 +126,15 @@ function resetInsuranceItemIndex () {
             '</tr>')
     }
 }
+
+// Coverage rules: one row per department / charge category.
+listenClick('#addCoverageRule', function () {
+    let table = $('#coverageRulesTable');
+    let index = parseInt(table.attr('data-next-index') || '0');
+    table.find('tbody').append($('#coverageRuleTemplate').html().replace(/__INDEX__/g, index));
+    table.attr('data-next-index', index + 1);
+});
+
+listenClick('.delete-coverage-rule', function () {
+    $(this).closest('tr').remove();
+});

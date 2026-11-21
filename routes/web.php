@@ -1427,6 +1427,8 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::patch('opds/{opdPatientDepartment}', [OpdPatientDepartmentController::class, 'update'])->name('opd.patient.update');
         Route::delete('opds/{opdPatientDepartment}', [OpdPatientDepartmentController::class, 'destroy'])->name('opd.patient.destroy');
         Route::get('get-doctor-opd-charge', [OpdPatientDepartmentController::class, 'getDoctorOPDCharge'])->name('getDoctor.OPDcharge');
+        Route::get('opd-payer-options', [OpdPatientDepartmentController::class, 'getPayerOptions'])->name('opd.payer.options');
+        Route::get('opd-quote', [OpdPatientDepartmentController::class, 'getQuote'])->name('opd.quote');
 
         // OPD Diagnosis routes
         Route::post('opd-diagnosis', [OpdDiagnosisController::class, 'store'])->name('opd.diagnosis.store');

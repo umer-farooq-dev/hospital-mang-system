@@ -10,6 +10,8 @@ use App\Models\PatientQueue;
 use App\Models\PaymentMethod;
 use App\Models\DoctorOPDCharge;
 use App\Models\OpdPatientDepartment;
+use App\Models\PatientInsurance;
+use App\Models\PriceList;
 use App\Repositories\OpdPatientDepartmentRepository;
 use Flash;
 use Illuminate\Http\Request;
@@ -123,5 +125,36 @@ class OpdPatientDepartmentController extends AppBaseController
         $doctorOPDCharge = DoctorOPDCharge::whereDoctorId($request->get('id'))->get();
 
         return $this->sendResponse($doctorOPDCharge, 'Doctor OPD Charge retrieved successfully.');
+    }
+
+    /** The patient's valid policies for the payer dropdown, with the price list of each payer. */
+    public function getPayerOptions(Request $request)
+    {
+        $options = PatientInsurance::with('insurance')->where('patient_id', $request->integer('patient_id'))->get()
+            ->filter(fn ($policy) => $policy->isValidOn($request->get('date')))
+            ->map(fn ($policy) => ['id' => $policy->id, 'label' => $policy->option_label, 'price_list_id' => $policy->insurance->price_list_id])
+            ->values();
+
+        return $this->sendResponse($options, '');
+    }
+
+    /**
+     * Price and split for the visit form. With reprice=1 the fee is taken from the doctor's
+     * OPD charge in the chosen price list; otherwise the fee typed by the cashier is split.
+     */
+    public function getQuote(Request $request)
+    {
+        $input = $request->only(['patient_id', 'doctor_id', 'patient_insurance_id', 'price_list_id', 'standard_charge', 'appointment_date', 'voucher_number']);
+        if ($request->boolean('reprice')) {
+            $charge = DoctorOPDCharge::where('doctor_id', $request->integer('doctor_id'))->first();
+            $list = PriceList::find($request->integer('price_list_id')) ?? PriceList::defaultList();
+            $input['standard_charge'] = $charge && $list ? $list->priceFor($charge, $input['appointment_date'] ?? now()) : 0;
+        }
+        [, $split] = OpdPatientDepartment::splitFor($input, $request->integer('visit_id') ?: null);
+
+        return $this->sendResponse([
+            'standard_charge' => $split['gross'],
+            'html' => view('opd_patient_departments.split_summary', compact('split'))->render(),
+        ], '');
     }
 }

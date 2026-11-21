@@ -445,7 +445,9 @@ return [
         'edit_doctor_department' => 'Editar departamento médico',
         'title' => 'Título',
         'description' => 'Descrição',
-        'doctor_field_required' => 'O campo médico é obrigatório'
+        'doctor_field_required' => 'O campo médico é obrigatório',
+        'discount_percent' => 'Desconto',
+        'discount_hint' => 'Desconto em % nas consultas deste departamento, além do desconto do pagador.',
     ],
 
     // investigation reports
@@ -2614,5 +2616,34 @@ return [
             'affiliate' => 'Afiliado',
             'weekend' => 'Fim de semana',
         ],
+    ],
+    'split' => [
+        'payer' => 'Pagador',
+        'price_list' => 'Tabela de preços',
+        'voucher_number' => 'N.º do vale',
+        'voucher_hint' => 'N.º de autorização da seguradora',
+        'gross' => 'Total',
+        'discount' => 'Desconto',
+        'payer_share' => 'Parte do pagador',
+        'patient_share' => 'Paga o paciente',
+        'warnings' => [
+            'policy_not_valid' => 'A apólice não é válida na data da visita: o paciente paga tudo.',
+            'not_covered' => 'Este pagador não cobre este departamento.',
+            'approval_needed' => 'Este pagador exige autorização: introduza o n.º do vale para aplicar a cobertura.',
+            'limit_reached' => 'O limite da apólice foi atingido: o restante é do paciente.',
+        ],
+    ],
+    'coverage' => [
+        'title' => 'Cobertura por departamento',
+        'hint' => 'Uma linha sem departamento nem categoria é a regra para todo o resto: marque-a «não coberto» para cobrir só os departamentos listados. Uma % vazia usa a do pagador ou da apólice.',
+        'department' => 'Departamento',
+        'charge_category' => 'Categoria de encargo',
+        'percent' => 'Cobertura',
+        'not_covered' => 'Não coberto',
+        'needs_approval' => 'Requer autorização',
+        'max_amount' => 'Máximo por ato',
+        'all_departments' => 'Todos os outros departamentos',
+        'any_category' => 'Qualquer categoria',
+        'payer_percent' => '% do pagador',
     ],
 ];

@@ -90,6 +90,7 @@
             </div>
         </div>
     </div>
+    @include('opd_patient_departments.payer_fields')
     @include('opd_patient_departments.visit_lists')
     <div class="col-md-6">
         <div class="mb-5">

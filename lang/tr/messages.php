@@ -485,7 +485,9 @@ return [
         'edit_doctor_department' => 'Doktor Bölümünü Düzenle',
         'title' => 'Başlık',
         'description' => 'Açıklama',
-        'doctor_field_required' => 'Doktor alanı zorunludur'
+        'doctor_field_required' => 'Doktor alanı zorunludur',
+        'discount_percent' => 'İndirim',
+        'discount_hint' => 'Bu bölümün ziyaretlerinde % indirim; ödeyicinin indiriminin üzerine uygulanır.',
     ],
 
     // investigation reports
@@ -2617,5 +2619,34 @@ return [
             'affiliate' => 'Üye',
             'weekend' => 'Hafta sonu',
         ],
+    ],
+    'split' => [
+        'payer' => 'Ödeyici',
+        'price_list' => 'Fiyat listesi',
+        'voucher_number' => 'Provizyon no',
+        'voucher_hint' => 'Sigortacının onay numarası',
+        'gross' => 'Toplam',
+        'discount' => 'İndirim',
+        'payer_share' => 'Ödeyici payı',
+        'patient_share' => 'Hasta öder',
+        'warnings' => [
+            'policy_not_valid' => 'Poliçe ziyaret tarihinde geçerli değil: hasta tamamını öder.',
+            'not_covered' => 'Bu ödeyici bu bölümü karşılamıyor.',
+            'approval_needed' => 'Bu ödeyici onay istiyor: karşılamayı uygulamak için provizyon numarasını girin.',
+            'limit_reached' => 'Poliçe limiti doldu: kalanı hasta öder.',
+        ],
+    ],
+    'coverage' => [
+        'title' => 'Bölüme göre karşılama',
+        'hint' => 'Bölüm ve kategori olmayan satır geri kalan her şey içindir: yalnızca listelenen bölümleri karşılamak için «karşılanmaz» işaretleyin. Boş % ödeyicinin veya poliçenin %\'sini kullanır.',
+        'department' => 'Bölüm',
+        'charge_category' => 'Ücret kategorisi',
+        'percent' => 'Karşılama',
+        'not_covered' => 'Karşılanmaz',
+        'needs_approval' => 'Onay gerekir',
+        'max_amount' => 'İşlem başına azami',
+        'all_departments' => 'Diğer tüm bölümler',
+        'any_category' => 'Herhangi bir kategori',
+        'payer_percent' => 'Ödeyici %\'si',
     ],
 ];

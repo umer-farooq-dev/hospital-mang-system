@@ -490,7 +490,9 @@ return [
         'edit_doctor_department' => 'Edit Doctor Department',
         'title' => 'Title',
         'description' => 'Description',
-        'doctor_field_required' => 'Doctor field is required'
+        'doctor_field_required' => 'Doctor field is required',
+        'discount_percent' => 'Discount',
+        'discount_hint' => 'Reduction in % on this department\'s visits, applied on top of the payer\'s discount.',
     ],
 
     // investigation reports
@@ -2801,5 +2803,34 @@ return [
             'affiliate' => 'Affiliate',
             'weekend' => 'Weekend',
         ],
+    ],
+    'split' => [
+        'payer' => 'Payer',
+        'price_list' => 'Price list',
+        'voucher_number' => 'Voucher no.',
+        'voucher_hint' => 'Insurer\'s approval number',
+        'gross' => 'Total',
+        'discount' => 'Reduction',
+        'payer_share' => 'Payer\'s share',
+        'patient_share' => 'Patient pays',
+        'warnings' => [
+            'policy_not_valid' => 'The policy is not valid on the visit date: the patient pays everything.',
+            'not_covered' => 'This payer does not cover this department.',
+            'approval_needed' => 'This payer needs an approval: enter the voucher number to apply the cover.',
+            'limit_reached' => 'The policy limit is reached: the rest is the patient\'s share.',
+        ],
+    ],
+    'coverage' => [
+        'title' => 'Coverage by department',
+        'hint' => 'A row without department and category is the default for everything else: mark it "not covered" to cover only the departments listed. An empty % uses the payer\'s or the policy\'s %.',
+        'department' => 'Department',
+        'charge_category' => 'Charge category',
+        'percent' => 'Coverage',
+        'not_covered' => 'Not covered',
+        'needs_approval' => 'Needs approval',
+        'max_amount' => 'Maximum per item',
+        'all_departments' => 'All other departments',
+        'any_category' => 'Any category',
+        'payer_percent' => 'Payer\'s %',
     ],
 ];
