@@ -415,37 +415,74 @@ function checkValidCurrency($currency_symbol): bool
     }
 }
 
+/**
+ * Amount format from Settings > General (decimals, separators, symbol position).
+ * Defaults match the original display: 2 decimals, "." and ",", symbol before.
+ */
+function currencyFormatSettings(): array
+{
+    static $format;
+
+    if ($format === null) {
+        $values = Setting::whereIn('key', ['currency_decimals', 'currency_decimal_separator', 'currency_thousands_separator', 'currency_symbol_position'])
+            ->pluck('value', 'key');
+        $format = [
+            'decimals' => max(0, min(3, (int) $values->get('currency_decimals', 2))),
+            'decimal_separator' => (string) $values->get('currency_decimal_separator', '.'),
+            'thousands_separator' => (string) $values->get('currency_thousands_separator', ','),
+            'symbol_position' => $values->get('currency_symbol_position') === 'after' ? 'after' : 'before',
+        ];
+    }
+
+    return $format;
+}
+
+/**
+ * A number shown as an amount, without symbol (e.g. "6 000" for FCFA).
+ */
+function formatAmount($amount): string
+{
+    $format = currencyFormatSettings();
+
+    return number_format((float) $amount, $format['decimals'], $format['decimal_separator'], $format['thousands_separator']);
+}
+
+/**
+ * An amount with its currency symbol on the side chosen in settings.
+ */
+function formatMoney($amount, ?string $symbol = null): string
+{
+    $symbol = $symbol ?? getCurrencySymbol();
+    $number = formatAmount($amount);
+    if ($symbol === null || $symbol === '') {
+        return $number;
+    }
+
+    return currencyFormatSettings()['symbol_position'] === 'after' ? $number.' '.$symbol : $symbol.' '.$number;
+}
+
 function moneyFormat($amount, $currencyCode): string
 {
-    $currencies = new ISOCurrencies();
-    $money = new Money((int) round($amount * 100), new Currency($currencyCode));
-
-    $numberFormatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
-    $moneyFormatter = new IntlMoneyFormatter($numberFormatter, $currencies);
-
-    return $moneyFormatter->format($money);
+    return formatMoney($amount, getSymbols(strtolower($currencyCode)) ?? strtoupper($currencyCode));
 }
 
 function checkNumberFormat($amount, $symbol): string
 {
-    if (checkValidCurrency($symbol)) {
-        return moneyFormat($amount, $symbol);
-    }
-
-    return number_format($amount, 2) . ' ' . (getSymbols($symbol) ?? getCurrencySymbol());
+    return formatMoney($amount, getSymbols($symbol) ?? getCurrencySymbol());
 }
 
 
 
 function getSymbols($symbol)
 {
-    static $currency_symbol;
+    // One lookup per currency code (the old cache returned the first symbol for every code).
+    static $symbols = [];
 
-    if (empty($currency_symbol)) {
-        $currency_symbol = CurrencySetting::where('currency_code', $symbol)->pluck('currency_icon')->first();
+    if (! array_key_exists((string) $symbol, $symbols)) {
+        $symbols[(string) $symbol] = CurrencySetting::where('currency_code', $symbol)->value('currency_icon');
     }
 
-    return $currency_symbol;
+    return $symbols[(string) $symbol];
 }
 
 /**
@@ -1219,13 +1256,7 @@ function generateUniqueBillNumber()
 
 function getCurrencyFormat($amount): string
 {
-    $currencyCode = strtoupper(getCurrentCurrency());
-
-    if (checkValidCurrency($currencyCode)) {
-        return moneyFormat($amount, $currencyCode);
-    }
-
-    return getCurrencySymbol() . ' ' . number_format($amount, 2);
+    return formatMoney($amount);
 }
 
 /**

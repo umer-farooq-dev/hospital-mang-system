@@ -95,6 +95,34 @@
                 </select>
             </div>
         </div>
+        <!-- Amount format -->
+        <div class="col-md-3">
+            <div class="form-group mb-5">
+                {{ Form::label('currency_decimals', __('messages.money_format.decimals') . ':', ['class' => 'form-label']) }}
+                {{ Form::select('currency_decimals', [0 => '0', 1 => '1', 2 => '2', 3 => '3'], $settings['currency_decimals'] ?? 2, ['class' => 'form-select', 'data-control' => 'select2']) }}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group mb-5">
+                {{ Form::label('currency_symbol_position', __('messages.money_format.symbol_position') . ':', ['class' => 'form-label']) }}
+                {{ Form::select('currency_symbol_position', ['before' => __('messages.money_format.before'), 'after' => __('messages.money_format.after')], $settings['currency_symbol_position'] ?? 'before', ['class' => 'form-select', 'data-control' => 'select2']) }}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group mb-5">
+                {{ Form::label('currency_thousands_separator', __('messages.money_format.thousands_separator') . ':', ['class' => 'form-label']) }}
+                {{ Form::select('currency_thousands_separator', \App\Models\Setting::THOUSANDS_SEPARATORS, array_key_exists('currency_thousands_separator', $settings) ? (string) $settings['currency_thousands_separator'] : ',', ['class' => 'form-select', 'data-control' => 'select2']) }}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group mb-5">
+                {{ Form::label('currency_decimal_separator', __('messages.money_format.decimal_separator') . ':', ['class' => 'form-label']) }}
+                {{ Form::select('currency_decimal_separator', \App\Models\Setting::DECIMAL_SEPARATORS, $settings['currency_decimal_separator'] ?? '.', ['class' => 'form-select', 'data-control' => 'select2']) }}
+            </div>
+        </div>
+        <div class="col-md-12 mb-5 text-muted fs-7">
+            {{ __('messages.money_format.example') }}: <span class="fw-bold">{{ formatMoney(1234567.891) }}</span>
+        </div>
         <div class="col-md-6">
             <div class="form-group mb-5 country-code">
                 {{ Form::label('country_phone', __('messages.setting.country_code') . ':', ['class' => 'form-label']) }}

@@ -147,8 +147,8 @@
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $item->item_name }}</td>
                                     <td class="number-align">{{ $item->qty }}</td>
-                                    <td class="number-align">{{ number_format($item->price, 2) }}</td>
-                                    <td class="number-align">{{ number_format($item->amount, 2) }}</td>
+                                    <td class="number-align">{{ formatAmount($item->price) }}</td>
+                                    <td class="number-align">{{ formatAmount($item->amount) }}</td>
                                 </tr>
                             @endforeach
                         @endif

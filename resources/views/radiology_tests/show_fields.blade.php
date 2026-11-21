@@ -40,7 +40,7 @@
                             </div>
                             <div class="col-lg-4 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.radiology_test.standard_charge')  }}</label>
-                                <span class="fw-bolder fs-6 text-gray-800"><b>{{ getCurrencySymbol() }}</b> {{ number_format($radiologyTest->standard_charge,2) }}</span>
+                                <span class="fw-bolder fs-6 text-gray-800">{{ formatMoney($radiologyTest->standard_charge) }}</span>
                             </div>
                             <div class="col-lg-4 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.common.created_on')  }}</label>

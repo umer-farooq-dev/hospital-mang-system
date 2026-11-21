@@ -33,7 +33,7 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-2 d-flex flex-column">
                                 {{ Form::label('purchase_price', __('messages.item_stock.purchase_price').(':'), ['class' => 'fw-bold text-muted py-3']) }}
-                                <span class="fw-bolder fs-6 text-gray-800">{{number_format($itemStock->purchase_price, 2)}}</span>
+                                <span class="fw-bolder fs-6 text-gray-800">{{formatAmount($itemStock->purchase_price)}}</span>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-2 d-flex flex-column">
                                 {{ Form::label('attachment', __('messages.item_stock.attachment').(':'), ['class' => 'fw-bold text-muted py-3']) }}

@@ -69,6 +69,11 @@ class Setting extends Model implements HasMedia
         'value' => 'string',
     ];
 
+    // Choices for the amount format (Settings > General); the label is what the admin sees.
+    const THOUSANDS_SEPARATORS = [',' => '1,000', '.' => '1.000', ' ' => '1 000', '' => '1000'];
+
+    const DECIMAL_SEPARATORS = ['.' => '0.50', ',' => '0,50'];
+
     public static $rules = [
         'app_name' => 'required|string',
         'company_name' => 'required|string',

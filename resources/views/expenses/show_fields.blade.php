@@ -34,7 +34,7 @@
                             <div class="col-lg-4 col-md-4 col-sm-2 d-flex flex-column">
                                 {{ Form::label('amount', __('messages.expense.amount') . ':', ['class' => 'fw-bold text-muted py-3']) }}
                                 <span class="fw-bolder fs-6 text-gray-800"><b>{{ getCurrencySymbol() }}</b>
-                                    {{ number_format($expenses->amount, 2) }}</span>
+                                    {{ formatAmount($expenses->amount) }}</span>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-2 d-flex flex-column">
                                 {{ Form::label('attachment', __('messages.expense.attachment') . ':', ['class' => 'fw-bold text-muted py-3']) }}

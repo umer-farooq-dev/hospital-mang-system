@@ -2532,4 +2532,14 @@ return [
         'printed_at' => 'Impreso el',
         'no_id' => 'Sin documento de identidad',
     ],
+
+    'money_format' => [
+        'decimals' => 'Decimales',
+        'symbol_position' => 'Símbolo de moneda',
+        'before' => 'Antes del importe',
+        'after' => 'Después del importe',
+        'thousands_separator' => 'Separador de miles',
+        'decimal_separator' => 'Separador decimal',
+        'example' => 'Ejemplo',
+    ],
 ];

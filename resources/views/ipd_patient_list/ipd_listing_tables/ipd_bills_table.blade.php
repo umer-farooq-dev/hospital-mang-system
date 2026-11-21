@@ -18,7 +18,7 @@
                             <td>{{ $charge->charge_type }}</td>
                             <td>{{ $charge->chargecategory->name }}</td>
                             <td>{{ $charge->date->format('d/m/Y') }}</td>
-                            <td class="text-right">{{ number_format($charge->applied_charge) }}</td>
+                            <td class="text-right">{{ formatAmount($charge->applied_charge) }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -51,7 +51,7 @@
                         <tr>
                             <td>{{ $payment->payment_mode_name }}</td>
                             <td>{{ $payment->date->format('d/m/Y') }}</td>
-                            <td class="text-right">{{ number_format($payment->amount) }}</td>
+                            <td class="text-right">{{ formatAmount($payment->amount) }}</td>
                         </tr>
                     @endforeach
                 </tbody>

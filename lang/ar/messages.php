@@ -2486,4 +2486,14 @@ return [
         'printed_at' => 'طُبع في',
         'no_id' => 'بدون وثيقة هوية',
     ],
+
+    'money_format' => [
+        'decimals' => 'عدد المنازل العشرية',
+        'symbol_position' => 'رمز العملة',
+        'before' => 'قبل المبلغ',
+        'after' => 'بعد المبلغ',
+        'thousands_separator' => 'فاصل الآلاف',
+        'decimal_separator' => 'الفاصل العشري',
+        'example' => 'مثال',
+    ],
 ];

@@ -2480,4 +2480,14 @@ return [
         'printed_at' => '打印时间',
         'no_id' => '无身份证件',
     ],
+
+    'money_format' => [
+        'decimals' => '小数位数',
+        'symbol_position' => '货币符号',
+        'before' => '金额之前',
+        'after' => '金额之后',
+        'thousands_separator' => '千位分隔符',
+        'decimal_separator' => '小数分隔符',
+        'example' => '示例',
+    ],
 ];

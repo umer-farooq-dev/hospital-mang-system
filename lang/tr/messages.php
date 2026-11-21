@@ -2483,4 +2483,14 @@ return [
         'printed_at' => 'Yazdırma tarihi',
         'no_id' => 'Kimlik belgesi yok',
     ],
+
+    'money_format' => [
+        'decimals' => 'Ondalık basamak',
+        'symbol_position' => 'Para birimi simgesi',
+        'before' => 'Tutardan önce',
+        'after' => 'Tutardan sonra',
+        'thousands_separator' => 'Binlik ayırıcı',
+        'decimal_separator' => 'Ondalık ayırıcı',
+        'example' => 'Örnek',
+    ],
 ];

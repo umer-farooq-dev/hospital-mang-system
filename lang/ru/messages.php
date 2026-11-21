@@ -2476,4 +2476,14 @@ return [
         'printed_at' => 'Напечатано',
         'no_id' => 'Без удостоверения личности',
     ],
+
+    'money_format' => [
+        'decimals' => 'Знаков после запятой',
+        'symbol_position' => 'Символ валюты',
+        'before' => 'Перед суммой',
+        'after' => 'После суммы',
+        'thousands_separator' => 'Разделитель тысяч',
+        'decimal_separator' => 'Десятичный разделитель',
+        'example' => 'Пример',
+    ],
 ];
