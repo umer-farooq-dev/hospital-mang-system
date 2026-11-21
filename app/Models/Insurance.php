@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Eloquent as Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -74,6 +75,12 @@ class Insurance extends Model
             'address' => 'nullable|max:1000',
             'billing_option' => ['required', Rule::in(self::BILLING_OPTIONS)],
             'credit_days' => 'nullable|integer|min:0|max:365',
+            'price_list_id' => 'nullable|integer|exists:price_lists,id',
+            'tax_id' => 'nullable|max:50',
+            'trade_register' => 'nullable|max:50',
+            'tax_regime' => 'nullable|max:100',
+            'tax_division' => 'nullable|max:100',
+            'account_code' => 'nullable|max:30',
         ];
     }
 
@@ -107,6 +114,12 @@ class Insurance extends Model
         'address',
         'billing_option',
         'credit_days',
+        'price_list_id',
+        'tax_id',
+        'trade_register',
+        'tax_regime',
+        'tax_division',
+        'account_code',
         'service_tax',
         'discount',
         'remark',
@@ -122,6 +135,7 @@ class Insurance extends Model
         'payer_type' => 'integer',
         'coverage_percent' => 'float',
         'credit_days' => 'integer',
+        'price_list_id' => 'integer',
         'service_tax' => 'double',
         'discount' => 'double',
         'remark' => 'string',
@@ -145,6 +159,11 @@ class Insurance extends Model
         $names['name'] = __('messages.insurance.insurance');
 
         return $names;
+    }
+
+    public function priceList(): BelongsTo
+    {
+        return $this->belongsTo(PriceList::class);
     }
 
     public function patientInsurances(): HasMany

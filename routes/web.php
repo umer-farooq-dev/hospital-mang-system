@@ -98,6 +98,7 @@ use App\Http\Controllers\PatientAdmissionController;
 use App\Http\Controllers\PatientCaseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientInsuranceController;
+use App\Http\Controllers\PriceListController;
 use App\Http\Controllers\ReceptionDeskController;
 use App\Http\Controllers\PatientRegistrationReportController;
 use App\Http\Controllers\PatientDiagnosisTestController;
@@ -888,6 +889,12 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
     });
 
     Route::middleware('access:Admin|Accountant')->group(function () {
+        // Price lists, surcharge periods and the tariff grid (Hospital Charges)
+        Route::get('price-lists', [PriceListController::class, 'index'])->name('price-lists.index')->middleware('modules');
+        Route::post('price-lists', [PriceListController::class, 'update'])->name('price-lists.update');
+        Route::post('price-periods', [PriceListController::class, 'updatePeriods'])->name('price-lists.periods.update');
+        Route::get('tariffs', [PriceListController::class, 'tariff'])->name('price-lists.tariff');
+        Route::post('tariffs', [PriceListController::class, 'updateTariff'])->name('price-lists.tariff.update');
         Route::resource('accounts', AccountController::class)->parameters(['accounts' => 'account']);
         Route::get('accounts', [AccountController::class, 'index'])
             ->name('accounts.index')

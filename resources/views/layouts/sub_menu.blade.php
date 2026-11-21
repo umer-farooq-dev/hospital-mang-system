@@ -1035,7 +1035,7 @@
             @module('Charge Categories', $modules)
                 @canroute('charge-categories.index')
                 <li
-                    class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*') ? 'd-none' : '' }}">
+                    class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*', 'price-lists*', 'tariffs*') ? 'd-none' : '' }}">
                     <a class="nav-link p-0 {{ Request::is('charge-categories*') ? 'active' : '' }}"
                         href="{{ route('charge-categories.index') }}">
                         {{ __('messages.charge_categories') }}
@@ -1048,7 +1048,7 @@
             @module('Charges', $modules)
                 @canroute('charges.index')
                 <li
-                    class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*') ? 'd-none' : '' }}">
+                    class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*', 'price-lists*', 'tariffs*') ? 'd-none' : '' }}">
                     <a class="nav-link p-0 {{ Request::is('charges*') ? 'active' : '' }}" href="{{ route('charges.index') }}">
                         {{ __('messages.charges') }}
                     </a>
@@ -1060,7 +1060,7 @@
             @module('Doctor OPD Charges', $modules)
                 @canroute('doctor-opd-charges.index')
                 <li
-                    class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*') ? 'd-none' : '' }}">
+                    class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*', 'price-lists*', 'tariffs*') ? 'd-none' : '' }}">
                     <a class="nav-link p-0 {{ Request::is('doctor-opd-charges*') ? 'active' : '' }}"
                         href="{{ route('doctor-opd-charges.index') }}">
                         {{ __('messages.doctor_opd_charges') }}
@@ -1069,6 +1069,16 @@
                 @endcanroute
             @endmodule
         @endif
+        @module('Price Lists', $modules)
+            @canroute('price-lists.index')
+            <li
+                class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*', 'price-lists*', 'tariffs*') ? 'd-none' : '' }}">
+                <a class="nav-link p-0 {{ Request::is('price-lists*', 'tariffs*') ? 'active' : '' }}" href="{{ route('price-lists.index') }}">
+                    {{ __('messages.price_list.price_lists') }}
+                </a>
+            </li>
+            @endcanroute
+        @endmodule
         @if (Auth::user()->hasRole('Admin|Receptionist') || hasCustomRole())
             @module('Call Logs', $modules)
                 @canroute('call_logs.index')
