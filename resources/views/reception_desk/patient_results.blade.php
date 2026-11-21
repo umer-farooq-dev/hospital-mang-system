@@ -64,6 +64,11 @@
                     <i class="fas fa-procedures me-1"></i>{{ __('messages.reception_desk.hospitalisation') }}
                 </a>
                 @endcanroute
+                @canroute('cashier.index')
+                <a href="{{ route('cashier.index', ['patient' => $patient->id]) }}" class="btn btn-sm btn-light-success">
+                    <i class="fas fa-cash-register me-1"></i>{{ __('messages.cashier.collect') }}
+                </a>
+                @endcanroute
                 @canroute('patients.show')
                 <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-light">
                     <i class="fas fa-folder-open me-1"></i>{{ __('messages.reception_desk.patient_file') }}

@@ -43,6 +43,18 @@
         @endcanroute
     @endmodule
 
+    {{-- Cashier --}}
+    @module('Cashier', $modules)
+        @canroute('cashier.index')
+        <li class="nav-item {{ Request::is('cashier*', 'cash-counters*', 'receipts*', 'cash-sessions*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('cashier.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-cash-register"></i></span>
+                <span class="aside-menu-title">{{ __('messages.cashier.cashier') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
     {{-- patient id card --}}
     @canroute('smart-patient-cards.index')
     <li class="nav-item {{ Request::is('smart-patient-cards*', 'generate-patient-smart-cards*') ? 'active' : '' }}">
@@ -934,6 +946,18 @@
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('reception-desk.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-concierge-bell"></i></span>
                         <span class="aside-menu-title">{{ __('messages.reception_desk.reception_desk') }}</span>
+                    </a>
+                </li>
+                @endcanroute
+            @endmodule
+
+            {{-- Cashier --}}
+            @module('Cashier', $modules)
+                @canroute('cashier.index')
+                <li class="nav-item {{ Request::is('cashier*', 'cash-counters*', 'receipts*', 'cash-sessions*') ? 'active' : '' }}">
+                    <a class="nav-link  d-flex align-items-center py-3" href="{{ route('cashier.index') }}">
+                        <span class="aside-menu-icon me-3"><i class="fas fa-cash-register"></i></span>
+                        <span class="aside-menu-title">{{ __('messages.cashier.cashier') }}</span>
                     </a>
                 </li>
                 @endcanroute

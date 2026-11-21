@@ -88,6 +88,8 @@ return [
         'departments' => 'staff',
 
         // billing
+        'cashier' => 'billing',
+        'cash_counters' => 'billing',
         'accounts' => 'billing',
         'invoices' => 'billing',
         'bills' => 'billing',
@@ -281,6 +283,8 @@ return [
         Controllers\ChargeController::class => 'charges',
         Controllers\DoctorOPDChargeController::class => 'doctor_opd_charges',
         Controllers\PriceListController::class => 'price_lists',
+        Controllers\CashierController::class => 'cashier',
+        Controllers\CashCounterController::class => 'cash_counters',
         Controllers\InsuranceController::class => 'insurances',
         Controllers\PackageController::class => 'packages',
         Controllers\ServiceController::class => 'services',
@@ -370,6 +374,12 @@ return [
         Controllers\ReceptionDeskController::class.'@getSearch' => ['reception_desk', 'list'],
         // The tariff grid is part of the price lists screen.
         Controllers\PriceListController::class.'@tariff' => ['price_lists', 'list'],
+        // Working the register is the cashier's job: opening, collecting and closing go together; prints are reading.
+        Controllers\CashierController::class.'@openSession' => ['cashier', 'create'],
+        Controllers\CashierController::class.'@collect' => ['cashier', 'create'],
+        Controllers\CashierController::class.'@closeSession' => ['cashier', 'create'],
+        Controllers\CashierController::class.'@printReceipt' => ['cashier', 'list'],
+        Controllers\CashierController::class.'@printSession' => ['cashier', 'list'],
 
         // Staff answer a complaint; only the patient edits it.
         Controllers\ComplaintController::class.'@responseEdit' => ['complaint_responses', 'edit'],

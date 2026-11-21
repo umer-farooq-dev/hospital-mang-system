@@ -98,6 +98,8 @@ use App\Http\Controllers\PatientAdmissionController;
 use App\Http\Controllers\PatientCaseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientInsuranceController;
+use App\Http\Controllers\CashCounterController;
+use App\Http\Controllers\CashierController;
 use App\Http\Controllers\PriceListController;
 use App\Http\Controllers\ReceptionDeskController;
 use App\Http\Controllers\PatientRegistrationReportController;
@@ -483,6 +485,13 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
     });
 
     Route::middleware('access:Admin|Receptionist')->group(function () {
+        // Cashier: session, collect payments, receipts, register close
+        Route::get('cashier', [CashierController::class, 'index'])->name('cashier.index')->middleware('modules');
+        Route::post('cashier/open', [CashierController::class, 'openSession'])->name('cashier.open');
+        Route::post('cashier/collect', [CashierController::class, 'collect'])->name('cashier.collect');
+        Route::post('cashier/close', [CashierController::class, 'closeSession'])->name('cashier.close');
+        Route::get('receipts/{receipt}/print', [CashierController::class, 'printReceipt'])->name('receipts.print');
+        Route::get('cash-sessions/{cashSession}/print', [CashierController::class, 'printSession'])->name('cash-sessions.print');
         Route::get('reception-desk', [ReceptionDeskController::class, 'index'])
             ->name('reception-desk.index')
             ->middleware('modules');
@@ -889,6 +898,9 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
     });
 
     Route::middleware('access:Admin|Accountant')->group(function () {
+        // Cash registers, users per register and receipt settings
+        Route::get('cash-counters', [CashCounterController::class, 'index'])->name('cash-counters.index')->middleware('modules');
+        Route::post('cash-counters', [CashCounterController::class, 'update'])->name('cash-counters.update');
         // Price lists, surcharge periods and the tariff grid (Hospital Charges)
         Route::get('price-lists', [PriceListController::class, 'index'])->name('price-lists.index')->middleware('modules');
         Route::post('price-lists', [PriceListController::class, 'update'])->name('price-lists.update');
