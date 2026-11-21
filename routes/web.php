@@ -97,6 +97,7 @@ use App\Http\Controllers\Patient;
 use App\Http\Controllers\PatientAdmissionController;
 use App\Http\Controllers\PatientCaseController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ReceptionDeskController;
 use App\Http\Controllers\PatientDiagnosisTestController;
 use App\Http\Controllers\PatientIdCardTemplateController;
 use App\Http\Controllers\PatientQueueController;
@@ -476,6 +477,13 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
 
     Route::middleware('access:Admin|Doctor|Receptionist|Patient')->group(function () {
         Route::get('doctor-departments/{doctorDepartment}', [DoctorDepartmentController::class, 'show'])->where('doctorDepartment', '[0-9]+');
+    });
+
+    Route::middleware('access:Admin|Receptionist')->group(function () {
+        Route::get('reception-desk', [ReceptionDeskController::class, 'index'])
+            ->name('reception-desk.index')
+            ->middleware('modules');
+        Route::get('reception-desk/search', [ReceptionDeskController::class, 'getSearch'])->name('reception-desk.search');
     });
 
     Route::middleware('access:Admin|Receptionist|Case Manager')->group(function () {

@@ -58,11 +58,11 @@ class PatientController extends AppBaseController
     {
         $input = $request->all();
 
-        $this->patientRepository->store($input);
+        $patient = $this->patientRepository->store($input);
         $this->patientRepository->createNotification($input);
         Flash::success(__('messages.advanced_payment.patient') . ' ' . __('messages.common.saved_successfully'));
 
-        return redirect(route('patients.index'));
+        return redirect(afterSaveUrl(route('patients.index'), ['patient' => $patient->id]));
     }
 
     public function show($patientId)

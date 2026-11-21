@@ -35,6 +35,7 @@ return [
         'dashboard' => 'dashboard',
 
         // patients
+        'reception_desk' => 'patients',
         'patients' => 'patients',
         'patient_cases' => 'patients',
         'case_handlers' => 'patients',
@@ -223,6 +224,7 @@ return [
     'controllers' => [
         Controllers\HomeController::class => 'dashboard',
         Controllers\PatientController::class => 'patients',
+        Controllers\ReceptionDeskController::class => 'reception_desk',
         Controllers\PatientCaseController::class => 'patient_cases',
         Controllers\CaseHandlerController::class => 'case_handlers',
         Controllers\PatientAdmissionController::class => 'patient_admissions',
@@ -358,6 +360,9 @@ return [
     //            and for any role that may create, edit or delete in the module.
     // "fixed":   allowed for the route's default roles only; not shown on the Roles screen.
     'methods' => [
+        // Searching is what the desk is for: anyone who can open it can search.
+        Controllers\ReceptionDeskController::class.'@getSearch' => ['reception_desk', 'list'],
+
         // Staff answer a complaint; only the patient edits it.
         Controllers\ComplaintController::class.'@responseEdit' => ['complaint_responses', 'edit'],
         Controllers\ComplaintController::class.'@updateStatusResponse' => ['complaint_responses', 'edit'],

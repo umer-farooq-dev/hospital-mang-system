@@ -2420,4 +2420,28 @@ return [
             'driving_licence' => 'Carteira de motorista',
         ],
     ],
+
+    'reception_desk' => [
+        'reception_desk' => 'Balcão de recepção',
+        'search_placeholder' => 'Nome, telefone, n.º do paciente, n.º do documento, ou leia o cartão do paciente',
+        'search_hint' => 'Digite pelo menos 2 caracteres. Um leitor de cartões pode ser usado diretamente neste campo.',
+        'today_appointments' => 'Consultas de hoje',
+        'no_appointments' => 'Nenhuma consulta hoje.',
+        'time' => 'Hora',
+        'check_in' => 'Registrar chegada',
+        'recent_patients' => 'Cadastrados recentemente',
+        'no_patient_found' => 'Nenhum paciente encontrado.',
+        'consultation' => 'Consulta',
+        'exams' => 'Exames',
+        'hospitalisation' => 'Internação',
+        'patient_file' => 'Ficha do paciente',
+        'queue_token' => 'Senha da fila n.º :no.',
+        'status' => [
+            0 => 'Pendente',
+            1 => 'Concluída',
+            3 => 'Cancelada',
+            4 => 'Na fila',
+            5 => 'Com o médico',
+        ],
+    ],
 ];

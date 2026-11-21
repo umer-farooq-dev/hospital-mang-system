@@ -31,6 +31,18 @@
     </li>
     @endcanroute
 
+    {{-- Reception Desk --}}
+    @module('Reception Desk', $modules)
+        @canroute('reception-desk.index')
+        <li class="nav-item {{ Request::is('reception-desk*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('reception-desk.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-concierge-bell"></i></span>
+                <span class="aside-menu-title">{{ __('messages.reception_desk.reception_desk') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
     {{-- patient id card --}}
     @canroute('smart-patient-cards.index')
     <li class="nav-item {{ Request::is('smart-patient-cards*', 'generate-patient-smart-cards*') ? 'active' : '' }}">
@@ -915,6 +927,18 @@
         @endrole
 
         @role('Receptionist')
+            {{-- Reception Desk --}}
+            @module('Reception Desk', $modules)
+                @canroute('reception-desk.index')
+                <li class="nav-item {{ Request::is('reception-desk*') ? 'active' : '' }}">
+                    <a class="nav-link  d-flex align-items-center py-3" href="{{ route('reception-desk.index') }}">
+                        <span class="aside-menu-icon me-3"><i class="fas fa-concierge-bell"></i></span>
+                        <span class="aside-menu-title">{{ __('messages.reception_desk.reception_desk') }}</span>
+                    </a>
+                </li>
+                @endcanroute
+            @endmodule
+
             {{-- Appointments --}}
             @module('Appointments', $modules)
                 @canroute('appointments.index')

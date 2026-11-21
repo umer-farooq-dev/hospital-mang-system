@@ -2416,6 +2416,7 @@ return [
         ],
         'modules' => [
             'dashboard' => 'Dashboard',
+            'reception_desk' => 'Reception Desk',
             'patients' => 'Patients',
             'patient_cases' => 'Cases',
             'case_handlers' => 'Case Handlers',
@@ -2601,6 +2602,30 @@ return [
             'national_id' => 'National ID card',
             'passport' => 'Passport',
             'driving_licence' => 'Driving licence',
+        ],
+    ],
+
+    'reception_desk' => [
+        'reception_desk' => 'Reception Desk',
+        'search_placeholder' => 'Name, phone, patient number, ID number, or scan the patient card',
+        'search_hint' => 'Type at least 2 characters. A card scanner can be used directly in this box.',
+        'today_appointments' => 'Today\'s appointments',
+        'no_appointments' => 'No appointments today.',
+        'time' => 'Time',
+        'check_in' => 'Check in',
+        'recent_patients' => 'Recently registered',
+        'no_patient_found' => 'No patient found.',
+        'consultation' => 'Consultation',
+        'exams' => 'Exams',
+        'hospitalisation' => 'Hospitalisation',
+        'patient_file' => 'Patient file',
+        'queue_token' => 'Queue token no. :no.',
+        'status' => [
+            0 => 'Pending',
+            1 => 'Completed',
+            3 => 'Cancelled',
+            4 => 'In queue',
+            5 => 'With the doctor',
         ],
     ],
 ];

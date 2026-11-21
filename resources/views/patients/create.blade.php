@@ -25,6 +25,7 @@
                 {{Form::hidden('defaultAvatarImageUrl',asset('assets/img/avatar.png'),['class'=>'defaultAvatarImageUrl'])}}
                 <div class="card-body p-12">
                     {{ Form::open(['route' => 'patients.store', 'files' => 'true', 'id' => 'createPatientForm']) }}
+                    {{ Form::hidden('from', request('from')) }}
                     @include('patients.fields')
                     {{ Form::close() }}
                 </div>

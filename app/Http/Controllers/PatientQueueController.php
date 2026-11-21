@@ -31,16 +31,13 @@ class PatientQueueController extends AppBaseController
 
     public function changeStatus(Request $request)
     {
-        $appointment = Appointment::find($request->id);
-        $appointment->update(['is_completed' => $request->status]);
+        $appointment = Appointment::findOrFail($request->id);
 
-        $lastQueue = PatientQueue::max('no');
-        $nextQueueNo = $lastQueue ? $lastQueue + 1 : 1;
-
-        $input['appointment_id']  = $appointment->id;
-        $input['no']  = $nextQueueNo;
-
-        PatientQueue::create($input);
+        if ((int) $request->status === Appointment::STATUS_IN_QUEUE) {
+            PatientQueue::enqueue($appointment);
+        } else {
+            $appointment->update(['is_completed' => $request->status]);
+        }
 
         return $this->sendsuccess(__('messages.common.status_updated_successfully'));
     }

@@ -2472,4 +2472,28 @@ return [
             'driving_licence' => 'Permiso de conducir',
         ],
     ],
+
+    'reception_desk' => [
+        'reception_desk' => 'Mostrador de recepción',
+        'search_placeholder' => 'Nombre, teléfono, n.º de paciente, n.º de documento, o escanee la tarjeta del paciente',
+        'search_hint' => 'Escriba al menos 2 caracteres. Se puede usar un lector de tarjetas directamente en este campo.',
+        'today_appointments' => 'Citas de hoy',
+        'no_appointments' => 'No hay citas hoy.',
+        'time' => 'Hora',
+        'check_in' => 'Registrar llegada',
+        'recent_patients' => 'Registrados recientemente',
+        'no_patient_found' => 'No se encontró ningún paciente.',
+        'consultation' => 'Consulta',
+        'exams' => 'Exámenes',
+        'hospitalisation' => 'Hospitalización',
+        'patient_file' => 'Expediente del paciente',
+        'queue_token' => 'Turno n.º :no.',
+        'status' => [
+            0 => 'Pendiente',
+            1 => 'Completada',
+            3 => 'Cancelada',
+            4 => 'En cola',
+            5 => 'Con el médico',
+        ],
+    ],
 ];

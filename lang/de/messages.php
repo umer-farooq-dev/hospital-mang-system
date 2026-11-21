@@ -2422,4 +2422,28 @@ return [
             'driving_licence' => 'Führerschein',
         ],
     ],
+
+    'reception_desk' => [
+        'reception_desk' => 'Empfangstresen',
+        'search_placeholder' => 'Name, Telefon, Patientennummer, Ausweisnummer oder Patientenkarte scannen',
+        'search_hint' => 'Mindestens 2 Zeichen eingeben. Ein Kartenscanner kann direkt in diesem Feld verwendet werden.',
+        'today_appointments' => 'Heutige Termine',
+        'no_appointments' => 'Heute keine Termine.',
+        'time' => 'Uhrzeit',
+        'check_in' => 'Einchecken',
+        'recent_patients' => 'Zuletzt erfasst',
+        'no_patient_found' => 'Kein Patient gefunden.',
+        'consultation' => 'Konsultation',
+        'exams' => 'Untersuchungen',
+        'hospitalisation' => 'Stationäre Aufnahme',
+        'patient_file' => 'Patientenakte',
+        'queue_token' => 'Wartenummer :no.',
+        'status' => [
+            0 => 'Ausstehend',
+            1 => 'Abgeschlossen',
+            3 => 'Storniert',
+            4 => 'In der Warteschlange',
+            5 => 'Beim Arzt',
+        ],
+    ],
 ];

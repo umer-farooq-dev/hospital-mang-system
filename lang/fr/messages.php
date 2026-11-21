@@ -2407,6 +2407,7 @@ return [
         ],
         'modules' => [
             'dashboard' => 'Tableau de bord',
+            'reception_desk' => 'Bureau d\'accueil',
             'patients' => 'Patients',
             'patient_cases' => 'Dossiers',
             'case_handlers' => 'Gestionnaires de dossiers',
@@ -2592,6 +2593,30 @@ return [
             'national_id' => 'Carte nationale d\'identité',
             'passport' => 'Passeport',
             'driving_licence' => 'Permis de conduire',
+        ],
+    ],
+
+    'reception_desk' => [
+        'reception_desk' => 'Bureau d\'accueil',
+        'search_placeholder' => 'Nom, téléphone, N° patient, N° de pièce, ou scanner la carte patient',
+        'search_hint' => 'Saisissez au moins 2 caractères. Un lecteur de carte peut être utilisé directement dans ce champ.',
+        'today_appointments' => 'Rendez-vous du jour',
+        'no_appointments' => 'Aucun rendez-vous aujourd\'hui.',
+        'time' => 'Heure',
+        'check_in' => 'Enregistrer l\'arrivée',
+        'recent_patients' => 'Derniers enregistrés',
+        'no_patient_found' => 'Aucun patient trouvé.',
+        'consultation' => 'Consultation',
+        'exams' => 'Examens',
+        'hospitalisation' => 'Hospitalisation',
+        'patient_file' => 'Dossier patient',
+        'queue_token' => 'Ticket de file N° :no.',
+        'status' => [
+            0 => 'En attente',
+            1 => 'Terminé',
+            3 => 'Annulé',
+            4 => 'En file d\'attente',
+            5 => 'Chez le médecin',
         ],
     ],
 ];

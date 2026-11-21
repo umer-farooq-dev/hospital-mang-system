@@ -58,7 +58,7 @@ class IpdPatientDepartmentController extends AppBaseController
         $this->ipdPatientDepartmentRepository->createNotification($input);
         Flash::success(__('messages.ipd_patient.ipd_patient').' '.__('messages.common.saved_successfully'));
 
-        return redirect(route('ipd.patient.index'));
+        return redirect(afterSaveUrl(route('ipd.patient.index')));
     }
 
     public function show(IpdPatientDepartment $ipdPatientDepartment)
