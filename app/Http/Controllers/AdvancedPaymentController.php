@@ -30,9 +30,18 @@ class AdvancedPaymentController extends AppBaseController
     {
         $input = $request->all();
         $input['amount'] = removeCommaFromNumbers($input['amount']);
+        $cashier = app(\App\Repositories\CashierRepository::class);
+        try {
+            $cashier->assertCanCollect(\Auth::user());
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->sendError($e->getMessage(), 422);
+        }
         Schema::disableForeignKeyConstraints();
-        $this->advancedPaymentRepository->create($input);
+        $advancedPayment = $this->advancedPaymentRepository->create($input);
         Schema::enableForeignKeyConstraints();
+        // An advance is paid in cash at the register (the screen has no payment method).
+        $cashier->recordPayment(\Auth::user(), (int) $advancedPayment->patient_id, 'advance_payment', $advancedPayment->id,
+            __('messages.cashier.advance_payment').' · '.$advancedPayment->receipt_no, (float) $advancedPayment->amount, \App\Repositories\CashierRepository::cashMethod());
         $this->advancedPaymentRepository->createNotification($input);
 
         return $this->sendSuccess(__('messages.advanced_payment.advanced_payment').' '.__('messages.common.saved_successfully'));

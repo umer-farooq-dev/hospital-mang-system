@@ -2948,6 +2948,10 @@ return [
             'self_pay' => 'The patient pays everything (warning)',
             'block' => 'Refuse to save',
         ],
+        'ipd_payment' => 'Hospitalisation payment',
+        'advance_payment' => 'Advance payment',
+        'session_required' => 'Payments only with an open register',
+        'session_required_hint' => 'IPD payments and advance payments always get a receipt on the cashier\'s open session. Ticked: they are refused when the user has no open session.',
     ],
     'receipts' => [
         'receipts' => 'Receipts',

@@ -127,6 +127,14 @@
                                 <div class="col-12 form-text mt-n3 mb-5">{{ __('messages.cashier.followup_hint') }}</div>
                             </div>
                             <div class="mb-5">
+                                <input type="hidden" name="cashier_session_required" value="0">
+                                <label class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input" name="cashier_session_required" value="1" {{ ($settings['cashier_session_required'] ?? '0') === '1' ? 'checked' : '' }} {{ $canEdit ? '' : 'disabled' }}>
+                                    <span class="form-check-label">{{ __('messages.cashier.session_required') }}</span>
+                                </label>
+                                <div class="form-text">{{ __('messages.cashier.session_required_hint') }}</div>
+                            </div>
+                            <div class="mb-5">
                                 {{ Form::label('policy_expired_mode', __('messages.cashier.policy_expired_mode') . ':', ['class' => 'form-label']) }}
                                 {{ Form::select('policy_expired_mode', collect(\App\Http\Controllers\CashCounterController::POLICY_EXPIRED_MODES)->mapWithKeys(fn ($m) => [$m => __('messages.cashier.policy_expired_modes.' . $m)]), $settings['policy_expired_mode'] ?? 'self_pay', ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
                             </div>

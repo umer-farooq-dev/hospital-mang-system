@@ -46,16 +46,19 @@ class PatientFlowRepository
         ])->whereHas('receipt', fn ($q) => $q->whereBetween('created_at', [$filters['from'], $filters['to']]))->get();
 
         $lines->each(function ($line) {
-            $line->setRelation('item', $line->payable_type === 'opd_visit'
-                ? \App\Models\OpdPatientDepartment::with('doctor.doctorUser', 'doctor.department', 'patientInsurance.insurance')->find($line->payable_id)
-                : \App\Models\ExamOrderItem::with('order.doctor.doctorUser', 'order.patientInsurance.insurance')->find($line->payable_id));
+            $line->setRelation('item', match ($line->payable_type) {
+                'opd_visit' => \App\Models\OpdPatientDepartment::with('doctor.doctorUser', 'doctor.department', 'patientInsurance.insurance')->find($line->payable_id),
+                'exam_item' => \App\Models\ExamOrderItem::with('order.doctor.doctorUser', 'order.patientInsurance.insurance')->find($line->payable_id),
+                default => null,
+            });
         });
 
         $rows = $lines->map(function ($line) {
             $item = $line->item;
             $isVisit = $line->payable_type === 'opd_visit';
-            $doctor = $isVisit ? $item?->doctor : $item?->order?->doctor;
-            $policy = $isVisit ? $item?->patientInsurance : $item?->order?->patientInsurance;
+            $isExam = $line->payable_type === 'exam_item';
+            $doctor = $isVisit ? $item?->doctor : ($isExam ? $item?->order?->doctor : null);
+            $policy = $isVisit ? $item?->patientInsurance : ($isExam ? $item?->order?->patientInsurance : null);
             $receipt = $line->receipt;
 
             return [
@@ -66,8 +69,8 @@ class PatientFlowRepository
                 'nature' => $line->description,
                 'doctor' => $doctor?->doctorUser?->full_name,
                 'department_id' => $isVisit ? $doctor?->doctor_department_id : null,
-                'service' => $isVisit ? ($doctor?->department?->title ?? __('messages.common.n/a'))
-                    : __('messages.exam_orders.'.(($item?->testable_type ?? '') === 'radiology_test' ? 'imaging' : (($item?->testable_type ?? '') === 'package' ? 'packages' : 'laboratory'))),
+                'service' => ! $isVisit && ! $isExam ? __('messages.cashier.'.$line->payable_type) : ($isVisit ? ($doctor?->department?->title ?? __('messages.common.n/a'))
+                    : __('messages.exam_orders.'.(($item?->testable_type ?? '') === 'radiology_test' ? 'imaging' : (($item?->testable_type ?? '') === 'package' ? 'packages' : 'laboratory')))),
                 'payer' => $policy?->insurance?->name,
                 'total' => $line->total,
                 'discount' => $line->discount_amount,

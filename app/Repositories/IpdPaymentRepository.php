@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use Illuminate\Support\Facades\Auth;
+use App\Models\PaymentMethod;
 use App\Models\IpdPatientDepartment;
 use App\Models\IpdPayment;
 use App\Models\Transaction;
@@ -42,6 +44,11 @@ class IpdPaymentRepository extends BaseRepository
 
     public function store($input)
     {
+        $cashier = app(CashierRepository::class);
+        $offline = PaymentMethod::isOffline($input['payment_mode'] ?? null);
+        if ($offline) {
+            $cashier->assertCanCollect(Auth::user());
+        }
         $ipdPayment = $this->create($input);
 
         // update ipd bill
@@ -58,6 +65,11 @@ class IpdPaymentRepository extends BaseRepository
         if (isset($input['file']) && ! empty($input['file'])) {
             $ipdPayment->addMedia($input['file'])->toMediaCollection(IpdPayment::IPD_PAYMENT_PATH,
                 config('app.media_disc'));
+        }
+
+        if ($offline && $ipdPatientDepartment) {
+            $cashier->recordPayment(Auth::user(), (int) $ipdPatientDepartment->patient_id, 'ipd_payment', $ipdPayment->id,
+                __('messages.cashier.ipd_payment').' · '.$ipdPatientDepartment->ipd_number, (float) $ipdPayment->amount, (int) $ipdPayment->payment_mode);
         }
 
         return true;

@@ -26,6 +26,8 @@ class ReceiptLine extends Model
     const PAYABLE_TYPES = [
         'opd_visit' => OpdPatientDepartment::class,
         'exam_item' => ExamOrderItem::class,
+        'ipd_payment' => IpdPayment::class,
+        'advance_payment' => AdvancedPayment::class,
     ];
 
     public function receipt(): BelongsTo
