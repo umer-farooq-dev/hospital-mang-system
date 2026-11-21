@@ -54,8 +54,8 @@
                     <i class="fas fa-stethoscope me-1"></i>{{ __('messages.reception_desk.consultation') }}
                 </a>
                 @endcanroute
-                @canroute('pathology.test.create')
-                <a href="{{ route('pathology.test.create', ['patient_id' => $patient->id, 'from' => 'reception-desk']) }}" class="btn btn-sm btn-light-primary">
+                @canroute('exam-orders.create')
+                <a href="{{ route('exam-orders.create', ['patient_id' => $patient->id, 'from' => 'reception-desk']) }}" class="btn btn-sm btn-light-primary">
                     <i class="fas fa-vial me-1"></i>{{ __('messages.reception_desk.exams') }}
                 </a>
                 @endcanroute

@@ -97,6 +97,30 @@ class CashierTest extends TestCase
             $t->decimal('amount', 15, 2);
             $t->timestamps();
         });
+        Schema::create('exam_orders', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedInteger('patient_id');
+            $t->unsignedBigInteger('doctor_id')->nullable();
+            $t->unsignedBigInteger('patient_insurance_id')->nullable();
+            $t->unsignedBigInteger('price_list_id')->nullable();
+            $t->string('voucher_number')->nullable();
+            $t->dateTime('ordered_at');
+            $t->unsignedBigInteger('user_id');
+            $t->text('notes')->nullable();
+            $t->timestamps();
+        });
+        Schema::create('exam_order_items', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('exam_order_id');
+            $t->string('testable_type');
+            $t->unsignedBigInteger('testable_id');
+            $t->string('description');
+            $t->decimal('total', 15, 2);
+            $t->decimal('discount_amount', 15, 2)->default(0);
+            $t->decimal('payer_amount', 15, 2)->default(0);
+            $t->decimal('patient_amount', 15, 2);
+            $t->timestamps();
+        });
         Schema::create('master_list_items', function (Blueprint $t) {
             $t->id();
             $t->string('type');
@@ -153,16 +177,16 @@ class CashierTest extends TestCase
     public function test_collect_numbers_receipts_from_the_start_number_and_gives_change(): void
     {
         $session = $this->cashier->open($this->user, 10000);
-        $this->assertSame([1, 2], $this->cashier->unpaidVisits(7)->pluck('id')->all(), 'a visit fully paid by the insurer is not listed');
+        $this->assertSame(['opd_visit:1', 'opd_visit:2'], $this->cashier->unpaidItems(7)->pluck('key')->all(), 'a visit fully paid by the insurer is not listed');
 
-        $receipt = $this->cashier->collect($session, $this->user, 7, [1, 2], ['payment_method' => 1, 'amount_received' => 10000]);
+        $receipt = $this->cashier->collect($session, $this->user, 7, ['opd_visit:1', 'opd_visit:2'], ['payment_method' => 1, 'amount_received' => 10000]);
 
         $this->assertSame([117511, 7242.0, 2758.0], [$receipt->receipt_number, $receipt->amount, $receipt->change_given]);
         $this->assertSame([6000.0, 1242.0], $receipt->lines->pluck('amount')->all());
-        $this->assertTrue($this->cashier->unpaidVisits(7)->isEmpty(), 'nothing left to pay');
+        $this->assertTrue($this->cashier->unpaidItems(7)->isEmpty(), 'nothing left to pay');
 
         DB::table('opd_patient_departments')->where('id', 3)->update(['payer_amount' => 4000, 'patient_amount' => 1000]);
-        $next = $this->cashier->collect($session, $this->user, 7, [3], ['payment_method' => 2]);
+        $next = $this->cashier->collect($session, $this->user, 7, ['opd_visit:3'], ['payment_method' => 2]);
         $this->assertSame([117512, 1000.0, 0.0], [$next->receipt_number, $next->amount, $next->change_given]);
     }
 
@@ -171,22 +195,22 @@ class CashierTest extends TestCase
         $session = $this->cashier->open($this->user, 0);
 
         try {
-            $this->cashier->collect($session, $this->user, 7, [3], ['payment_method' => 1]);
+            $this->cashier->collect($session, $this->user, 7, ['opd_visit:3'], ['payment_method' => 1]);
             $this->fail('nothing to pay on visit 3');
         } catch (ValidationException $e) {
-            $this->assertArrayHasKey('visits', $e->errors());
+            $this->assertArrayHasKey('items', $e->errors());
         }
 
         $this->expectException(ValidationException::class);
-        $this->cashier->collect($session, $this->user, 7, [1], ['payment_method' => 1, 'amount_received' => 5000]);
+        $this->cashier->collect($session, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1, 'amount_received' => 5000]);
     }
 
     public function test_close_gives_the_next_closing_number_and_expected_cash(): void
     {
         $session = $this->cashier->open($this->user, 10000);
         $this->assertSame($session->id, $this->cashier->open($this->user, 0)->id, 'one open session per register');
-        $this->cashier->collect($session, $this->user, 7, [1], ['payment_method' => 1]);   // cash 6 000
-        $this->cashier->collect($session, $this->user, 7, [2], ['payment_method' => 2]);   // cheque 1 242
+        $this->cashier->collect($session, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]);   // cash 6 000
+        $this->cashier->collect($session, $this->user, 7, ['opd_visit:2'], ['payment_method' => 2]);   // cheque 1 242
 
         $closed = $this->cashier->close($session, 15500, 'manque 500');
         $this->assertSame([1, 16000.0, 15500.0], [$closed->closing_number, $closed->expected_cash, $closed->counted_cash]);
@@ -205,7 +229,7 @@ class CashierTest extends TestCase
     public function test_void_only_while_the_session_is_open_and_the_items_become_payable_again(): void
     {
         $session = $this->cashier->open($this->user, 0);
-        $receipt = $this->cashier->collect($session, $this->user, 7, [1], ['payment_method' => 1]);
+        $receipt = $this->cashier->collect($session, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]);
 
         $this->cashier->changeMethod($receipt, 2);
         $this->assertSame([2 => 6000.0], $session->fresh()->netByMethod(), 'method corrected while open');
@@ -213,9 +237,9 @@ class CashierTest extends TestCase
         $this->cashier->void($receipt, $this->user, 4);
         $this->assertSame('voided', $receipt->fresh()->status);
         $this->assertSame([], $session->fresh()->netByMethod());
-        $this->assertSame([1, 2], $this->cashier->unpaidVisits(7)->pluck('id')->all());
+        $this->assertSame(['opd_visit:1', 'opd_visit:2'], $this->cashier->unpaidItems(7)->pluck('key')->all());
 
-        $again = $this->cashier->collect($session, $this->user, 7, [1], ['payment_method' => 1]);
+        $again = $this->cashier->collect($session, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]);
         $this->cashier->close($session, 6000, null);
         $this->expectException(ValidationException::class);
         $this->cashier->void($again, $this->user, 5);
@@ -224,7 +248,7 @@ class CashierTest extends TestCase
     public function test_refund_leaves_the_closed_session_unchanged_and_comes_out_of_the_current_one(): void
     {
         $first = $this->cashier->open($this->user, 0);
-        $receipt = $this->cashier->collect($first, $this->user, 7, [1], ['payment_method' => 1]);
+        $receipt = $this->cashier->collect($first, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]);
         $this->cashier->close($first, 6000, null);
 
         $second = $this->cashier->open($this->user, 10000);
@@ -242,8 +266,8 @@ class CashierTest extends TestCase
     public function test_cash_journal_runs_the_balance_from_the_session_float(): void
     {
         $session = $this->cashier->open($this->user, 10000);
-        $a = $this->cashier->collect($session, $this->user, 7, [1], ['payment_method' => 1]);
-        $this->cashier->collect($session, $this->user, 7, [2], ['payment_method' => 1]);
+        $a = $this->cashier->collect($session, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]);
+        $this->cashier->collect($session, $this->user, 7, ['opd_visit:2'], ['payment_method' => 1]);
         $this->cashier->refund($a, $this->user, 1, null);
 
         $repo = app(\App\Repositories\CashJournalRepository::class);
@@ -254,5 +278,23 @@ class CashierTest extends TestCase
         $this->assertSame([true, true, false], $journal['rows']->pluck('credit')->all());
         $this->assertSame([1 => 1242.0], $journal['totals']);
         $this->assertSame(11242.0, $journal['closing']);
+    }
+
+    public function test_consultation_and_exams_are_paid_on_one_receipt_like_the_client_sample(): void
+    {
+        $order = \App\Models\ExamOrder::create(['patient_id' => 7, 'doctor_id' => 1, 'ordered_at' => '2026-11-22 09:30', 'user_id' => $this->user->id]);
+        $ge = $order->items()->create(['testable_type' => 'pathology_test', 'testable_id' => 1, 'description' => 'G.E. avec frottis', 'total' => 1500, 'patient_amount' => 1500]);
+        $nfs = $order->items()->create(['testable_type' => 'pathology_test', 'testable_id' => 2, 'description' => 'NFS', 'total' => 3500, 'payer_amount' => 2800, 'patient_amount' => 700]);
+
+        $this->assertSame(['opd_visit:1', 'exam_item:'.$ge->id, 'exam_item:'.$nfs->id, 'opd_visit:2'], $this->cashier->unpaidItems(7)->pluck('key')->all(), 'oldest first');
+
+        $session = $this->cashier->open($this->user, 0);
+        $receipt = $this->cashier->collect($session, $this->user, 7, ['exam_item:'.$ge->id, 'exam_item:'.$nfs->id], ['payment_method' => 1]);
+
+        $this->assertSame(2200.0, $receipt->amount);
+        $this->assertSame(['G.E. avec frottis', 'NFS'], $receipt->lines->pluck('description')->all());
+        $this->assertSame(['exam_item', 'exam_item'], $receipt->lines->pluck('payable_type')->all());
+        $this->assertSame('Dr Ouattara', $receipt->lines->first()->payable->doctor->doctorUser->full_name, 'the prescriber is named on the receipt');
+        $this->assertSame(['opd_visit:1', 'opd_visit:2'], $this->cashier->unpaidItems(7)->pluck('key')->all());
     }
 }

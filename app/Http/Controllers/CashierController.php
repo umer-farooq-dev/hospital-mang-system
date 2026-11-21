@@ -36,7 +36,7 @@ class CashierController extends AppBaseController
             'session' => $session,
             'patients' => $session ? $this->cashierRepository->patientsToCollect() : [],
             'patientId' => $patientId,
-            'visits' => $session && $patientId ? $this->cashierRepository->unpaidVisits($patientId) : collect(),
+            'items' => $session && $patientId ? $this->cashierRepository->unpaidItems($patientId) : collect(),
             'paymentMethods' => PaymentMethod::options(),
             'totals' => $session ? $session->netByMethod() : [],
             'recentReceipts' => $session ? $session->receipts()->with('patient.patientUser')->latest('id')->take(10)->get() : collect(),
@@ -64,15 +64,15 @@ class CashierController extends AppBaseController
         }
         $input = $request->validate([
             'patient_id' => 'required|integer|exists:patients,id',
-            'visits' => 'required|array|min:1',
-            'visits.*' => 'integer',
+            'items' => 'required|array|min:1',
+            'items.*' => ['string', 'regex:/^[a-z_]+:\d+$/'],
             'payment_method' => ['required', 'integer', Rule::in(array_keys(PaymentMethod::options()))],
             'amount_received' => 'nullable|numeric|min:0',
             'cheque_number' => 'nullable|string|max:50',
             'cheque_drawer' => 'nullable|string|max:100',
-        ], [], ['visits' => __('messages.cashier.items')]);
+        ], [], ['items' => __('messages.cashier.items')]);
 
-        $receipt = $this->cashierRepository->collect($session, Auth::user(), $input['patient_id'], $input['visits'], $input);
+        $receipt = $this->cashierRepository->collect($session, Auth::user(), $input['patient_id'], $input['items'], $input);
         Flash::success(__('messages.cashier.collected', ['number' => $receipt->receipt_number, 'change' => formatMoney($receipt->change_given)]));
 
         return redirect(route('cashier.index', ['print' => $receipt->id]));
@@ -97,7 +97,7 @@ class CashierController extends AppBaseController
         $settings = getSettingValue();
         $followupDays = (int) Setting::where('key', 'receipt_followup_days')->value('value');
         $paper = Setting::where('key', 'receipt_paper')->value('value') ?: 'a5';
-        $doctor = optional($receipt->lines->first())->payable?->doctor?->doctorUser?->full_name;
+        $doctor = $receipt->lines->map(fn ($line) => $line->payable?->doctor?->doctorUser?->full_name)->filter()->first();
 
         return view('cashier.receipt', compact('receipt', 'settings', 'followupDays', 'paper', 'doctor'));
     }

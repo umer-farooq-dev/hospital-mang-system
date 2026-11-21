@@ -2662,4 +2662,7 @@ return [
     'cash_journal' => [
         'title' => 'يومية الصندوق',
     ],
+    'exam_orders' => [
+        'title' => 'طلبات الفحوص',
+    ],
 ];

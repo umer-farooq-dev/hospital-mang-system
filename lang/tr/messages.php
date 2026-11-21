@@ -2659,4 +2659,7 @@ return [
     'cash_journal' => [
         'title' => 'Kasa defteri',
     ],
+    'exam_orders' => [
+        'title' => 'Tetkik istekleri',
+    ],
 ];

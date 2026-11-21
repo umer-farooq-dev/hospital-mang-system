@@ -100,6 +100,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientInsuranceController;
 use App\Http\Controllers\CashCounterController;
 use App\Http\Controllers\CashierController;
+use App\Http\Controllers\ExamOrderController;
 use App\Http\Controllers\CashJournalController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\PriceListController;
@@ -499,6 +500,12 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
     });
 
     Route::middleware('access:Admin|Receptionist')->group(function () {
+        // Exam requests from reception, paid at the cashier
+        Route::get('exam-orders', [ExamOrderController::class, 'index'])->name('exam-orders.index')->middleware('modules');
+        Route::get('exam-orders/create', [ExamOrderController::class, 'create'])->name('exam-orders.create');
+        Route::post('exam-orders', [ExamOrderController::class, 'store'])->name('exam-orders.store');
+        Route::get('exam-orders/quote', [ExamOrderController::class, 'getQuote'])->name('exam-orders.quote');
+
         // Cashier: session, collect payments, receipts, register close
         Route::get('cashier', [CashierController::class, 'index'])->name('cashier.index')->middleware('modules');
         Route::post('cashier/open', [CashierController::class, 'openSession'])->name('cashier.open');
