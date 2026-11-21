@@ -460,6 +460,7 @@ return [
             'insurer' => 'Compagnie d\'assurance',
             'company' => 'Entreprise partenaire',
             'mutual' => 'Mutuelle / organisme public',
+            'staff' => 'Personnel et ayants droit',
         ],
         'price_list_id' => 'Grille tarifaire',
         'price_list_default' => 'Grille par défaut',

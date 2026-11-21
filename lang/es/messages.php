@@ -510,6 +510,7 @@ return [
             'insurer' => 'Compañía de seguros',
             'company' => 'Empresa asociada',
             'mutual' => 'Mutua / régimen público',
+            'staff' => 'Personal y familiares',
         ],
         'price_list_id' => 'Lista de precios',
         'price_list_default' => 'Lista por defecto',

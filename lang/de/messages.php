@@ -459,6 +459,7 @@ return [
             'insurer' => 'Versicherung',
             'company' => 'Partnerunternehmen',
             'mutual' => 'Gegenseitigkeitskasse / öffentliches System',
+            'staff' => 'Personal und Angehörige',
         ],
         'price_list_id' => 'Preisliste',
         'price_list_default' => 'Standardpreisliste',
