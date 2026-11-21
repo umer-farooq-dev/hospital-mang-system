@@ -374,4 +374,25 @@ class CashierTest extends TestCase
         $this->assertNull(\App\Models\OpdPatientDepartment::followupFactor(['appointment_date' => '2026-12-07 10:00'] + $input), 'after 14 days');
         $this->assertNull(\App\Models\OpdPatientDepartment::followupFactor(['doctor_id' => 2] + $input), 'another doctor');
     }
+
+    public function test_patient_flow_reports_from_the_receipts(): void
+    {
+        $session = $this->cashier->open($this->user, 0);
+        $this->cashier->collect($session, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]);     // self-pay 6 000
+        $b = $this->cashier->collect($session, $this->user, 7, ['opd_visit:2'], ['payment_method' => 1]); // insured, patient 1 242
+        DB::table('opd_patient_departments')->where('id', 3)->update(['payer_amount' => 4000, 'patient_amount' => 1000]);
+        $c = $this->cashier->collect($session, $this->user, 7, ['opd_visit:3'], ['payment_method' => 1]);
+        $this->cashier->void($c, $this->user, 5);
+
+        $repo = app(\App\Repositories\PatientFlowRepository::class);
+        $report = fn ($tab) => $repo->report($repo->filters(['tab' => $tab, 'from' => now()->toDateString()]));
+
+        $detailed = $report('detailed');
+        $this->assertSame(3, $detailed['rows']->count(), 'cancelled receipts are listed, flagged');
+        $this->assertSame(['valid', 'valid', 'voided'], $detailed['rows']->pluck('status')->all());
+        $this->assertSame(7242.0, $detailed['totals']['paid'], 'totals count valid receipts only');
+        $this->assertSame([1242.0], $report('patient_shares')['rows']->pluck('paid')->all());
+        $this->assertSame([6000.0], $report('without_insurance')['rows']->pluck('paid')->all());
+        $this->assertSame(['Médecine générale'], $report('by_service')['groups']->keys()->all());
+    }
 }

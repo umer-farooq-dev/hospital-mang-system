@@ -102,6 +102,7 @@ use App\Http\Controllers\CashCounterController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\ExamOrderController;
 use App\Http\Controllers\CashJournalController;
+use App\Http\Controllers\PatientFlowController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\PriceListController;
 use App\Http\Controllers\ReceptionDeskController;
@@ -492,6 +493,8 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('receipts', [ReceiptController::class, 'index'])->name('receipts.index')->middleware('modules');
         Route::get('cash-journal', [CashJournalController::class, 'index'])->name('cash-journal.index')->middleware('modules');
         Route::get('cash-journal/print', [CashJournalController::class, 'print'])->name('cash-journal.print');
+        Route::get('patient-flow', [PatientFlowController::class, 'index'])->name('patient-flow.index')->middleware('modules');
+        Route::get('patient-flow/print', [PatientFlowController::class, 'print'])->name('patient-flow.print');
     });
     Route::middleware('access:Admin|Accountant')->group(function () {
         Route::post('receipts/{receipt}/void', [ReceiptController::class, 'void'])->name('receipts.void');

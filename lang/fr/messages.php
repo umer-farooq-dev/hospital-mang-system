@@ -2512,6 +2512,7 @@ return [
             'receipts' => 'Reçus',
             'cash_journal' => 'Brouillard de caisse',
             'exam_orders' => 'Demandes d\'examens',
+            'patient_flow' => 'État de passage des patients',
             'insurances' => 'Assurances',
             'packages' => 'Forfaits',
             'services' => 'Services',
@@ -3021,6 +3022,19 @@ return [
         'destinations' => [
             'safe' => 'Coffre-fort',
             'bank' => 'Banque',
+        ],
+    ],
+    'patient_flow' => [
+        'title' => 'État de passage des patients',
+        'service' => 'Service',
+        'count' => 'Nombre',
+        'empty' => 'Aucun encaissement sur cette période.',
+        'tabs' => [
+            'detailed' => 'État général détaillé',
+            'general' => 'État général',
+            'patient_shares' => 'État des tickets modérateurs',
+            'without_insurance' => 'Encaissements sans assurance',
+            'by_service' => 'État de passage par service',
         ],
     ],
 ];
