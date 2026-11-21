@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\CashCounter;
 use App\Models\CashSession;
+use App\Models\FundTransfer;
 use App\Models\Receipt;
 use App\Models\Refund;
 use App\Models\User;
@@ -49,6 +50,14 @@ class CashJournalRepository
         };
         $receipts = Receipt::with('patient.patientUser', 'user')->whereNull('voided_at')->tap($scope)->get();
         $refunds = Refund::with('receipt.patient.patientUser', 'user')->tap($scope)->get();
+        $transferScope = function ($query, string $side) use ($filters) {
+            $query->where($side.'_counter_id', $filters['counter']);
+            $filters['session']
+                ? $query->where($side.'_session_id', $filters['session']->id)
+                : $query->whereBetween('created_at', [$filters['from'], $filters['to']]);
+        };
+        $out = FundTransfer::with('toCounter', 'user')->tap(fn ($q) => $transferScope($q, 'from'))->get();
+        $in = FundTransfer::with('fromCounter', 'user')->tap(fn ($q) => $transferScope($q, 'to'))->get();
 
         $rows = $receipts->map(fn ($r) => [
             'at' => $r->created_at, 'patient' => $r->patient, 'label' => __('messages.cash_journal.customer_payment'),
@@ -58,6 +67,12 @@ class CashJournalRepository
             'at' => $f->created_at, 'patient' => $f->receipt->patient, 'label' => __('messages.cash_journal.refund').' · '.$f->reason_name,
             'credit' => false, 'amount' => $f->amount, 'receipt_number' => $f->receipt->receipt_number, 'operator' => $f->user?->full_name,
             'method' => $f->payment_method,
+        ]))->concat($out->map(fn ($t) => [
+            'at' => $t->created_at, 'patient' => null, 'label' => __('messages.fund_transfer.out', ['to' => $t->destination_name]),
+            'credit' => false, 'amount' => $t->amount, 'receipt_number' => null, 'operator' => $t->user?->full_name, 'method' => $t->payment_method,
+        ]))->concat($in->map(fn ($t) => [
+            'at' => $t->created_at, 'patient' => null, 'label' => __('messages.fund_transfer.in', ['from' => $t->fromCounter->code.' · '.$t->fromCounter->name]),
+            'credit' => true, 'amount' => $t->amount, 'receipt_number' => null, 'operator' => $t->user?->full_name, 'method' => $t->payment_method,
         ]))->sortBy('at')->values();
 
         $opening = $filters['session'] ? $filters['session']->opening_float : $this->balanceBefore($filters['counter'], $filters['from']);
@@ -80,7 +95,9 @@ class CashJournalRepository
     private function balanceBefore(int $counterId, Carbon $date): float
     {
         $in = Receipt::where('cash_counter_id', $counterId)->whereNull('voided_at')->where('created_at', '<', $date)->sum('amount');
-        $out = Refund::where('cash_counter_id', $counterId)->where('created_at', '<', $date)->sum('amount');
+        $out = Refund::where('cash_counter_id', $counterId)->where('created_at', '<', $date)->sum('amount')
+            + FundTransfer::where('from_counter_id', $counterId)->where('created_at', '<', $date)->sum('amount');
+        $in += FundTransfer::where('to_counter_id', $counterId)->where('created_at', '<', $date)->sum('amount');
 
         return round((float) $in - (float) $out, 2);
     }

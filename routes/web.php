@@ -511,6 +511,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('cashier/open', [CashierController::class, 'openSession'])->name('cashier.open');
         Route::post('cashier/collect', [CashierController::class, 'collect'])->name('cashier.collect');
         Route::post('cashier/close', [CashierController::class, 'closeSession'])->name('cashier.close');
+        Route::post('cashier/transfer', [CashierController::class, 'transfer'])->name('cashier.transfer');
         Route::get('receipts/{receipt}/print', [CashierController::class, 'printReceipt'])->name('receipts.print');
         Route::get('cash-sessions/{cashSession}/print', [CashierController::class, 'printSession'])->name('cash-sessions.print');
         Route::get('reception-desk', [ReceptionDeskController::class, 'index'])

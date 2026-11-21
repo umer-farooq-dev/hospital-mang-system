@@ -384,6 +384,7 @@ return [
         Controllers\CashierController::class.'@openSession' => ['cashier', 'create'],
         Controllers\CashierController::class.'@collect' => ['cashier', 'create'],
         Controllers\CashierController::class.'@closeSession' => ['cashier', 'create'],
+        Controllers\CashierController::class.'@transfer' => ['cashier', 'create'],
         Controllers\CashierController::class.'@printReceipt' => ['cashier', 'list'],
         Controllers\CashierController::class.'@printSession' => ['cashier', 'list'],
         // Undoing money is a supervisor's action (delete); correcting the method is an edit.
