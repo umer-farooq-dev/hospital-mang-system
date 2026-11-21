@@ -344,10 +344,10 @@
 
     {{-- Hospital Charges --}}
     <?php
-    $hospitalCharge = getMenuLinks(\App\Models\User::MAIN_HOSPITAL_CHARGE);
+    $hospitalCharge = getMenuLinks(\App\Models\User::MAIN_HOSPITAL_CHARGE) ?: (canAccessRoute('price-lists.index') ? route('price-lists.index') : false);
     ?>
     @if ($hospitalCharge)
-        <li class="nav-item  {{ Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*') ? 'active' : '' }}">
+        <li class="nav-item  {{ Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*', 'price-lists*', 'tariffs*') ? 'active' : '' }}">
             <a class="nav-link  d-flex align-items-center py-3" href="{{ $hospitalCharge }}">
                 <span class="aside-menu-icon me-3"><i class="fas fa-coins"></i></span>
                 <span class="aside-menu-title">{{ __('messages.hospital_charges') }}</span>
@@ -1081,11 +1081,11 @@
 
             {{-- Hospital Charges --}}
             <?php
-            $ReceptionisthospitalCharge = getMenuLinks(\App\Models\User::MAIN_HOSPITAL_CHARGE);
+            $ReceptionisthospitalCharge = getMenuLinks(\App\Models\User::MAIN_HOSPITAL_CHARGE) ?: (canAccessRoute('price-lists.index') ? route('price-lists.index') : false);
             ?>
             @if ($ReceptionisthospitalCharge)
                 <li
-                    class="nav-item  {{ Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*') ? 'active' : '' }}">
+                    class="nav-item  {{ Request::is('charge-categories*', 'charges*', 'doctor-opd-charges*', 'price-lists*', 'tariffs*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ $ReceptionisthospitalCharge }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-coins"></i></span>
                         <span class="aside-menu-title">{{ __('messages.hospital_charges') }}</span>

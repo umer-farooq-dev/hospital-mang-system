@@ -105,6 +105,7 @@ return [
         'charge_categories' => 'charges',
         'charges' => 'charges',
         'doctor_opd_charges' => 'charges',
+        'price_lists' => 'charges',
 
         // services
         'insurances' => 'services',
@@ -279,6 +280,7 @@ return [
         Controllers\ChargeCategoryController::class => 'charge_categories',
         Controllers\ChargeController::class => 'charges',
         Controllers\DoctorOPDChargeController::class => 'doctor_opd_charges',
+        Controllers\PriceListController::class => 'price_lists',
         Controllers\InsuranceController::class => 'insurances',
         Controllers\PackageController::class => 'packages',
         Controllers\ServiceController::class => 'services',
@@ -366,6 +368,8 @@ return [
     'methods' => [
         // Searching is what the desk is for: anyone who can open it can search.
         Controllers\ReceptionDeskController::class.'@getSearch' => ['reception_desk', 'list'],
+        // The tariff grid is part of the price lists screen.
+        Controllers\PriceListController::class.'@tariff' => ['price_lists', 'list'],
 
         // Staff answer a complaint; only the patient edits it.
         Controllers\ComplaintController::class.'@responseEdit' => ['complaint_responses', 'edit'],

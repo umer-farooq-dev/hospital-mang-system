@@ -9,6 +9,7 @@ use App\Models\Insurance;
 use App\Models\MasterListItem;
 use App\Models\PatientAdmission;
 use App\Models\PatientInsurance;
+use App\Models\PriceList;
 use App\Repositories\InsuranceRepository;
 use DB;
 use Exception;
@@ -42,6 +43,7 @@ class InsuranceController extends AppBaseController
         return [
             'payerTypes' => MasterListItem::options(Insurance::PAYER_TYPE, $insurance->payer_type ?? null),
             'billingOptions' => Insurance::billingOptions(),
+            'priceLists' => PriceList::options($insurance->price_list_id ?? null),
         ];
     }
 

@@ -51,6 +51,17 @@
         {{ Form::number('credit_days', null, ['class' => 'form-control', 'min' => 0, 'max' => 365, 'placeholder' => __('messages.insurance.credit_days')]) }}
     </div>
     <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('price_list_id', __('messages.insurance.price_list_id') . ':', ['class' => 'form-label']) }}
+        {{ Form::select('price_list_id', $priceLists, null, ['class' => 'form-select', 'data-control' => 'select2', 'placeholder' => __('messages.insurance.price_list_default')]) }}
+        <div class="form-text">{{ __('messages.insurance.price_list_hint') }}</div>
+    </div>
+    @foreach (['tax_id' => 50, 'trade_register' => 50, 'tax_regime' => 100, 'tax_division' => 100, 'account_code' => 30] as $field => $max)
+        <div class="form-group col-sm-6 mb-5">
+            {{ Form::label($field, __('messages.insurance.' . $field) . ':', ['class' => 'form-label']) }}
+            {{ Form::text($field, null, ['class' => 'form-control', 'maxlength' => $max, 'placeholder' => __('messages.insurance.' . $field)]) }}
+        </div>
+    @endforeach
+    <div class="form-group col-sm-6 mb-5">
         {{ Form::label('contact_person', __('messages.insurance.contact_person') . ':', ['class' => 'form-label']) }}
         {{ Form::text('contact_person', null, ['class' => 'form-control', 'maxlength' => 160, 'placeholder' => __('messages.insurance.contact_person')]) }}
     </div>

@@ -19,6 +19,12 @@
                                 'phone' => $insurance->phone,
                                 'email' => $insurance->email,
                                 'address' => $insurance->address,
+                                'price_list_id' => $insurance->priceList?->label,
+                                'tax_id' => $insurance->tax_id,
+                                'trade_register' => $insurance->trade_register,
+                                'tax_regime' => $insurance->tax_regime,
+                                'tax_division' => $insurance->tax_division,
+                                'account_code' => $insurance->account_code,
                             ] as $field => $value)
                                 <div class="col-lg-3 d-flex flex-column mb-md-10 mb-5">
                                     <label class="pb-2 fs-5 text-gray-600">{{ __('messages.insurance.' . $field) . ':' }}</label>
