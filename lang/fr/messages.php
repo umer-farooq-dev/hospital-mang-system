@@ -2939,6 +2939,10 @@ return [
             'self_pay' => 'Le patient paie tout (avertissement)',
             'block' => 'Refuser l\'enregistrement',
         ],
+        'ipd_payment' => 'Paiement hospitalisation',
+        'advance_payment' => 'Avance sur frais',
+        'session_required' => 'Encaissement uniquement avec une caisse ouverte',
+        'session_required_hint' => 'Les paiements d\'hospitalisation et les avances donnent toujours un reçu sur la caisse ouverte. Coché : ils sont refusés si l\'utilisateur n\'a pas de caisse ouverte.',
     ],
     'receipts' => [
         'receipts' => 'Reçus',

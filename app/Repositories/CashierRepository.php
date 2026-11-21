@@ -245,6 +245,50 @@ class CashierRepository
         });
     }
 
+    public static function sessionRequired(): bool
+    {
+        return (string) DB::table('settings')->where('key', 'cashier_session_required')->value('value') === '1';
+    }
+
+    /** Before taking money on another screen: refuse when the setting requires an open session and there is none. */
+    public function assertCanCollect(?User $user): void
+    {
+        if (self::sessionRequired() && (! $user || ! $this->openSessionFor($user))) {
+            throw ValidationException::withMessages(['cashier' => __('messages.cashier.open_first')]);
+        }
+    }
+
+    /**
+     * Issue the receipt for money taken on another screen (IPD payment, advance payment)
+     * on the user's open session. Without an open session nothing is issued (unless required).
+     */
+    public function recordPayment(?User $user, int $patientId, string $type, int $payableId, string $description, float $amount, int $method): ?Receipt
+    {
+        $session = $user ? $this->openSessionFor($user) : null;
+        if (! $session) {
+            $this->assertCanCollect($user);
+
+            return null;
+        }
+
+        return DB::transaction(function () use ($session, $user, $patientId, $type, $payableId, $description, $amount, $method) {
+            $receipt = Receipt::create([
+                'receipt_number' => Receipt::nextNumber(),
+                'cash_session_id' => $session->id,
+                'cash_counter_id' => $session->cash_counter_id,
+                'user_id' => $user->id,
+                'patient_id' => $patientId,
+                'payment_method' => $method,
+                'amount' => round($amount, 2),
+                'amount_received' => round($amount, 2),
+            ]);
+            $receipt->lines()->create(['payable_type' => $type, 'payable_id' => $payableId, 'description' => $description,
+                'total' => round($amount, 2), 'amount' => round($amount, 2)]);
+
+            return $receipt;
+        });
+    }
+
     /** The payment method counted as cash in the drawer (Settings), Espèces by default. */
     public static function cashMethod(): int
     {

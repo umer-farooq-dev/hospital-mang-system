@@ -395,4 +395,23 @@ class CashierTest extends TestCase
         $this->assertSame([6000.0], $report('without_insurance')['rows']->pluck('paid')->all());
         $this->assertSame(['Médecine générale'], $report('by_service')['groups']->keys()->all());
     }
+
+    public function test_payments_from_other_screens_get_a_receipt_on_the_open_session(): void
+    {
+        $this->assertNull($this->cashier->recordPayment($this->user, 7, 'advance_payment', 1, 'Avance', 20000, 1), 'no session, not required: no receipt');
+
+        DB::table('settings')->insert(['key' => 'cashier_session_required', 'value' => '1']);
+        try {
+            $this->cashier->assertCanCollect($this->user);
+            $this->fail('required without a session');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('cashier', $e->errors());
+        }
+
+        $session = $this->cashier->open($this->user, 0);
+        $receipt = $this->cashier->recordPayment($this->user, 7, 'ipd_payment', 5, 'Paiement hospitalisation · IPD1', 50000, 1);
+        $this->assertSame([117511, 50000.0, 'ipd_payment'], [$receipt->receipt_number, $receipt->amount, $receipt->lines->first()->payable_type]);
+        $this->assertSame([1 => 50000.0], $session->fresh()->netByMethod());
+        $this->assertTrue($this->cashier->unpaidItems(7)->every(fn ($i) => $i['type'] === 'opd_visit'), 'not an item to collect');
+    }
 }
