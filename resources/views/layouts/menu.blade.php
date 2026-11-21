@@ -416,7 +416,7 @@
     ?>
     @if ($patientCaseMgt)
         <li
-            class="nav-item  {{ Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*') ? 'active' : '' }}">
+            class="nav-item  {{ Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*', 'patient-registrations*') ? 'active' : '' }}">
             <a class="nav-link  d-flex align-items-center py-3" href="{{ $patientCaseMgt }}">
                 <span class="aside-menu-icon me-3">
                     <i class="fas fa-user-injured"></i>
@@ -779,7 +779,7 @@
                 ?>
                 @if ($patientDoctorCaseMgt)
                     <li
-                        class="nav-item  {{ Request::is('patients*', 'patient-admissions*', 'patient-cases*') ? 'active' : '' }}">
+                        class="nav-item  {{ Request::is('patients*', 'patient-admissions*', 'patient-cases*', 'patient-registrations*') ? 'active' : '' }}">
                         <a class="nav-link  d-flex align-items-center py-3" href="{{ $patientDoctorCaseMgt }}">
                             <span class="aside-menu-icon me-3"><i class="fas fa-user-injured"></i></span>
                             <span class="aside-menu-title">{{ __('messages.patients') }}</span>
@@ -1160,7 +1160,7 @@
             ?>
             @if ($receptionistPatientCaseMgt)
                 <li
-                    class="nav-item {{ Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*') ? 'active' : '' }}">
+                    class="nav-item {{ Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*', 'patient-registrations*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ $receptionistPatientCaseMgt }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-user-injured"></i></span>
                         <span class="aside-menu-title">{{ __('messages.patients') }}</span>

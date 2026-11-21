@@ -330,9 +330,22 @@
     @module('Patients', $modules)
         @canroute('patients.index')
         <li
-            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*') ? 'd-none' : '' }}">
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*', 'patient-registrations*') ? 'd-none' : '' }}">
             <a class="nav-link p-0 {{ Request::is('patients*') ? 'active' : '' }}" href="{{ route('patients.index') }}">
                 {{ __('messages.patients') }}
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+@endif
+@if (Auth::user()->hasRole('Admin|Receptionist') || hasCustomRole())
+    @module('Patient Registrations', $modules)
+        @canroute('patient-registrations.index')
+        <li
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*', 'patient-registrations*') ? 'd-none' : '' }}">
+            <a class="nav-link p-0 {{ Request::is('patient-registrations*') ? 'active' : '' }}"
+                href="{{ route('patient-registrations.index') }}">
+                {{ __('messages.reception_report.tab') }}
             </a>
         </li>
         @endcanroute
@@ -342,7 +355,7 @@
     @module('Cases', $modules)
         @canroute('patient-cases.index')
         <li
-            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*') ? 'd-none' : '' }}">
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*', 'patient-registrations*') ? 'd-none' : '' }}">
             <a class="nav-link p-0 {{ Request::is('patient-cases*') ? 'active' : '' }}"
                 href="{{ route('patient-cases.index') }}">
                 {{ __('messages.cases') }}
@@ -355,7 +368,7 @@
     @module('Case Handlers', $modules)
         @canroute('case-handlers.index')
         <li
-            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0  {{ !Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*') ? 'd-none' : '' }}">
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0  {{ !Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*', 'patient-registrations*') ? 'd-none' : '' }}">
             <a class="nav-link p-0 {{ Request::is('case-handlers*') ? 'active' : '' }}"
                 href="{{ route('case-handlers.index') }}">
                 {{ __('messages.case_handlers') }}
@@ -368,7 +381,7 @@
     @module('Patient Admissions', $modules)
         @canroute('patient-admissions.index')
         <li
-            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*') ? 'd-none' : '' }}">
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('patients*', 'patient-cases*', 'case-handlers*', 'patient-admissions*', 'patient-registrations*') ? 'd-none' : '' }}">
             <a class="nav-link p-0 {{ Request::is('patient-admissions**') ? 'active' : '' }}"
                 href="{{ route('patient-admissions.index') }}">
                 {{ __('messages.patient_admissions') }}
