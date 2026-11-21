@@ -391,6 +391,7 @@ return [
         Controllers\ReceiptController::class.'@void' => ['receipts', 'delete'],
         Controllers\ReceiptController::class.'@refund' => ['receipts', 'delete'],
         Controllers\ReceiptController::class.'@changeMethod' => ['receipts', 'edit'],
+        Controllers\ReceiptController::class.'@changeDoctor' => ['receipts', 'edit'],
         Controllers\CashJournalController::class.'@print' => ['cash_journal', 'list'],
 
         // Staff answer a complaint; only the patient edits it.

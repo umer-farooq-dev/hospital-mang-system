@@ -2803,6 +2803,7 @@ return [
             'doctor_opd_charge' => 'Doctor OPD charges',
             'pathology_test' => 'Pathology tests',
             'radiology_test' => 'Radiology tests',
+            'package' => 'Check-ups / packages',
         ],
         'seed' => [
             'cash' => 'Cash',
@@ -2928,6 +2929,8 @@ return [
             'a4' => 'A4 sheet',
             'thermal' => 'Thermal printer 80 mm',
         ],
+        'receipt_footer_text' => 'Receipt footer text',
+        'receipt_footer_hint' => 'Printed on consultation receipts. Use :days and :date for the validity. Empty = the default text.',
     ],
     'receipts' => [
         'receipts' => 'Receipts',
@@ -2957,6 +2960,9 @@ return [
             'wrong_method' => 'Wrong payment method',
             'input_error' => 'Input error',
         ],
+        'change_doctor' => 'Change the doctor',
+        'doctor_changed' => 'Doctor of receipt no. :number changed.',
+        'no_consultation' => 'This receipt has no consultation.',
     ],
     'cash_journal' => [
         'title' => 'Cash journal',
@@ -2975,6 +2981,7 @@ return [
         'closing_number' => 'Closing no. (N° Arrêt)',
         'whole_period' => 'Whole period',
         'print' => 'Print the journal',
+        'all_registers' => 'All registers (cumulative)',
     ],
     'exam_orders' => [
         'title' => 'Exam requests',
@@ -2990,6 +2997,7 @@ return [
         'saved' => 'Exam request saved. The patient pays :amount.',
         'no_valid_test' => 'None of the chosen exams exists any more.',
         'none' => 'No exam request yet.',
+        'packages' => 'Check-ups',
     ],
     'fund_transfer' => [
         'title' => 'Fund transfer',

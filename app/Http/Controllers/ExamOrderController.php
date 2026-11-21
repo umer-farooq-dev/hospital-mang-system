@@ -36,6 +36,8 @@ class ExamOrderController extends AppBaseController
                 ->mapWithKeys(fn ($t) => ['pathology_test:'.$t->id => $t->test_name.' · '.formatMoney($t->standard_charge)])->all(),
             __('messages.exam_orders.imaging') => RadiologyTest::orderBy('test_name')->get()
                 ->mapWithKeys(fn ($t) => ['radiology_test:'.$t->id => $t->test_name.' · '.formatMoney($t->standard_charge)])->all(),
+            __('messages.exam_orders.packages') => \App\Models\Package::orderBy('name')->get()
+                ->mapWithKeys(fn ($p) => ['package:'.$p->id => $p->name.' · '.formatMoney($p->total_amount)])->all(),
         ];
         $patients = Patient::with('patientUser')->get()->where('patientUser.status', 1)
             ->mapWithKeys(fn ($p) => [$p->id => $p->patientUser->full_name.' · '.$p->patient_unique_id])->sort()->all();

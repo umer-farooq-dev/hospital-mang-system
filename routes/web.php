@@ -497,6 +497,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('receipts/{receipt}/void', [ReceiptController::class, 'void'])->name('receipts.void');
         Route::post('receipts/{receipt}/refund', [ReceiptController::class, 'refund'])->name('receipts.refund');
         Route::post('receipts/{receipt}/method', [ReceiptController::class, 'changeMethod'])->name('receipts.method');
+        Route::post('receipts/{receipt}/doctor', [ReceiptController::class, 'changeDoctor'])->name('receipts.doctor');
     });
 
     Route::middleware('access:Admin|Receptionist')->group(function () {

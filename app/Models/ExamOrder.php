@@ -28,6 +28,7 @@ class ExamOrder extends Model
     const TEST_TYPES = [
         'pathology_test' => PathologyTest::class,
         'radiology_test' => RadiologyTest::class,
+        'package' => Package::class, // check-ups
     ];
 
     public static function rules(): array
@@ -40,7 +41,7 @@ class ExamOrder extends Model
             'voucher_number' => 'nullable|string|max:50',
             'notes' => 'nullable|string|max:1000',
             'tests' => 'required|array|min:1',
-            'tests.*' => ['string', 'regex:/^(pathology_test|radiology_test):\d+$/'],
+            'tests.*' => ['string', 'regex:/^(pathology_test|radiology_test|package):\d+$/'],
         ];
     }
 
@@ -92,11 +93,11 @@ class ExamOrder extends Model
             if (! $test) {
                 continue;
             }
-            $gross = $list ? $list->priceFor($test, $at) : (float) $test->standard_charge;
+            $gross = $list ? $list->priceFor($test, $at) : ItemPrice::basePrice($test);
             $lines[] = [
                 'type' => $type,
                 'id' => $test->id,
-                'description' => $test->test_name,
+                'description' => $test->test_name ?? $test->name,
                 'split' => PriceSplit::compute($gross, $policy, $departmentId, [
                     'date' => $at, 'voucher_number' => $input['voucher_number'] ?? null, 'charge_category_id' => $test->charge_category_id,
                 ]),

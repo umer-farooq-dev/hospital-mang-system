@@ -2794,6 +2794,7 @@ return [
             'doctor_opd_charge' => 'Consultations des médecins',
             'pathology_test' => 'Examens de laboratoire',
             'radiology_test' => 'Examens de radiologie',
+            'package' => 'Check-up / forfaits',
         ],
         'seed' => [
             'cash' => 'Comptant',
@@ -2919,6 +2920,8 @@ return [
             'a4' => 'Feuille A4',
             'thermal' => 'Imprimante thermique 80 mm',
         ],
+        'receipt_footer_text' => 'Texte du pied de reçu',
+        'receipt_footer_hint' => 'Imprimé sur les reçus de consultation. Utilisez :days et :date pour la validité. Vide = texte par défaut.',
     ],
     'receipts' => [
         'receipts' => 'Reçus',
@@ -2948,6 +2951,9 @@ return [
             'wrong_method' => 'Erreur sur le mode d\'encaissement',
             'input_error' => 'Erreur de saisie',
         ],
+        'change_doctor' => 'Changer de médecin',
+        'doctor_changed' => 'Médecin du reçu N° :number modifié.',
+        'no_consultation' => 'Ce reçu ne contient pas de consultation.',
     ],
     'cash_journal' => [
         'title' => 'Brouillard de caisse',
@@ -2966,6 +2972,7 @@ return [
         'closing_number' => 'N° Arrêt',
         'whole_period' => 'Toute la période',
         'print' => 'Imprimer le brouillard',
+        'all_registers' => 'Toutes les caisses (cumul)',
     ],
     'exam_orders' => [
         'title' => 'Demandes d\'examens',
@@ -2981,6 +2988,7 @@ return [
         'saved' => 'Demande d\'examens enregistrée. Part patient : :amount.',
         'no_valid_test' => 'Aucun des examens choisis n\'existe plus.',
         'none' => 'Aucune demande d\'examens pour le moment.',
+        'packages' => 'Check-up',
     ],
     'fund_transfer' => [
         'title' => 'Transfert de fonds',

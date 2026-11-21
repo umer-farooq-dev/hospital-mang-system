@@ -141,9 +141,10 @@ class CashierController extends AppBaseController
         $settings = getSettingValue();
         $followupDays = (int) Setting::where('key', 'receipt_followup_days')->value('value');
         $paper = Setting::where('key', 'receipt_paper')->value('value') ?: 'a5';
+        $footerText = trim((string) Setting::where('key', 'receipt_footer_text')->value('value'));
         $doctor = $receipt->lines->map(fn ($line) => $line->payable?->doctor?->doctorUser?->full_name)->filter()->first();
 
-        return view('cashier.receipt', compact('receipt', 'settings', 'followupDays', 'paper', 'doctor'));
+        return view('cashier.receipt', compact('receipt', 'settings', 'followupDays', 'paper', 'doctor', 'footerText'));
     }
 
     public function printSession(CashSession $cashSession)

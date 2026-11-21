@@ -31,8 +31,10 @@ class CashJournalRepository
         if ($from->gt($to)) {
             [$from, $to] = [$to->copy()->startOfDay(), $from->copy()->endOfDay()];
         }
-        $counterId = (int) ($input['counter'] ?? 0) ?: ($user->cash_counter_id ?: CashCounter::orderBy('code')->value('id'));
-        $session = filled($input['session'] ?? null) ? CashSession::where('cash_counter_id', $counterId)->find((int) $input['session']) : null;
+        // 'all' = cumulative journal of every register ("Cumul des brouillards").
+        $counterId = ($input['counter'] ?? null) === 'all' ? 'all'
+            : ((int) ($input['counter'] ?? 0) ?: ($user->cash_counter_id ?: CashCounter::orderBy('code')->value('id')));
+        $session = $counterId !== 'all' && filled($input['session'] ?? null) ? CashSession::where('cash_counter_id', $counterId)->find((int) $input['session']) : null;
 
         return ['from' => $from, 'to' => $to, 'counter' => $counterId, 'session' => $session];
     }
@@ -43,7 +45,7 @@ class CashJournalRepository
     public function journal(array $filters): array
     {
         $scope = function ($query) use ($filters) {
-            $query->where('cash_counter_id', $filters['counter']);
+            $query->when($filters['counter'] !== 'all', fn ($q) => $q->where('cash_counter_id', $filters['counter']));
             $filters['session']
                 ? $query->where('cash_session_id', $filters['session']->id)
                 : $query->whereBetween('created_at', [$filters['from'], $filters['to']]);
@@ -51,13 +53,17 @@ class CashJournalRepository
         $receipts = Receipt::with('patient.patientUser', 'user')->whereNull('voided_at')->tap($scope)->get();
         $refunds = Refund::with('receipt.patient.patientUser', 'user')->tap($scope)->get();
         $transferScope = function ($query, string $side) use ($filters) {
-            $query->where($side.'_counter_id', $filters['counter']);
+            $query->when($filters['counter'] !== 'all', fn ($q) => $q->where($side.'_counter_id', $filters['counter']));
             $filters['session']
                 ? $query->where($side.'_session_id', $filters['session']->id)
                 : $query->whereBetween('created_at', [$filters['from'], $filters['to']]);
         };
         $out = FundTransfer::with('toCounter', 'user')->tap(fn ($q) => $transferScope($q, 'from'))->get();
         $in = FundTransfer::with('fromCounter', 'user')->tap(fn ($q) => $transferScope($q, 'to'))->get();
+        if ($filters['counter'] === 'all') {
+            $out = $out->whereNull('to_counter_id');
+            $in = collect();
+        }
 
         $rows = $receipts->map(fn ($r) => [
             'at' => $r->created_at, 'patient' => $r->patient, 'label' => __('messages.cash_journal.customer_payment'),
@@ -92,12 +98,15 @@ class CashJournalRepository
     }
 
     /** Net movements of the register before a date (receipts in, refunds out). */
-    private function balanceBefore(int $counterId, Carbon $date): float
+    private function balanceBefore($counterId, Carbon $date): float
     {
-        $in = Receipt::where('cash_counter_id', $counterId)->whereNull('voided_at')->where('created_at', '<', $date)->sum('amount');
-        $out = Refund::where('cash_counter_id', $counterId)->where('created_at', '<', $date)->sum('amount')
-            + FundTransfer::where('from_counter_id', $counterId)->where('created_at', '<', $date)->sum('amount');
-        $in += FundTransfer::where('to_counter_id', $counterId)->where('created_at', '<', $date)->sum('amount');
+        $one = fn ($q, $column) => $q->when($counterId !== 'all', fn ($q) => $q->where($column, $counterId))->where('created_at', '<', $date);
+        $in = Receipt::whereNull('voided_at')->tap(fn ($q) => $one($q, 'cash_counter_id'))->sum('amount');
+        $out = Refund::tap(fn ($q) => $one($q, 'cash_counter_id'))->sum('amount');
+        if ($counterId !== 'all') { // between registers, transfers cancel out in the cumulative journal
+            $out += FundTransfer::tap(fn ($q) => $one($q, 'from_counter_id'))->sum('amount');
+            $in += FundTransfer::tap(fn ($q) => $one($q, 'to_counter_id'))->sum('amount');
+        }
 
         return round((float) $in - (float) $out, 2);
     }

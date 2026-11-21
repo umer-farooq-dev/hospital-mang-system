@@ -29,6 +29,7 @@ class ItemPrice extends Model
         'doctor_opd_charge' => [DoctorOPDCharge::class, null, 'standard_charge'],
         'pathology_test' => [PathologyTest::class, 'test_name', 'standard_charge'],
         'radiology_test' => [RadiologyTest::class, 'test_name', 'standard_charge'],
+        'package' => [Package::class, 'name', 'total_amount'],
     ];
 
     public function priceList(): BelongsTo
