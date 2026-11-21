@@ -59,12 +59,13 @@ class InsuranceRepository extends BaseRepository
     {
         $items = [];
         foreach ($input as $key => $data) {
-            foreach ($data as $index => $value) {
+            foreach ((array) $data as $index => $value) {
                 $items[$index][$key] = $value;
             }
         }
 
-        return $items;
+        // Disease charges are optional (a partner company has none): skip blank rows.
+        return array_filter($items, fn ($item) => filled($item['disease_name'] ?? null) || filled($item['disease_charge'] ?? null));
     }
 
     public function getDisease()

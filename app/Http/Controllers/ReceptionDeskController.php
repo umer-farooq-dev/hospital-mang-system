@@ -23,7 +23,7 @@ class ReceptionDeskController extends AppBaseController
         $recentPatients = $this->receptionDeskRepository->recentPatients();
         // Coming back from "New patient": show that patient ready for the next step.
         $selected = $request->filled('patient')
-            ? Patient::with('patientUser.media')->whereKey($request->integer('patient'))->get()
+            ? Patient::with(['patientUser.media', 'insurances.insurance'])->whereKey($request->integer('patient'))->get()
             : collect();
 
         $webcam = Patient::registrationSettings()['webcam'];

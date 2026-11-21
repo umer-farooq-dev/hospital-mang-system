@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Session\TokenMismatchException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
@@ -53,6 +54,9 @@ class Handler extends ExceptionHandler
             }
             if ($exception instanceof AuthenticationException) {
                 $code = 401;
+            }
+            if ($exception instanceof TokenMismatchException) {
+                $code = 419; // page expired: the form must be reloaded
             }
 
             if ($exception instanceof ModelNotFoundException) {
@@ -111,6 +115,9 @@ class Handler extends ExceptionHandler
             }
             if ($exception instanceof AuthenticationException) {
                 $code = 401;
+            }
+            if ($exception instanceof TokenMismatchException) {
+                $code = 419; // page expired: the form must be reloaded
             }
 
             if ($exception instanceof ModelNotFoundException) {

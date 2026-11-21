@@ -9,6 +9,7 @@
             'to' => $filters['to']->toDateString(),
             'gender' => $filters['gender'],
             'id_document_type' => $filters['id_document_type'],
+            'payer' => $filters['payer'],
         ];
         $visitTotals = [
             'visits' => $summary['visits']->sum('visits'),
@@ -48,7 +49,18 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-4 d-flex flex-wrap gap-2 justify-content-md-end">
+                        <div class="col-md-2">
+                            <label class="form-label">{{ __('messages.patient_insurance.payer') }}</label>
+                            <select name="payer" class="form-select">
+                                <option value="">{{ __('messages.filter.All') }}</option>
+                                <option value="self" {{ $filters['payer'] === 'self' ? 'selected' : '' }}>{{ __('messages.patient_insurance.self_pay') }}</option>
+                                <option value="insured" {{ $filters['payer'] === 'insured' ? 'selected' : '' }}>{{ __('messages.patient_insurance.any_payer') }}</option>
+                                @foreach ($payers as $id => $name)
+                                    <option value="{{ $id }}" {{ $filters['payer'] === (string) $id ? 'selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12 d-flex flex-wrap gap-2 justify-content-end">
                             <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i>{{ __('messages.reception_report.apply') }}</button>
                             <a href="{{ route('patient-registrations.index') }}" class="btn btn-secondary">{{ __('messages.common.reset') }}</a>
                             @canroute('patient-registrations.export')
@@ -68,8 +80,9 @@
                     ['male', 'fa-mars', 'info'],
                     ['female', 'fa-venus', 'danger'],
                     ['with_id', 'fa-id-card', 'success'],
+                    ['insured', 'fa-shield-alt', 'warning'],
                 ] as [$key, $icon, $color])
-                    <div class="col-xl-3 col-md-6 mb-7">
+                    <div class="col-xl col-md-6 mb-7">
                         <div class="card h-100">
                             <div class="card-body d-flex align-items-center">
                                 <span class="bg-light-{{ $color }} text-{{ $color }} rounded p-4 me-4"><i class="fas {{ $icon }} fs-2"></i></span>

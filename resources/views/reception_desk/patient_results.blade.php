@@ -31,6 +31,21 @@
                             · {{ $patient->id_document_type_name }} {{ $patient->id_document_number }}
                         @endif
                     </div>
+                    <div class="mt-1">
+                        @forelse ($patient->insurances->where('validity_status', '!=', 'inactive') as $policy)
+                            <span class="badge bg-light-{{ $policy->validity_status === 'valid' ? 'success' : 'danger' }} me-1">
+                                {{ $policy->insurance->name }}
+                                @if ($policy->effective_coverage !== null)
+                                    {{ formatPercent($policy->effective_coverage) }}
+                                @endif
+                                @if ($policy->validity_status !== 'valid')
+                                    · {{ __('messages.patient_insurance.status.' . $policy->validity_status) }}
+                                @endif
+                            </span>
+                        @empty
+                            <span class="badge bg-light-secondary">{{ __('messages.patient_insurance.self_pay') }}</span>
+                        @endforelse
+                    </div>
                 </div>
             </div>
             <div class="d-flex flex-wrap gap-2">

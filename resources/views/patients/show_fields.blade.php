@@ -75,6 +75,9 @@
                 <a class="nav-link p-0" data-bs-toggle="tab" href="#showPatientCases">{{ __('messages.cases') }}</a>
             </li>
             <li class="nav-item position-relative {{getCurrentLoginUserLanguageName()=='ar' ? 'ms-7' : 'me-7'}} mb-3">
+                <a class="nav-link p-0" data-bs-toggle="tab" href="#showPatientInsurances">{{ __('messages.patient_insurance.tab') }}</a>
+            </li>
+            <li class="nav-item position-relative {{getCurrentLoginUserLanguageName()=='ar' ? 'ms-7' : 'me-7'}} mb-3">
                 <a class="nav-link p-0" data-bs-toggle="tab"
                     href="#showPatientAdmissions">{{ __('messages.patient_admissions') }}</a>
             </li>
@@ -220,6 +223,20 @@
                             </p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="showPatientInsurances" role="tabpanel">
+        <div class="card">
+            <div class="card-body">
+                @canroute('patient-insurances.store')
+                <div class="d-flex justify-content-end mb-5">
+                    <button type="button" class="btn btn-primary" id="addPatientInsurance">{{ __('messages.patient_insurance.new_policy') }}</button>
+                </div>
+                @endcanroute
+                <div id="patientInsuranceList">
+                    @include('patients.insurances.list', ['policies' => $data->insurances()->with('insurance')->get()])
                 </div>
             </div>
         </div>

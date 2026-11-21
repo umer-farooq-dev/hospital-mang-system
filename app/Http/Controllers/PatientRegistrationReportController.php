@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\PatientRegistrationExport;
+use App\Models\Insurance;
 use App\Models\MasterListItem;
 use App\Repositories\PatientRegistrationReportRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -27,8 +28,9 @@ class PatientRegistrationReportController extends AppBaseController
         $summary = $this->reportRepository->summary($filters);
         $patients = $this->reportRepository->patients($filters)->paginate(self::PER_PAGE)->withQueryString();
         $idTypes = MasterListItem::options('id_document_type', $filters['id_document_type']);
+        $payers = Insurance::options(ctype_digit($filters['payer']) ? (int) $filters['payer'] : null);
 
-        return view('patient_registrations.index', compact('filters', 'summary', 'patients', 'idTypes'));
+        return view('patient_registrations.index', compact('filters', 'summary', 'patients', 'idTypes', 'payers'));
     }
 
     public function export(Request $request)

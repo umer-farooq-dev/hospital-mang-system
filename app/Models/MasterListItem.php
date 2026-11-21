@@ -34,6 +34,7 @@ class MasterListItem extends Model
         'meal_timing' => ['prescriptions_medicines', 'time'],
         'id_document_type' => ['patients', 'id_document_type'],
         'payment_method' => ['opd_patient_departments', 'payment_mode'],
+        'payer_type' => ['insurances', 'payer_type'],
     ];
 
     // Other tables that also store codes of a list.

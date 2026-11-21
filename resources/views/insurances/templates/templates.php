@@ -2,10 +2,10 @@
 <tr>
     <td class="text-center item-number">1</td>
      <td>
-        <input class="form-control disease-name" required="" name="disease_name[]" type="text" data-id="{{:uniqueId}}" placeholder="<?php echo __('messages.insurance.diseases_name');?>">
+        <input class="form-control disease-name" name="disease_name[]" type="text" data-id="{{:uniqueId}}" placeholder="<?php echo __('messages.insurance.diseases_name');?>">
     </td>
     <td>
-        <input class="form-control disease-charge price-input" required="" name="disease_charge[]" type="text" placeholder="<?php echo __('messages.insurance.diseases_charge');?>">
+        <input class="form-control disease-charge price-input" name="disease_charge[]" type="text" placeholder="<?php echo __('messages.insurance.diseases_charge');?>">
     </td>
     </td>
     <td class="text-center">

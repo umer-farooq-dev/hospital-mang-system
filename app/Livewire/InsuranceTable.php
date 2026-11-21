@@ -75,6 +75,13 @@ class InsuranceTable extends LivewireTableComponent
                 ->view('insurances.templates.columns.name')
                 ->sortable()
                 ->searchable(),
+            Column::make(__('messages.insurance.payer_type'), 'payer_type')
+                ->view('insurances.templates.columns.payer_type')
+                ->sortable(),
+            Column::make(__('messages.insurance.coverage_percent'), 'coverage_percent')
+                ->view('insurances.templates.columns.coverage')
+                ->sortable(),
+            Column::make('discount')->hideIf(1),
             Column::make(__('messages.insurance.service_tax'), 'service_tax')
                 ->view('insurances.templates.columns.serveice_tax')
                 ->searchable()

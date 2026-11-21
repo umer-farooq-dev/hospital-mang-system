@@ -5,19 +5,31 @@
         {{ Form::text('name', null, ['class' => 'form-control ', 'required', 'placeholder' => __('messages.insurance.insurance')]) }}
     </div>
     <div class="form-group col-sm-6 mb-5">
-        {{ Form::label('service_tax', __('messages.insurance.service_tax') . ':', ['class' => 'form-label fs-6']) }}
+        {{ Form::label('payer_type', __('messages.insurance.payer_type') . ':', ['class' => 'form-label']) }}
         <span class="required"></span>
-        {{ Form::text('service_tax', null, ['class' => 'form-control  service-tax price-input', 'required', 'placeholder' => __('messages.insurance.service_tax')]) }}
+        {{ Form::select('payer_type', $payerTypes, null, ['class' => 'form-select', 'required', 'data-control' => 'select2']) }}
+    </div>
+    <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('coverage_percent', __('messages.insurance.coverage_percent') . ':', ['class' => 'form-label']) }}
+        ({{ __('messages.invoice.in_percentage') }}(%))
+        {{ Form::number('coverage_percent', null, ['class' => 'form-control', 'min' => 0, 'max' => 100, 'step' => '.01', 'placeholder' => __('messages.insurance.coverage_percent')]) }}
+        <div class="form-text">{{ __('messages.insurance.coverage_hint') }}</div>
+    </div>
+    <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('service_tax', __('messages.insurance.service_tax') . ':', ['class' => 'form-label fs-6']) }}
+        
+        {{ Form::text('service_tax', null, ['class' => 'form-control  service-tax price-input', 'placeholder' => __('messages.insurance.service_tax')]) }}
     </div>
     <div class="form-group col-sm-6 mb-5">
         {{ Form::label('discount', __('messages.insurance.discount') . ': ', ['class' => 'form-label']) }}
         ({{ __('messages.invoice.in_percentage') }}(%))
         {{ Form::number('discount', null, ['id' => 'insuranceDiscountId', 'class' => 'form-control discount', 'min' => 0, 'max' => 100, 'step' => '.01', 'placeholder' => __('messages.insurance.discount')]) }}
+        <div class="form-text">{{ __('messages.insurance.discount_hint') }}</div>
     </div>
     <div class="form-group col-sm-6 mb-5">
         {{ Form::label('insurance_no', __('messages.insurance.insurance_no') . ':', ['class' => 'form-label']) }}
-        <span class="required"></span>
-        {{ Form::text('insurance_no', null, ['class' => 'form-control', 'required', 'placeholder' => __('messages.insurance.insurance_no')]) }}
+        
+        {{ Form::text('insurance_no', null, ['class' => 'form-control', 'placeholder' => __('messages.insurance.insurance_no')]) }}
     </div>
     <div class="form-group col-sm-6 mb-5">
         {{ Form::label('insurance_code', __('messages.insurance.insurance_code') . ':', ['class' => 'form-label']) }}
@@ -26,8 +38,33 @@
     </div>
     <div class="form-group col-sm-6 mb-5">
         {{ Form::label('hospital_rate', __('messages.insurance.hospital_rate') . ':', ['class' => 'form-label']) }}
+        
+        {{ Form::text('hospital_rate', null, ['class' => 'form-control hospital-rate price-input', 'placeholder' => __('messages.insurance.hospital_rate')]) }}
+    </div>
+    <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('billing_option', __('messages.insurance.billing_option') . ':', ['class' => 'form-label']) }}
         <span class="required"></span>
-        {{ Form::text('hospital_rate', null, ['class' => 'form-control hospital-rate price-input', 'required', 'placeholder' => __('messages.insurance.hospital_rate')]) }}
+        {{ Form::select('billing_option', $billingOptions, null, ['class' => 'form-select', 'required', 'data-control' => 'select2']) }}
+    </div>
+    <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('credit_days', __('messages.insurance.credit_days') . ':', ['class' => 'form-label']) }}
+        {{ Form::number('credit_days', null, ['class' => 'form-control', 'min' => 0, 'max' => 365, 'placeholder' => __('messages.insurance.credit_days')]) }}
+    </div>
+    <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('contact_person', __('messages.insurance.contact_person') . ':', ['class' => 'form-label']) }}
+        {{ Form::text('contact_person', null, ['class' => 'form-control', 'maxlength' => 160, 'placeholder' => __('messages.insurance.contact_person')]) }}
+    </div>
+    <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('phone', __('messages.insurance.phone') . ':', ['class' => 'form-label']) }}
+        {{ Form::text('phone', null, ['class' => 'form-control', 'maxlength' => 30, 'placeholder' => __('messages.insurance.phone')]) }}
+    </div>
+    <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('email', __('messages.insurance.email') . ':', ['class' => 'form-label']) }}
+        {{ Form::email('email', null, ['class' => 'form-control', 'maxlength' => 160, 'placeholder' => __('messages.insurance.email')]) }}
+    </div>
+    <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('address', __('messages.insurance.address') . ':', ['class' => 'form-label']) }}
+        {{ Form::textarea('address', null, ['class' => 'form-control', 'rows' => 4, 'placeholder' => __('messages.insurance.address')]) }}
     </div>
     <div class="form-group col-sm-6 mb-5">
         {{ Form::label('remark', __('messages.insurance.remark') . ':', ['class' => 'form-label']) }}
@@ -59,11 +96,9 @@
                         <th class="text-center">#</th>
                         <th class="insurance-name form-label fs-6 fw-bolder text-gray-700 mb-3'">
                             {{ __('messages.insurance.diseases_name') }}
-                            <span class="required"></span>
                         </th>
                         <th class="insurance-name form-label fs-6 fw-bolder text-gray-700 mb-3'">
                             {{ __('messages.insurance.diseases_charge') }}
-                            <span class="required"></span>
                         </th>
                         <th class="table__add-btn-heading text-center form-label fs-6 fw-bolder text-gray-700 mb-3">
                             {{ __('messages.common.action') }}
@@ -76,12 +111,11 @@
                             <tr>
                                 <td class="text-center item-number">{{ $loop->iteration }}</td>
                                 <td>
-                                    {{ Form::text('disease_name[]', $disease->disease_name, ['class' => 'form-control disease-name ', 'required', 'placeholder' => __('messages.insurance.diseases_name')]) }}
+                                    {{ Form::text('disease_name[]', $disease->disease_name, ['class' => 'form-control disease-name ', 'placeholder' => __('messages.insurance.diseases_name')]) }}
                                 </td>
                                 <td>
                                     {{ Form::text('disease_charge[]', number_format($disease->disease_charge, 2), [
                                         'class' => 'form-control  disease-charge  price-input',
-                                        'required',
                                         'placeholder' => __('messages.insurance.diseases_charge'),
                                     ]) }}
                                 </td>
@@ -97,10 +131,10 @@
                         <tr>
                             <td class="text-center item-number">1</td>
                             <td>
-                                {{ Form::text('disease_name[]', null, ['class' => 'form-control  disease-name', 'required', 'placeholder' => __('messages.insurance.diseases_name')]) }}
+                                {{ Form::text('disease_name[]', null, ['class' => 'form-control  disease-name', 'placeholder' => __('messages.insurance.diseases_name')]) }}
                             </td>
                             <td>
-                                {{ Form::text('disease_charge[]', null, ['class' => 'form-control disease-charge price-input', 'required', 'placeholder' => __('messages.insurance.diseases_charge')]) }}
+                                {{ Form::text('disease_charge[]', null, ['class' => 'form-control disease-charge price-input', 'placeholder' => __('messages.insurance.diseases_charge')]) }}
                             </td>
                             <td class="text-center">
                                 <a href="javascript:void(0)" title="{{ __('messages.common.delete') }}"

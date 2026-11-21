@@ -17,6 +17,7 @@ use App\Models\InvestigationReport;
 use App\Models\Invoice;
 use App\Models\IpdPatientDepartment;
 use App\Models\OperationReport;
+use App\Models\Insurance;
 use App\Models\Patient;
 use App\Models\PatientAdmission;
 use App\Models\PatientCase;
@@ -87,7 +88,9 @@ class PatientController extends AppBaseController
             $vaccinations = Vaccination::toBase()->pluck('name', 'id')->toArray();
             natcasesort($vaccinations);
 
-            return view('patients.show', compact('data', 'patients', 'vaccinations', 'vaccinationPatients'));
+            $payers = Insurance::options();
+
+            return view('patients.show', compact('data', 'patients', 'vaccinations', 'vaccinationPatients', 'payers'));
         }
     }
 

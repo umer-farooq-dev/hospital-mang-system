@@ -29,7 +29,7 @@ class ReceptionDeskRepository
         $digits = preg_replace('/\D/', '', $term);
         $words = preg_split('/\s+/', $term);
 
-        return Patient::with('patientUser.media')
+        return Patient::with(['patientUser.media', 'insurances.insurance'])
             ->where(function (Builder $q) use ($term, $idNumber, $digits, $words) {
                 $q->where('patient_unique_id', $term)
                     ->orWhere('id_document_number', $idNumber)
@@ -62,6 +62,6 @@ class ReceptionDeskRepository
 
     public function recentPatients(): Collection
     {
-        return Patient::with('patientUser.media')->whereHas('patientUser')->latest('id')->limit(self::RECENT_LIMIT)->get();
+        return Patient::with(['patientUser.media', 'insurances.insurance'])->whereHas('patientUser')->latest('id')->limit(self::RECENT_LIMIT)->get();
     }
 }

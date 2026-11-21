@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Insurance;
 use App\Models\MasterListItem;
 use App\Models\OpdPatientDepartment;
 use App\Models\Patient;
@@ -35,13 +36,28 @@ class PatientRegistrationReportRepository
             [$from, $to] = [$to->copy()->startOfDay(), $from->copy()->endOfDay()];
         }
 
+        $payer = (string) ($input['payer'] ?? '');
+
         return [
             'from' => $from,
             'to' => $to,
             'gender' => array_key_exists($input['gender'] ?? '', self::GENDERS) ? $input['gender'] : '',
             'id_document_type' => array_key_exists((int) ($input['id_document_type'] ?? 0), MasterListItem::labels('id_document_type'))
                 ? (int) $input['id_document_type'] : null,
+            // '' all, 'self' without a policy, 'insured' with any policy, or one payer's id.
+            'payer' => in_array($payer, ['self', 'insured'], true) || (ctype_digit($payer) && Insurance::whereKey((int) $payer)->exists()) ? $payer : '',
         ];
+    }
+
+    /** Patients holding a policy (any, or with one payer), or none for 'self'. */
+    private function wherePayer(Builder $query, string $payer, string $relation = 'insurances'): Builder
+    {
+        return match ($payer) {
+            '' => $query,
+            'self' => $query->whereDoesntHave($relation),
+            'insured' => $query->whereHas($relation),
+            default => $query->whereHas($relation, fn (Builder $q) => $q->where('insurance_id', (int) $payer)),
+        };
     }
 
     public function patients(array $filters): Builder
@@ -54,12 +70,14 @@ class PatientRegistrationReportRepository
             })
             ->whereBetween('patients.created_at', [$filters['from'], $filters['to']])
             ->when($filters['id_document_type'], fn ($q, $type) => $q->where('id_document_type', $type))
+            ->tap(fn ($q) => $this->wherePayer($q, $filters['payer']))
             ->orderByDesc('patients.created_at');
     }
 
     public function summary(array $filters): array
     {
-        $patients = $this->patients($filters)->get(['patients.id', 'patients.user_id', 'patients.created_at', 'patients.id_document_type', 'patients.id_document_number']);
+        $patients = $this->patients($filters)->withCount('insurances')
+            ->get(['patients.id', 'patients.user_id', 'patients.created_at', 'patients.id_document_type', 'patients.id_document_number']);
 
         $byDay = $patients->groupBy(fn ($p) => $p->created_at->toDateString())->map->count()->sortKeys();
         $byIdType = $patients->groupBy(fn ($p) => $p->id_document_type ? $p->id_document_type_name : __('messages.reception_report.no_id'))
@@ -70,6 +88,7 @@ class PatientRegistrationReportRepository
             'male' => $patients->where('patientUser.gender', 0)->count(),
             'female' => $patients->where('patientUser.gender', 1)->count(),
             'with_id' => $patients->whereNotNull('id_document_number')->count(),
+            'insured' => $patients->where('insurances_count', '>', 0)->count(),
             'by_day' => $byDay,
             'by_id_type' => $byIdType,
             'visits' => $this->visits($filters),
@@ -83,6 +102,7 @@ class PatientRegistrationReportRepository
     {
         $visits = OpdPatientDepartment::with(['doctor.department', 'patient.patientUser'])
             ->whereBetween('appointment_date', [$filters['from'], $filters['to']])
+            ->tap(fn ($q) => $this->wherePayer($q, $filters['payer'], 'patient.insurances'))
             ->whereHas('patient.patientUser', function (Builder $u) use ($filters) {
                 if ($filters['gender'] !== '') {
                     $u->where('gender', self::GENDERS[$filters['gender']]);

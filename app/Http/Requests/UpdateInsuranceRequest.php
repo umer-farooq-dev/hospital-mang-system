@@ -15,14 +15,23 @@ class UpdateInsuranceRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
+    /** Amounts are typed with thousands separators; validate the plain number. */
+    protected function prepareForValidation(): void
+    {
+        foreach (['service_tax', 'hospital_rate'] as $field) {
+            if ($this->filled($field)) {
+                $this->merge([$field => removeCommaFromNumbers($this->input($field))]);
+            }
+        }
+    }
+
     public function rules(): array
     {
-        $rules = Insurance::$rules;
-        $rules['name'] = 'required|unique:insurances,name,'.$this->route('insurance')->id;
+        return Insurance::rules($this->route('insurance')->id);
+    }
 
-        return $rules;
+    public function attributes(): array
+    {
+        return Insurance::attributeNames();
     }
 }

@@ -6,7 +6,9 @@ use App\Exports\InsuranceExport;
 use App\Http\Requests\CreateInsuranceRequest;
 use App\Http\Requests\UpdateInsuranceRequest;
 use App\Models\Insurance;
+use App\Models\MasterListItem;
 use App\Models\PatientAdmission;
+use App\Models\PatientInsurance;
 use App\Repositories\InsuranceRepository;
 use DB;
 use Exception;
@@ -32,14 +34,23 @@ class InsuranceController extends AppBaseController
 
     public function create()
     {
-        return view('insurances.create');
+        return view('insurances.create', $this->formData());
+    }
+
+    private function formData($insurance = null): array
+    {
+        return [
+            'payerTypes' => MasterListItem::options(Insurance::PAYER_TYPE, $insurance->payer_type ?? null),
+            'billingOptions' => Insurance::billingOptions(),
+        ];
     }
 
     public function store(CreateInsuranceRequest $request)
     {
         $input = $request->all();
-        $input['service_tax'] = removeCommaFromNumbers($input['service_tax']);
-        $input['hospital_rate'] = removeCommaFromNumbers($input['hospital_rate']);
+        $input['service_tax'] = $input['service_tax'] ?? 0;
+        $input['hospital_rate'] = $input['hospital_rate'] ?? 0;
+        $input['total'] = $input['total'] ?? 0;
         $input['status'] = isset($input['status']) ? 1 : 0;
         try {
             DB::beginTransaction();
@@ -69,14 +80,15 @@ class InsuranceController extends AppBaseController
     {
         $diseases = $this->insuranceRepository->getInsuranceDisease($insurance->id);
 
-        return view('insurances.edit', compact('diseases', 'insurance'));
+        return view('insurances.edit', array_merge(compact('diseases', 'insurance'), $this->formData($insurance)));
     }
 
     public function update(Insurance $insurance, UpdateInsuranceRequest $request)
     {
         $input = $request->all();
-        $input['service_tax'] = removeCommaFromNumbers($input['service_tax']);
-        $input['hospital_rate'] = removeCommaFromNumbers($input['hospital_rate']);
+        $input['service_tax'] = $input['service_tax'] ?? 0;
+        $input['hospital_rate'] = $input['hospital_rate'] ?? 0;
+        $input['total'] = $input['total'] ?? 0;
         $input['status'] = isset($input['status']) ? 1 : 0;
         try {
             DB::beginTransaction();
@@ -97,6 +109,7 @@ class InsuranceController extends AppBaseController
     {
         $insuranceModel = [
             PatientAdmission::class,
+            PatientInsurance::class,
         ];
         $result = canDelete($insuranceModel, 'insurance_id', $insurance->id);
 
