@@ -2388,6 +2388,7 @@ return [
             'dose_duration' => 'Einnahmedauern',
             'meal_timing' => 'Einnahmezeitpunkte',
             'id_document_type' => 'Ausweisarten',
+            'payment_method' => 'Zahlungsarten',
         ],
     ],
 

@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Doctor;
 use App\Models\Notification;
 use App\Models\OpdPatientDepartment;
+use App\Models\PaymentMethod;
 use App\Models\OpdPrescription;
 use App\Models\Patient;
 use App\Models\PatientCase;
@@ -59,7 +60,7 @@ class OpdPatientDepartmentRepository extends BaseRepository
             'id'
         )->sort();
         $data['opdNumber'] = $this->model->generateUniqueOpdNumber();
-        $data['paymentMode'] = $this->model::PAYMENT_MODES;
+        $data['paymentMode'] = PaymentMethod::options();
 
         return $data;
     }

@@ -1366,10 +1366,7 @@ if (!function_exists('getIpdPaymentTypes')) {
         if (!empty($flutterwave)) {
             $ipdPaymentTypes[8] = 'FlutterWave';
         }
-        $ipdPaymentTypes[1] = 'Cash';
-        $ipdPaymentTypes[2] = 'Cheque';
-
-        return $ipdPaymentTypes;
+        return \App\Models\PaymentMethod::options() + $ipdPaymentTypes;
     }
 }
 
@@ -1416,9 +1413,8 @@ if (!function_exists('getAppointmentPaymentTypes')) {
         $flutterwave = getPaymentCredentials('flutterwave_enable');
         $payStack = getPaymentCredentials('paystack_enable');
 
-        $ipdPaymentTypes[1] = 'Cash';
-        $ipdPaymentTypes[2] = 'Cheque';
-        $ipdPaymentTypes[6] = 'Other';
+        // Counter methods from Settings > Master Lists, then the enabled gateways.
+        $ipdPaymentTypes = \App\Models\PaymentMethod::options();
 
         if (!empty($stripe)) {
             $ipdPaymentTypes[3] = 'Stripe';
@@ -1444,14 +1440,15 @@ if (!function_exists('getAppointmentPaymentTypes')) {
 }
 
 if (!function_exists('getEditAppointmentPaymentTypes')) {
-    function getEditAppointmentPaymentTypes()
+    function getEditAppointmentPaymentTypes($currentCode = null)
     {
-        $ipdPaymentTypes = [];
-        $ipdPaymentTypes[1] = 'Cash';
-        $ipdPaymentTypes[2] = 'Cheque';
-        $ipdPaymentTypes[6] = 'Other';
+        $types = \App\Models\PaymentMethod::options([], $currentCode);
+        // Appointments saved before the list existed may hold the old "Other" (6).
+        if ((int) $currentCode === \App\Models\Appointment::OTHER) {
+            $types[\App\Models\Appointment::OTHER] = 'Other';
+        }
 
-        return $ipdPaymentTypes;
+        return $types;
     }
 }
 

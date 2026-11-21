@@ -8,8 +8,6 @@
     <span class="badge bg-light-success">{{ __('messages.phonepe') }}</span>
 @elseif($row->payment_mode == \App\Models\IpdPayment::PAYMENT_MODES_PAYSTACK)
     <span class="badge bg-light-success">{{ __('messages.paystack') }}</span>
-@elseif($row->payment_mode == 1)
-    <span class="badge bg-light-info">{{ __('messages.cash') }}</span>
-@elseif($row->payment_mode == 2)
-    <span class="badge bg-light-warning">{{ __('messages.cheque') }}</span>
+@elseif(\App\Models\PaymentMethod::isOffline($row->payment_mode))
+    <span class="badge bg-light-{{ $row->payment_mode == 1 ? 'info' : 'warning' }}">{{ \App\Models\PaymentMethod::label($row->payment_mode) }}</span>
 @endif

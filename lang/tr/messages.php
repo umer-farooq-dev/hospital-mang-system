@@ -2389,6 +2389,7 @@ return [
             'dose_duration' => 'Doz Süreleri',
             'meal_timing' => 'Öğün Zamanları',
             'id_document_type' => 'Kimlik Belgesi Türleri',
+            'payment_method' => 'Ödeme Yöntemleri',
         ],
     ],
 

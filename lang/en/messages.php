@@ -2571,6 +2571,7 @@ return [
             'dose_duration' => 'Dose Durations',
             'meal_timing' => 'Meal Timings',
             'id_document_type' => 'ID Document Types',
+            'payment_method' => 'Payment Methods',
         ],
     ],
 

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateOpdPatientDepartmentRequest;
 use App\Models\AddCustomFields;
 use App\Models\Appointment;
 use App\Models\PatientQueue;
+use App\Models\PaymentMethod;
 use App\Models\DoctorOPDCharge;
 use App\Models\OpdPatientDepartment;
 use App\Repositories\OpdPatientDepartmentRepository;
@@ -86,6 +87,8 @@ class OpdPatientDepartmentController extends AppBaseController
     public function edit(OpdPatientDepartment $opdPatientDepartment)
     {
         $data = $this->opdPatientDepartmentRepository->getAssociatedData();
+        // Keep the visit's own method selectable even if the admin has since deactivated it.
+        $data['paymentMode'] = PaymentMethod::options([], $opdPatientDepartment->payment_mode);
         $customField = AddCustomFields::where('module_name', AddCustomFields::OpdPatient)->get()->toArray();
 
         return view('opd_patient_departments.edit', compact('data', 'opdPatientDepartment','customField'));
