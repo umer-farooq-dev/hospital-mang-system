@@ -37,6 +37,7 @@ return [
         // patients
         'reception_desk' => 'patients',
         'patients' => 'patients',
+        'patient_registrations' => 'patients',
         'patient_cases' => 'patients',
         'case_handlers' => 'patients',
         'patient_admissions' => 'patients',
@@ -225,6 +226,7 @@ return [
         Controllers\HomeController::class => 'dashboard',
         Controllers\PatientController::class => 'patients',
         Controllers\ReceptionDeskController::class => 'reception_desk',
+        Controllers\PatientRegistrationReportController::class => 'patient_registrations',
         Controllers\PatientCaseController::class => 'patient_cases',
         Controllers\CaseHandlerController::class => 'case_handlers',
         Controllers\PatientAdmissionController::class => 'patient_admissions',

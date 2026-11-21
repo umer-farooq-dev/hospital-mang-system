@@ -98,6 +98,7 @@ use App\Http\Controllers\PatientAdmissionController;
 use App\Http\Controllers\PatientCaseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ReceptionDeskController;
+use App\Http\Controllers\PatientRegistrationReportController;
 use App\Http\Controllers\PatientDiagnosisTestController;
 use App\Http\Controllers\PatientIdCardTemplateController;
 use App\Http\Controllers\PatientQueueController;
@@ -484,6 +485,11 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
             ->name('reception-desk.index')
             ->middleware('modules');
         Route::get('reception-desk/search', [ReceptionDeskController::class, 'getSearch'])->name('reception-desk.search');
+        Route::get('patient-registrations', [PatientRegistrationReportController::class, 'index'])
+            ->name('patient-registrations.index')
+            ->middleware('modules');
+        Route::get('patient-registrations/export', [PatientRegistrationReportController::class, 'export'])->name('patient-registrations.export');
+        Route::get('patient-registrations/pdf', [PatientRegistrationReportController::class, 'downloadPdf'])->name('patient-registrations.pdf');
     });
 
     Route::middleware('access:Admin|Receptionist|Case Manager')->group(function () {
