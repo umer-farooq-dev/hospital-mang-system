@@ -63,6 +63,19 @@
         @endforeach
     </tbody>
 </table>
+@if ($session->refunds->isNotEmpty())
+    <h2>{{ __('messages.receipts.refunds') }} ({{ $session->refunds->count() }})</h2>
+    <table>
+        <thead><tr><th>{{ __('messages.cashier.receipt_no') }}</th><th>{{ __('messages.cashier.time') }}</th><th>{{ __('messages.cashier.patient') }}</th><th>{{ __('messages.receipts.reason') }}</th><th class="num">{{ __('messages.cashier.amount') }}</th></tr></thead>
+        <tbody>
+            @foreach ($session->refunds as $refund)
+                <tr><td>{{ $refund->receipt->receipt_number }}</td><td>{{ $refund->created_at->format('H:i') }}</td>
+                    <td>{{ $refund->receipt->patient->patientUser->full_name ?? '' }}</td><td>{{ $refund->reason_name }}</td>
+                    <td class="num">-{{ formatMoney($refund->amount) }}</td></tr>
+            @endforeach
+        </tbody>
+    </table>
+@endif
 @if ($session->notes)
     <p class="muted">{{ $session->notes }}</p>
 @endif

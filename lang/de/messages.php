@@ -2652,4 +2652,10 @@ return [
         'cashier' => 'Kasse',
         'counters' => 'Kassen',
     ],
+    'receipts' => [
+        'receipts' => 'Quittungen',
+    ],
+    'cash_journal' => [
+        'title' => 'Kassenbuch',
+    ],
 ];

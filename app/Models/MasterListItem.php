@@ -38,10 +38,12 @@ class MasterListItem extends Model
         'patient_origin' => ['opd_patient_departments', 'patient_origin'],
         'emergency_level' => ['opd_patient_departments', 'emergency_level'],
         'referrer' => ['opd_patient_departments', 'referrer'],
+        'refund_reason' => ['refunds', 'reason'],
     ];
 
     // Other tables that also store codes of a list.
     const ALSO_USED_IN = [
+        'refund_reason' => [['receipts', 'void_reason']],
         'payment_method' => [['ipd_payments', 'payment_mode'], ['appointments', 'payment_type'], ['appointment_transactions', 'payment_type']],
         'charge_type' => [['charges', 'charge_type'], ['ipd_charges', 'charge_type_id']],
         'dose_interval' => [['ipd_prescription_items', 'dose_interval'], ['opd_prescription_items', 'dose_interval']],

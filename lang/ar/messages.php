@@ -2656,4 +2656,10 @@ return [
         'cashier' => 'الصندوق',
         'counters' => 'الصناديق',
     ],
+    'receipts' => [
+        'receipts' => 'الإيصالات',
+    ],
+    'cash_journal' => [
+        'title' => 'يومية الصندوق',
+    ],
 ];

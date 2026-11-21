@@ -52,7 +52,12 @@
 
     <div class="title">{{ __('messages.cashier.receipt_no') }} {{ $receipt->receipt_number }}</div>
     @if ($receipt->voided_at)
-        <div class="void">{{ __('messages.cashier.voided') }}</div>
+        <div class="void">{{ __('messages.cashier.voided') }} · {{ $receipt->void_reason_name }}</div>
+    @elseif ($receipt->refund)
+        <div class="void">{{ __('messages.receipts.status.refunded') }} · {{ $receipt->refund->reason_name }} · {{ $receipt->refund->created_at->format('d/m/Y') }}</div>
+    @endif
+    @if (request('duplicate'))
+        <div class="void" style="color:#111; border-color:#111">{{ __('messages.receipts.duplicate_mark') }}</div>
     @endif
 
     <table class="info">

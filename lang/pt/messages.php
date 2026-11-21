@@ -2650,4 +2650,10 @@ return [
         'cashier' => 'Caixa',
         'counters' => 'Caixas',
     ],
+    'receipts' => [
+        'receipts' => 'Recibos',
+    ],
+    'cash_journal' => [
+        'title' => 'Diário de caixa',
+    ],
 ];

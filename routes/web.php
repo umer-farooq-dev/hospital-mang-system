@@ -100,6 +100,8 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientInsuranceController;
 use App\Http\Controllers\CashCounterController;
 use App\Http\Controllers\CashierController;
+use App\Http\Controllers\CashJournalController;
+use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\PriceListController;
 use App\Http\Controllers\ReceptionDeskController;
 use App\Http\Controllers\PatientRegistrationReportController;
@@ -482,6 +484,18 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
 
     Route::middleware('access:Admin|Doctor|Receptionist|Patient')->group(function () {
         Route::get('doctor-departments/{doctorDepartment}', [DoctorDepartmentController::class, 'show'])->where('doctorDepartment', '[0-9]+');
+    });
+
+    // Receipts log and cash journal: cashiers read them, supervisors correct receipts.
+    Route::middleware('access:Admin|Receptionist|Accountant')->group(function () {
+        Route::get('receipts', [ReceiptController::class, 'index'])->name('receipts.index')->middleware('modules');
+        Route::get('cash-journal', [CashJournalController::class, 'index'])->name('cash-journal.index')->middleware('modules');
+        Route::get('cash-journal/print', [CashJournalController::class, 'print'])->name('cash-journal.print');
+    });
+    Route::middleware('access:Admin|Accountant')->group(function () {
+        Route::post('receipts/{receipt}/void', [ReceiptController::class, 'void'])->name('receipts.void');
+        Route::post('receipts/{receipt}/refund', [ReceiptController::class, 'refund'])->name('receipts.refund');
+        Route::post('receipts/{receipt}/method', [ReceiptController::class, 'changeMethod'])->name('receipts.method');
     });
 
     Route::middleware('access:Admin|Receptionist')->group(function () {

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * A payment at the cashier ("Reçu"), with one running number for the whole hospital.
@@ -14,7 +15,7 @@ class Receipt extends Model
     protected $table = 'receipts';
 
     protected $fillable = ['receipt_number', 'cash_session_id', 'cash_counter_id', 'user_id', 'patient_id', 'payment_method', 'amount',
-        'amount_received', 'change_given', 'cheque_number', 'cheque_drawer', 'voided_at'];
+        'amount_received', 'change_given', 'cheque_number', 'cheque_drawer', 'voided_at', 'void_reason', 'voided_by'];
 
     protected $casts = [
         'receipt_number' => 'integer',
@@ -28,6 +29,22 @@ class Receipt extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(ReceiptLine::class);
+    }
+
+    public function refund(): HasOne
+    {
+        return $this->hasOne(Refund::class);
+    }
+
+    /** 'valid', 'voided' or 'refunded'. */
+    public function getStatusAttribute(): string
+    {
+        return $this->voided_at ? 'voided' : ($this->refund ? 'refunded' : 'valid');
+    }
+
+    public function getVoidReasonNameAttribute(): ?string
+    {
+        return MasterListItem::label(Refund::REASON_LIST, $this->void_reason);
     }
 
     public function patient(): BelongsTo

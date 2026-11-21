@@ -7,6 +7,7 @@ use App\Models\OpdPatientDepartment;
 use App\Models\Patient;
 use App\Models\Receipt;
 use App\Models\ReceiptLine;
+use App\Models\Refund;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -41,7 +42,7 @@ class CashierRepository
     private function paidPerVisit(array $visitIds): Collection
     {
         return ReceiptLine::where('payable_type', 'opd_visit')->whereIn('payable_id', $visitIds)
-            ->whereHas('receipt', fn ($q) => $q->whereNull('voided_at'))
+            ->whereHas('receipt', fn ($q) => $q->whereNull('voided_at')->whereDoesntHave('refund'))
             ->selectRaw('payable_id, SUM(amount) as paid')->groupBy('payable_id')->pluck('paid', 'payable_id');
     }
 
@@ -115,6 +116,67 @@ class CashierRepository
         });
     }
 
+    /** A receipt can be corrected only while its session is open and nothing has undone it. */
+    private function assertCorrectable(Receipt $receipt): void
+    {
+        if ($receipt->status !== 'valid') {
+            throw ValidationException::withMessages(['receipt' => __('messages.receipts.already_'.$receipt->status)]);
+        }
+        if ($receipt->session->closed_at) {
+            throw ValidationException::withMessages(['receipt' => __('messages.receipts.session_closed')]);
+        }
+    }
+
+    /** Cancel a wrong receipt (same open session); its items become payable again. */
+    public function void(Receipt $receipt, User $user, int $reason): Receipt
+    {
+        return DB::transaction(function () use ($receipt, $user, $reason) {
+            $receipt = Receipt::with('session', 'refund')->lockForUpdate()->findOrFail($receipt->id);
+            $this->assertCorrectable($receipt);
+            $receipt->update(['voided_at' => now(), 'void_reason' => $reason, 'voided_by' => $user->id]);
+
+            return $receipt;
+        });
+    }
+
+    /** Give the money back, out of the refunding user's open session, with the same method. */
+    public function refund(Receipt $receipt, User $user, int $reason, ?string $notes): Refund
+    {
+        return DB::transaction(function () use ($receipt, $user, $reason, $notes) {
+            $receipt = Receipt::with('refund')->lockForUpdate()->findOrFail($receipt->id);
+            if ($receipt->status !== 'valid') {
+                throw ValidationException::withMessages(['receipt' => __('messages.receipts.already_'.$receipt->status)]);
+            }
+            $session = $this->openSessionFor($user);
+            if (! $session) {
+                throw ValidationException::withMessages(['receipt' => __('messages.cashier.open_first')]);
+            }
+
+            return Refund::create([
+                'receipt_id' => $receipt->id,
+                'cash_session_id' => $session->id,
+                'cash_counter_id' => $session->cash_counter_id,
+                'user_id' => $user->id,
+                'reason' => $reason,
+                'payment_method' => $receipt->payment_method,
+                'amount' => $receipt->amount,
+                'notes' => $notes,
+            ]);
+        });
+    }
+
+    /** Correct the payment method of a receipt of a session still open. */
+    public function changeMethod(Receipt $receipt, int $method): Receipt
+    {
+        return DB::transaction(function () use ($receipt, $method) {
+            $receipt = Receipt::with('session', 'refund')->lockForUpdate()->findOrFail($receipt->id);
+            $this->assertCorrectable($receipt);
+            $receipt->update(['payment_method' => $method]);
+
+            return $receipt;
+        });
+    }
+
     /** The payment method counted as cash in the drawer (Settings), Espèces by default. */
     public static function cashMethod(): int
     {
@@ -129,7 +191,7 @@ class CashierRepository
             if ($session->closed_at) {
                 return $session;
             }
-            $cash = $session->totalsByMethod()[self::cashMethod()] ?? 0;
+            $cash = $session->netByMethod()[self::cashMethod()] ?? 0;
             $session->update([
                 'closed_at' => now(),
                 'closing_number' => (int) CashSession::lockForUpdate()->max('closing_number') + 1,

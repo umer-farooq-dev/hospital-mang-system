@@ -6,9 +6,7 @@
     <div class="container-fluid">
         <div class="d-md-flex align-items-center justify-content-between mb-7">
             <h1 class="mb-0">@yield('title')</h1>
-            @canroute('cashier.index')
-            <a href="{{ route('cashier.index') }}" class="btn btn-outline-primary">{{ __('messages.cashier.cashier') }}</a>
-            @endcanroute
+            @include('cashier.nav')
         </div>
     </div>
 @endsection

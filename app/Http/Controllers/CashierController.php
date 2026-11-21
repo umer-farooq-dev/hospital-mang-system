@@ -38,7 +38,7 @@ class CashierController extends AppBaseController
             'patientId' => $patientId,
             'visits' => $session && $patientId ? $this->cashierRepository->unpaidVisits($patientId) : collect(),
             'paymentMethods' => PaymentMethod::options(),
-            'totals' => $session ? $session->totalsByMethod() : [],
+            'totals' => $session ? $session->netByMethod() : [],
             'recentReceipts' => $session ? $session->receipts()->with('patient.patientUser')->latest('id')->take(10)->get() : collect(),
         ];
 
@@ -93,7 +93,7 @@ class CashierController extends AppBaseController
 
     public function printReceipt(Receipt $receipt)
     {
-        $receipt->load('lines', 'patient.patientUser', 'user', 'counter');
+        $receipt->load('lines', 'patient.patientUser', 'user', 'counter', 'refund');
         $settings = getSettingValue();
         $followupDays = (int) Setting::where('key', 'receipt_followup_days')->value('value');
         $paper = Setting::where('key', 'receipt_paper')->value('value') ?: 'a5';
@@ -104,10 +104,10 @@ class CashierController extends AppBaseController
 
     public function printSession(CashSession $cashSession)
     {
-        $cashSession->load('counter', 'user', 'receipts.patient.patientUser');
+        $cashSession->load('counter', 'user', 'receipts.patient.patientUser', 'refunds.receipt.patient.patientUser');
         $settings = getSettingValue();
 
         return view('cashier.session_report', ['session' => $cashSession, 'settings' => $settings,
-            'totals' => $cashSession->totalsByMethod(), 'cashMethod' => CashierRepository::cashMethod()]);
+            'totals' => $cashSession->netByMethod(), 'cashMethod' => CashierRepository::cashMethod()]);
     }
 }

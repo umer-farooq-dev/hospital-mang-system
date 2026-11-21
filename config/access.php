@@ -90,6 +90,8 @@ return [
         // billing
         'cashier' => 'billing',
         'cash_counters' => 'billing',
+        'receipts' => 'billing',
+        'cash_journal' => 'billing',
         'accounts' => 'billing',
         'invoices' => 'billing',
         'bills' => 'billing',
@@ -285,6 +287,8 @@ return [
         Controllers\PriceListController::class => 'price_lists',
         Controllers\CashierController::class => 'cashier',
         Controllers\CashCounterController::class => 'cash_counters',
+        Controllers\ReceiptController::class => 'receipts',
+        Controllers\CashJournalController::class => 'cash_journal',
         Controllers\InsuranceController::class => 'insurances',
         Controllers\PackageController::class => 'packages',
         Controllers\ServiceController::class => 'services',
@@ -380,6 +384,11 @@ return [
         Controllers\CashierController::class.'@closeSession' => ['cashier', 'create'],
         Controllers\CashierController::class.'@printReceipt' => ['cashier', 'list'],
         Controllers\CashierController::class.'@printSession' => ['cashier', 'list'],
+        // Undoing money is a supervisor's action (delete); correcting the method is an edit.
+        Controllers\ReceiptController::class.'@void' => ['receipts', 'delete'],
+        Controllers\ReceiptController::class.'@refund' => ['receipts', 'delete'],
+        Controllers\ReceiptController::class.'@changeMethod' => ['receipts', 'edit'],
+        Controllers\CashJournalController::class.'@print' => ['cash_journal', 'list'],
 
         // Staff answer a complaint; only the patient edits it.
         Controllers\ComplaintController::class.'@responseEdit' => ['complaint_responses', 'edit'],
