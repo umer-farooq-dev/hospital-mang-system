@@ -609,6 +609,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('patients/{patient}/edit', [PatientController::class, 'edit'])->name('patients.edit');
         Route::post('patients/{patient}/active-deactive', [PatientController::class, 'activeDeactiveStatus']);
         Route::get('export-patients', [PatientController::class, 'patientExport'])->name('patient.excel');
+        Route::get('patient-duplicates', [PatientController::class, 'getDuplicates'])->name('patients.duplicates');
 
         Route::resource('case-handlers', CaseHandlerController::class)->parameters(['case-handlers' => 'caseHandler']);
         Route::get('case-handlers', [CaseHandlerController::class, 'index'])
@@ -1134,6 +1135,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::resource('hospital-schedules', HospitalScheduleController::class);
         Route::post('checkRecord', [HospitalScheduleController::class, 'checkRecord'])->name('checkRecord');
         Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
+        Route::post('settings/reception', [SettingController::class, 'updateReception'])->name('settings.reception.update');
         Route::get('modules', [SettingController::class, 'getModule'])->name('module.index');
         Route::post('modules/{module}/active-deactive', [SettingController::class, 'activeDeactiveStatus'])->name('module.activeDeactiveStatus');
         Route::get('queue-theme-configuration', [SettingController::class, 'patientQueueThemeView'])->name('queue-theme-view');

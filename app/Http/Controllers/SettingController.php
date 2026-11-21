@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateSettingRequest;
 use App\Models\Module;
+use App\Models\Patient;
 use App\Models\Setting;
 use App\Queries\ModuleDataTable;
 use App\Repositories\SettingRepository;
 use Flash;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Yajra\DataTables\DataTables;
 
 class SettingController extends AppBaseController
@@ -38,6 +40,32 @@ class SettingController extends AppBaseController
         Flash::success(__('messages.settings').' '.__('messages.common.updated_successfully'));
 
         return redirect(route('settings.edit'));
+    }
+
+    public function updateReception(Request $request)
+    {
+        $input = $request->validate([
+            'patient_required_fields' => 'nullable|array',
+            'patient_required_fields.*' => Rule::in(Patient::REQUIRABLE_FIELDS),
+            'patient_duplicate_check' => ['required', Rule::in(Patient::DUPLICATE_MODES)],
+            'patient_duplicate_fields' => 'nullable|array',
+            'patient_duplicate_fields.*' => Rule::in(Patient::DUPLICATE_FIELDS),
+        ]);
+
+        $values = [
+            'patient_required_fields' => implode(',', $input['patient_required_fields'] ?? []),
+            'patient_portal_login' => $request->boolean('patient_portal_login') ? '1' : '0',
+            'patient_duplicate_check' => $input['patient_duplicate_check'],
+            'patient_duplicate_fields' => implode(',', $input['patient_duplicate_fields'] ?? []),
+        ];
+        foreach ($values as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        }
+        Patient::flushRegistrationSettings();
+
+        Flash::success(__('messages.settings').' '.__('messages.common.updated_successfully'));
+
+        return redirect(route('settings.edit', ['section' => 'reception']));
     }
 
     public function getModule(Request $request)

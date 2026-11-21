@@ -32,6 +32,7 @@ class MasterListItem extends Model
         'dose_interval' => ['prescriptions_medicines', 'dose_interval'],
         'dose_duration' => ['prescriptions_medicines', 'day'],
         'meal_timing' => ['prescriptions_medicines', 'time'],
+        'id_document_type' => ['patients', 'id_document_type'],
     ];
 
     // Other tables that also store codes of a list.

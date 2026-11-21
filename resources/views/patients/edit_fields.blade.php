@@ -16,22 +16,22 @@
     </div>
     <div class="col-md-6">
         <div class="form-group mb-5">
-            {{ Form::label('email', __('messages.user.email').':', ['class' => 'form-label']) }}
-            <span class="required"></span>
-            {{ Form::text('email', null, ['class' => 'form-control', 'required', 'tabindex' => '3','id'=>'editPatientEmail','placeholder'=>__('messages.user.email')]) }}
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="form-group mb-5">
             {{ Form::label('dob', __('messages.user.dob').':', ['class' => 'form-label']) }}
+            @if (\App\Models\Patient::isRequired('dob'))
+                <span class="required"></span>
+            @endif
             {{ Form::text('dob', null, ['class' => (getLoggedInUser()->thememode ? 'bg-light patientBirthDate form-control' : 'bg-white patientBirthDate form-control'), 'id' => 'editPatientBirthDate', 'autocomplete' => 'off', 'tabindex' => '4','placeholder'=>__('messages.user.dob')]) }}
+            <span class="text-muted fs-7 patient-age d-block mt-1" data-template="{{ __('messages.reception.age_years') }}"></span>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group mobile-overlapping  mb-5">
             {{ Form::label('phone', __('messages.user.phone').':', ['class' => 'form-label']) }}
-            <span class="required"></span><br>
-            {{ Form::tel('phone', $patient->patientUser->phone ?? getCountryCode(), ['class' => 'form-control phoneNumber', 'id' => 'editPatientPhoneNumber', 'required', 'onkeyup' => 'if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,"")', 'tabindex' => '5']) }}
+            @if (\App\Models\Patient::isRequired('phone'))
+                <span class="required"></span>
+            @endif
+            <br>
+            {{ Form::tel('phone', $patient->patientUser->phone ?? getCountryCode(), ['class' => 'form-control phoneNumber', 'id' => 'editPatientPhoneNumber', \App\Models\Patient::isRequired('phone') ? 'required' : '', 'data-duplicate-check' => '1', 'onkeyup' => 'if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,"")', 'tabindex' => '5']) }}
             {{ Form::hidden('prefix_code',null,['class'=>'prefix_code']) }}
             {{ Form::hidden('country_iso',null,['class'=>'country_iso']) }}
             <span class="text-success valid-msg d-none fw-400 fs-small mt-2">✓ &nbsp; {{__('messages.valid')}}</span>
@@ -66,6 +66,7 @@
             {{ Form::select('blood_group', $bloodGroup, null, ['class' => 'form-select', 'id' => 'editPatientBloodGroup', 'placeholder' => __('messages.user.select_blood_group'), 'data-control' => 'select2', 'tabindex' => "9"]) }}
         </div>
     </div>
+    @include('patients.registration_fields', ['patient' => $patient])
     @if (count($customField) >= 0)
         @foreach ($customField as $field)
         @php
@@ -128,7 +129,10 @@
         <div class="col-md-6">
             <div class="form-group mb-5">
                 {{ Form::label('address1', __('messages.user.address1').':', ['class' => 'form-label']) }}
-                {{ Form::text('address1', $patient->address->address1 ?? null, ['class' => 'form-control','placeholder'=>__('messages.user.address1')]) }}
+                @if (\App\Models\Patient::isRequired('address1'))
+                    <span class="required"></span>
+                @endif
+                {{ Form::text('address1', $patient->address->address1 ?? null, ['class' => 'form-control','placeholder'=>__('messages.user.address1'), \App\Models\Patient::isRequired('address1') ? 'required' : '']) }}
             </div>
         </div>
         <div class="col-md-6">
@@ -140,7 +144,10 @@
         <div class="col-md-3">
             <div class="form-group mb-5">
                 {{ Form::label('city', __('messages.user.city').':', ['class' => 'form-label']) }}
-                {{ Form::text('city', $patient->address->city ?? null, ['class' => 'form-control','placeholder'=>__('messages.user.city')]) }}
+                @if (\App\Models\Patient::isRequired('city'))
+                    <span class="required"></span>
+                @endif
+                {{ Form::text('city', $patient->address->city ?? null, ['class' => 'form-control','placeholder'=>__('messages.user.city'), \App\Models\Patient::isRequired('city') ? 'required' : '']) }}
             </div>
         </div>
         <div class="col-md-3">

@@ -13,6 +13,7 @@ use App\Models\PatientAdmission;
 use Hash;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 /**
@@ -43,12 +44,15 @@ class PatientRepository extends BaseRepository
             $input['status'] = isset($input['status']) ? 1 : 0;
             $input['phone'] = preparePhoneNumber($input, 'phone');
             $input['department_id'] = Department::whereName('Patient')->first()->id;
-            $input['password'] = Hash::make($input['password']);
+            $input['email'] = ! empty($input['email']) ? $input['email'] : null;
+            // Without portal login (or without an e-mail) the account gets an unusable random password.
+            $canLogin = Patient::registrationSettings()['portal_login'] && $input['email'] && ! empty($input['password']);
+            $input['password'] = Hash::make($canLogin ? $input['password'] : Str::random(40));
             $input['language'] = $settings['default_lang'];
             $input['dob'] = (! empty($input['dob'])) ? $input['dob'] : null;
             $user = User::create($input);
 
-            if ($mail) {
+            if ($mail && $user->email) {
                 $user->sendEmailVerificationNotification();
             }
 
@@ -63,7 +67,13 @@ class PatientRepository extends BaseRepository
                 }
             }
 
-            $patient = Patient::create(['user_id' => $user->id, 'patient_unique_id' => strtoupper(Patient::generateUniquePatientId()), 'custom_field' => !empty($jsonFields) ? $jsonFields : null]);
+            $patient = Patient::create([
+                'user_id' => $user->id,
+                'patient_unique_id' => strtoupper(Patient::generateUniquePatientId()),
+                'custom_field' => ! empty($jsonFields) ? $jsonFields : null,
+                'id_document_type' => $input['id_document_type'] ?? null,
+                'id_document_number' => $input['id_document_number'] ?? null,
+            ]);
 
             $ownerId = $patient->id;
             $ownerType = Patient::class;
@@ -102,6 +112,7 @@ class PatientRepository extends BaseRepository
             }
 
             $input['custom_field'] = !empty($jsonFields) ? $jsonFields : null;
+            $input['email'] = ! empty($input['email']) ? $input['email'] : null;
             $input['phone'] = preparePhoneNumber($input, 'phone');
             $input['dob'] = (! empty($input['dob'])) ? $input['dob'] : null;
             $patient->patientUser->update($input);

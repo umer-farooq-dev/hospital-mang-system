@@ -123,7 +123,13 @@
                                 class="pb-2 fs-5 text-gray-600">{{ __('messages.user.gender') }}</label>
                             <p>
                                 <span
-                                    class="fs-5 text-gray-800">{{ !empty($data->patientUser->phone) ? ($data->patientUser->gender != 1 ? __('messages.user.male') : __('messages.user.female')) : '' }}</span>
+                                    class="fs-5 text-gray-800">{{ $data->patientUser->gender != 1 ? __('messages.user.male') : __('messages.user.female') }}</span>
+                            </p>
+                        </div>
+                        <div class="col-sm-6 d-flex flex-column mb-md-10 mb-5">
+                            <label class="pb-2 fs-5 text-gray-600">{{ __('messages.reception.id_document') }}</label>
+                            <p>
+                                <span class="fs-5 text-gray-800">{{ $data->id_document_number ? $data->id_document_type_name . ' : ' . $data->id_document_number : __('messages.common.n/a') }}</span>
                             </p>
                         </div>
                         <div class="col-sm-6 d-flex flex-column mb-md-10 mb-5">
@@ -144,6 +150,9 @@
                             <p>
                                 <span
                                     class="fs-5 text-gray-800">{{ !empty($data->patientUser->dob) ? \Carbon\Carbon::parse($data->patientUser->dob)->translatedFormat('jS M, Y') : __('messages.common.n/a') }}</span>
+                                @if (!empty($data->patientUser->dob))
+                                    <span class="fs-6 text-gray-600 ms-2">({{ __('messages.reception.age_years', ['count' => \Carbon\Carbon::parse($data->patientUser->dob)->age]) }})</span>
+                                @endif
                             </p>
                         </div>
                         <div class="col-sm-6 d-flex flex-column mb-md-10 mb-5">

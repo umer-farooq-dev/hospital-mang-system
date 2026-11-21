@@ -1140,6 +1140,13 @@
                 {{ __('messages.general') }}
             </a>
         </li>
+        <li
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0  {{ Request::is('settings*', 'currency-settings*', 'hospital-schedules', 'operation-categories*', 'operations*', 'payment-gateways*', 'add-custom-fields*', 'queue-theme*') ? '' : 'd-none' }}">
+            <a class="nav-link p-0  {{ isset($sectionName) && $sectionName == 'reception' ? 'active' : '' }}"
+                href="{{ route('settings.edit', ['section' => 'reception']) }}">
+                {{ __('messages.reception.reception') }}
+            </a>
+        </li>
         @endcanroute
         @canroute('hospital-schedules.index')
         <li

@@ -8,6 +8,6 @@
         <a href="{{route('patients.show', $row->id)}}" class="mb-1 text-decoration-none fs-6">
             {{$row->patientUser->full_name}}
         </a>
-        <span class="fs-6">{{$row->patientUser->email}}</span>
+        <span class="fs-6">{{ $row->patientUser->email ?: $row->patient_unique_id }}</span>
     </div>
 </div>
