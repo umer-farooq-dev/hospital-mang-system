@@ -1681,6 +1681,20 @@ return [
         'visits' => 'Visitas',
         'revisits' => 'Revisitar',
         'total_visits' => 'Visitas totais',
+        'patient_origin' => 'Proveniência do paciente',
+        'emergency_level' => 'Nível de urgência',
+        'referrer' => 'Encaminhado por',
+        'origins' => [
+            'self' => 'Por iniciativa própria',
+            'referred' => 'Encaminhado',
+            'evacuated' => 'Evacuado',
+            'transferred' => 'Transferido',
+        ],
+        'emergency_levels' => [
+            'not_urgent' => 'Não urgente',
+            'urgent' => 'Urgente',
+            'vital' => 'Risco de vida',
+        ],
     ],
 
     'opd_payments' => [
@@ -2408,6 +2422,9 @@ return [
             'id_document_type' => 'Tipos de documento de identidade',
             'payment_method' => 'Formas de pagamento',
             'payer_type' => 'Tipos de pagador',
+            'patient_origin' => 'Proveniências dos pacientes',
+            'emergency_level' => 'Níveis de urgência',
+            'referrer' => 'Encaminhadores',
         ],
     ],
 
@@ -2449,6 +2466,9 @@ return [
             'passport' => 'Passaporte',
             'driving_licence' => 'Carteira de motorista',
         ],
+        'queue' => 'Fila de espera',
+        'queue_card_count' => 'Número de cartões de fila',
+        'queue_card_count_hint' => 'Cartões numerados reutilizáveis entregues na receção. Os números começam em 1 todos os dias, dão a volta e saltam um cartão que um paciente ainda tem. 0 = sem cartões: os números seguem em ordem.',
     ],
 
     'reception_desk' => [

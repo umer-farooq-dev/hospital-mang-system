@@ -1701,6 +1701,20 @@ return [
         'visits' => 'Ziyaretler',
         'revisits' => 'Tekrar ziyaret edin',
         'total_visits' => 'Toplam Ziyaret',
+        'patient_origin' => 'Hastanın geliş şekli',
+        'emergency_level' => 'Aciliyet düzeyi',
+        'referrer' => 'Yönlendiren',
+        'origins' => [
+            'self' => 'Kendisi başvurdu',
+            'referred' => 'Sevk edildi',
+            'evacuated' => 'Tahliye edildi',
+            'transferred' => 'Transfer edildi',
+        ],
+        'emergency_levels' => [
+            'not_urgent' => 'Acil değil',
+            'urgent' => 'Acil',
+            'vital' => 'Hayati tehlike',
+        ],
     ],
 
     'opd_payments' => [
@@ -2411,6 +2425,9 @@ return [
             'id_document_type' => 'Kimlik Belgesi Türleri',
             'payment_method' => 'Ödeme Yöntemleri',
             'payer_type' => 'Ödeyici türleri',
+            'patient_origin' => 'Hasta geliş şekilleri',
+            'emergency_level' => 'Aciliyet düzeyleri',
+            'referrer' => 'Yönlendirenler',
         ],
     ],
 
@@ -2452,6 +2469,9 @@ return [
             'passport' => 'Pasaport',
             'driving_licence' => 'Sürücü belgesi',
         ],
+        'queue' => 'Sıra',
+        'queue_card_count' => 'Sıra kartı sayısı',
+        'queue_card_count_hint' => 'Resepsiyonda verilen yeniden kullanılabilir numaralı kartlar. Numaralar her gün 1\'den başlar, başa döner ve hâlâ bir hastada olan kartı atlar. 0 = kart yok: numaralar sırayla artar.',
     ],
 
     'reception_desk' => [

@@ -78,11 +78,25 @@
             </div>
         </div>
 
+        <div class="col-md-12 mb-3 mt-3">
+            <h5>{{ __('messages.reception.queue') }}</h5>
+        </div>
+        <div class="col-md-6 mb-5">
+            {{ Form::label('queue_card_count', __('messages.reception.queue_card_count') . ':', ['class' => 'form-label']) }}
+            {{ Form::number('queue_card_count', \App\Models\PatientQueue::cardCount(), ['class' => 'form-control', 'min' => 0, 'max' => 9999, 'required']) }}
+            <div class="text-muted fs-7">{{ __('messages.reception.queue_card_count_hint') }}</div>
+        </div>
+
         @canroute('master-lists.index')
-        <div class="col-md-12 mb-5">
+        <div class="col-md-12 mb-5 d-flex flex-wrap gap-6">
             <a href="{{ route('master-lists.index', ['type' => 'id_document_type']) }}" class="text-decoration-none">
                 <i class="fas fa-list me-1"></i>{{ __('messages.reception.manage_id_types') }}
             </a>
+            @foreach (\App\Models\OpdPatientDepartment::VISIT_LISTS as $list)
+                <a href="{{ route('master-lists.index', ['type' => $list]) }}" class="text-decoration-none">
+                    <i class="fas fa-list me-1"></i>{{ __('messages.master_list.types.' . $list) }}
+                </a>
+            @endforeach
         </div>
         @endcanroute
     </div>

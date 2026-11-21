@@ -58,6 +58,12 @@ class ReceptionDeskTest extends TestCase
             $table->integer('is_completed')->default(0);
             $table->timestamps();
         });
+        Schema::create('settings', function (Blueprint $table) {
+            $table->id();
+            $table->string('key');
+            $table->string('value')->nullable();
+            $table->timestamps();
+        });
         Schema::create('patient_queues', function (Blueprint $table) {
             $table->id();
             $table->integer('no');
@@ -103,5 +109,31 @@ class ReceptionDeskTest extends TestCase
         $this->assertSame(2, PatientQueue::enqueue($second)->no);
         $this->assertSame(Appointment::STATUS_IN_QUEUE, $first->fresh()->is_completed);
         $this->assertSame(3, PatientQueue::count());
+    }
+
+    public function test_queue_numbers_follow_the_cards_and_skip_a_card_still_held(): void
+    {
+        DB::table('settings')->insert(['key' => 'queue_card_count', 'value' => '3']);
+        $visit = fn () => Appointment::create(['patient_id' => 1, 'opd_date' => now(), 'is_completed' => 0]);
+
+        $a = $visit();
+        $this->assertSame([1, 2, 3], [PatientQueue::enqueue($a)->no, PatientQueue::enqueue($visit())->no, PatientQueue::enqueue($visit())->no]);
+
+        // Card 1 comes back (consultation done); cards 2 and 3 are still held.
+        $a->update(['is_completed' => Appointment::STATUS_COMPLETED]);
+        $this->assertSame(1, PatientQueue::enqueue($visit())->no, 'goes round to the free card');
+
+        // Every card is out: the number carries on above the cards.
+        $this->assertSame(4, PatientQueue::enqueue($visit())->no);
+    }
+
+    public function test_without_cards_numbers_simply_count_up(): void
+    {
+        DB::table('settings')->insert(['key' => 'queue_card_count', 'value' => '0']);
+        $first = Appointment::create(['patient_id' => 1, 'opd_date' => now(), 'is_completed' => 0]);
+        PatientQueue::enqueue($first);
+        $first->update(['is_completed' => Appointment::STATUS_COMPLETED]);
+
+        $this->assertSame(2, PatientQueue::enqueue(Appointment::create(['patient_id' => 1, 'opd_date' => now(), 'is_completed' => 0]))->no);
     }
 }

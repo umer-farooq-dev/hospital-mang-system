@@ -136,6 +136,12 @@
                                        class="pb-2 fs-5 text-gray-600">{{ __('messages.ipd_payments.payment_mode') }}</label>
                                 <span class="fs-5 text-gray-800">{{ !empty($opdPatientDepartment->payment_mode_name) ? $opdPatientDepartment->payment_mode_name : __('messages.common.n/a') }}</span>
                             </div>
+                            @foreach (\App\Models\OpdPatientDepartment::VISIT_LISTS as $list)
+                                <div class="col-sm-6 d-flex flex-column mb-md-10 mb-5">
+                                    <label class="pb-2 fs-5 text-gray-600">{{ __('messages.opd_patient.' . $list) }}</label>
+                                    <span class="fs-5 text-gray-800">{{ \App\Models\MasterListItem::label($list, $opdPatientDepartment->$list, __('messages.common.n/a')) }}</span>
+                                </div>
+                            @endforeach
                             <div class="col-sm-6 d-flex flex-column mb-md-10 mb-5">
                                 <label for="name"
                                        class="pb-2 fs-5 text-gray-600">{{ __('messages.doctor_opd_charge.standard_charge') }}</label>
