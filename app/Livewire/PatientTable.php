@@ -77,6 +77,8 @@ class PatientTable extends LivewireTableComponent
             Column::make(__('messages.common.status'), 'patientUser.status')->view('patients.columns.status'),
             Column::make(__('messages.common.action'), 'id')->view('patients.action'),
             Column::make('created_at')->sortable()->hideIf(1),
+            Column::make('patient_unique_id', 'patient_unique_id')->searchable()->hideIf(1),
+            Column::make('id_document_number', 'id_document_number')->searchable()->hideIf(1),
         ];
     }
 

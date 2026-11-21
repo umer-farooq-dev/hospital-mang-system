@@ -227,8 +227,11 @@ class AppointmentRepository extends BaseRepository
                 $input['doctor_name'] = $appointment->doctor->doctorUser->full_name;
                 $input['doctor_email'] = $appointment->doctor->doctorUser->email;
 
-                Mail::to($input['patient_email'])
-                    ->send(new AppointmentReminderPatientMail($input));
+                // Patients registered without an e-mail get no reminder mail.
+                if (! empty($input['patient_email'])) {
+                    Mail::to($input['patient_email'])
+                        ->send(new AppointmentReminderPatientMail($input));
+                }
 
                 Mail::to($input['doctor_email'])
                     ->send(new AppointmentReminderDoctorMail($input));

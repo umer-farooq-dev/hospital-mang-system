@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Patient;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class UpdatePatientRequest extends FormRequest
 {
@@ -20,12 +21,15 @@ class UpdatePatientRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = Patient::$rules;
-        $rules['password'] = 'same:password_confirmation|min:6';
-        $rules['email'] = 'required|email:filter|unique:users,email,'.$this->route('patient')->patientUser->id;
+        $rules = Patient::registrationRules($this->route('patient')->patientUser->id);
         $rules['image'] = 'mimes:jpeg,jpg,png,gif';
 
         return $rules;
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(fn (Validator $validator) => Patient::blockDuplicates($validator, $this->all(), $this->route('patient')->id));
     }
 
     /**
@@ -36,5 +40,10 @@ class UpdatePatientRequest extends FormRequest
         return [
             'image.mimes' => __('messages.user.validate_image_type'),
         ];
+    }
+
+    public function attributes(): array
+    {
+        return Patient::registrationAttributes();
     }
 }

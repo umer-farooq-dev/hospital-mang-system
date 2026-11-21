@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Patient;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class CreatePatientRequest extends FormRequest
 {
@@ -20,10 +21,15 @@ class CreatePatientRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = Patient::$rules;
+        $rules = Patient::registrationRules();
         $rules['image'] = 'mimes:jpeg,jpg,png,gif';
 
         return $rules;
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(fn (Validator $validator) => Patient::blockDuplicates($validator, $this->all()));
     }
 
     /**
@@ -34,5 +40,10 @@ class CreatePatientRequest extends FormRequest
         return [
             'image.mimes' => __('messages.user.validate_image_type'),
         ];
+    }
+
+    public function attributes(): array
+    {
+        return Patient::registrationAttributes();
     }
 }

@@ -25,6 +25,7 @@ use App\Models\Vaccination;
 use App\Repositories\AdvancedPaymentRepository;
 use App\Repositories\PatientRepository;
 use Flash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -166,6 +167,26 @@ class PatientController extends AppBaseController
             return redirect(route('patients.index'));
         }
         return Excel::download(new PatientExport, 'patients-' . time() . '.xlsx');
+    }
+
+    /**
+     * Live duplicate check while reception fills the form.
+     */
+    public function getDuplicates(Request $request)
+    {
+        if (Patient::registrationSettings()['duplicate_check'] === 'off') {
+            return $this->sendResponse([], '');
+        }
+
+        $input = $request->only(['id_document_number', 'phone', 'prefix_code', 'first_name', 'last_name', 'dob']);
+        $matches = Patient::findDuplicates($input, $request->integer('patient_id') ?: null)->map(fn (Patient $patient) => [
+            'name' => $patient->patientUser->full_name,
+            'patient_unique_id' => $patient->patient_unique_id,
+            'phone' => $patient->patientUser->phone,
+            'url' => route('patients.show', $patient->id),
+        ]);
+
+        return $this->sendResponse($matches->values(), '');
     }
 
     public function getBirthDate($id)

@@ -24,14 +24,12 @@
                 </div>
                 <div class="row">
                     <div class="form-group col-sm-6 mb-5">
-                        {{ Form::label('email', __('messages.user.email').':', ['class' => 'form-label']) }}
-                        <span class="required"></span>
-                        {{ Form::text('email', null, ['placeholder' => __('messages.user.email'),'class' => 'form-control','required']) }}
-                    </div>
-                    <div class="form-group col-sm-6 mb-5">
                         {{ Form::label('phone', __('messages.user.phone').':', ['class' => 'form-label']) }}
-                        <span class="required"></span><br>
-                        {{ Form::tel('phone', getCountryCode(), ['class' => 'form-control phoneNumber', 'id' => 'patientPhoneNumber', 'required', 'onkeyup' => 'if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,"")', 'tabindex' => '5']) }}
+                        @if (\App\Models\Patient::isRequired('phone'))
+                            <span class="required"></span>
+                        @endif
+                        <br>
+                        {{ Form::tel('phone', getCountryCode(), ['class' => 'form-control phoneNumber', 'id' => 'patientPhoneNumber', \App\Models\Patient::isRequired('phone') ? 'required' : '', 'data-duplicate-check' => '1', 'onkeyup' => 'if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,"")', 'tabindex' => '5']) }}
                         {{ Form::hidden('prefix_code',null,['class'=>'prefix_code']) }}
                         <span class="text-success valid-msg d-none fw-400 fs-small mt-2">✓ &nbsp; {{__('messages.valid')}}</span>
                         <span class="text-danger error-msg d-none fw-400 fs-small mt-2"></span>
@@ -59,14 +57,25 @@
                 </div>
                 <div class="row">
                     <div class="form-group col-sm-6 mb-5">
-                        {{ Form::label('password', __('messages.user.password').':', ['class' => 'form-label']) }}<span class="required"></span>
-                        {{ Form::password('password', ['placeholder' => __('messages.user.password'),'class' => 'form-control','required','min' => '6','max' => '10', 'tabindex' => '10']) }}
+                        {{ Form::label('dob', __('messages.user.dob').':', ['class' => 'form-label']) }}
+                        @if (\App\Models\Patient::isRequired('dob'))
+                            <span class="required"></span>
+                        @endif
+                        {{ Form::text('dob', null, ['class' => 'form-control bg-white patientBirthDate', 'autocomplete' => 'off', 'placeholder' => __('messages.user.dob'), \App\Models\Patient::isRequired('dob') ? 'required' : '']) }}
+                        <span class="text-muted fs-7 patient-age d-block mt-1" data-template="{{ __('messages.reception.age_years') }}"></span>
                     </div>
-                    <div class="form-group col-sm-6 mb-5">
-                        {{ Form::label('password_confirmation', __('messages.user.password_confirmation').':', ['class' => 'form-label']) }}
-                        <span class="required"></span>
-                        {{ Form::password('password_confirmation', ['placeholder' => __('messages.user.password_confirmation'),'class' => 'form-control','required','min' => '6','max' => '10', 'tabindex' => '11']) }}
-                    </div>
+                    @foreach (['address1', 'city'] as $addressField)
+                        @if (\App\Models\Patient::isRequired($addressField))
+                            <div class="form-group col-sm-6 mb-5">
+                                {{ Form::label($addressField, __('messages.user.'.$addressField).':', ['class' => 'form-label']) }}
+                                <span class="required"></span>
+                                {{ Form::text($addressField, null, ['class' => 'form-control', 'placeholder' => __('messages.user.'.$addressField), 'required']) }}
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+                <div class="row">
+                    @include('patients.registration_fields', ['patient' => null])
                 </div>
                 <div class="modal-footer p-0">
                     {{ Form::button(__('messages.common.save'), ['type'=>'submit','class' => 'btn btn-primary m-0','id'=>'patientBtnSave','data-loading-text'=>"<span class='spinner-border spinner-border-sm'></span> Processing..."]) }}
