@@ -2649,4 +2649,8 @@ return [
         'any_category' => 'Herhangi bir kategori',
         'payer_percent' => 'Ödeyici %\'si',
     ],
+    'cashier' => [
+        'cashier' => 'Kasa',
+        'counters' => 'Kasalar',
+    ],
 ];

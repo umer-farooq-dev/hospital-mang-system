@@ -2652,4 +2652,8 @@ return [
         'any_category' => 'أي فئة',
         'payer_percent' => 'نسبة الجهة',
     ],
+    'cashier' => [
+        'cashier' => 'الصندوق',
+        'counters' => 'الصناديق',
+    ],
 ];

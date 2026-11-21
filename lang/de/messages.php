@@ -2648,4 +2648,8 @@ return [
         'any_category' => 'Jede Kategorie',
         'payer_percent' => '% des Kostenträgers',
     ],
+    'cashier' => [
+        'cashier' => 'Kasse',
+        'counters' => 'Kassen',
+    ],
 ];

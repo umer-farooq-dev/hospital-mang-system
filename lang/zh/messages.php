@@ -2646,4 +2646,8 @@ return [
         'any_category' => '任意类别',
         'payer_percent' => '付款方比例',
     ],
+    'cashier' => [
+        'cashier' => '收银',
+        'counters' => '收银台',
+    ],
 ];

@@ -2642,4 +2642,8 @@ return [
         'any_category' => 'Любая категория',
         'payer_percent' => '% плательщика',
     ],
+    'cashier' => [
+        'cashier' => 'Касса',
+        'counters' => 'Кассы',
+    ],
 ];

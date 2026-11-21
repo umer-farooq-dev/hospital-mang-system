@@ -2646,4 +2646,8 @@ return [
         'any_category' => 'Qualquer categoria',
         'payer_percent' => '% do pagador',
     ],
+    'cashier' => [
+        'cashier' => 'Caixa',
+        'counters' => 'Caixas',
+    ],
 ];
