@@ -162,7 +162,7 @@ return [
     'razorpay_key' => 'Clé Razorpay',
     'razorpay_secret' => 'Secret Razorpay',
     'cash' => 'Espèces',
-    'cheque' => 'Vérifier',
+    'cheque' => 'Chèque',
     'flutterwave' => 'Onde Flutter',
     'flutterwave_public_key' => 'Clé publique Flutterwave',
     'flutterwave_secret_key' => 'Clé secrète Flutterwave',
@@ -2562,6 +2562,7 @@ return [
             'dose_duration' => 'Durées de traitement',
             'meal_timing' => 'Moments de prise',
             'id_document_type' => 'Types de pièces d\'identité',
+            'payment_method' => 'Modes de paiement',
         ],
     ],
 

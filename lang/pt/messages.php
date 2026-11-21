@@ -2386,6 +2386,7 @@ return [
             'dose_duration' => 'Durações de dose',
             'meal_timing' => 'Horários das refeições',
             'id_document_type' => 'Tipos de documento de identidade',
+            'payment_method' => 'Formas de pagamento',
         ],
     ],
 

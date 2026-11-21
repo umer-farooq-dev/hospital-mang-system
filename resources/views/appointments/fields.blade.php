@@ -40,7 +40,7 @@
             <div class="form-group col-sm-6 mb-5 paymentType d-none">
                 {{ Form::label('payment_mode', __('messages.ipd_payments.payment_mode') . ':', ['class' => 'form-label']) }}
                 <span class="required d-none paymentMode"></span>
-                {{ Form::select('payment_mode', getEditAppointmentPaymentTypes(), $appointment->payment_type ?? null, ['class' => 'form-select  select2Selector', 'id' => 'appointmentPaymentModeId', 'placeholder' => __('messages.ipd_payments.payment_mode')]) }}
+                {{ Form::select('payment_mode', getEditAppointmentPaymentTypes($appointment->payment_type ?? null), $appointment->payment_type ?? null, ['class' => 'form-select  select2Selector', 'id' => 'appointmentPaymentModeId', 'placeholder' => __('messages.ipd_payments.payment_mode')]) }}
             </div>
         @else
             <div class="form-group col-sm-6 mb-5 paymentType d-none">

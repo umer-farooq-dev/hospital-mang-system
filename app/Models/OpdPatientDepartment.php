@@ -57,11 +57,6 @@ class OpdPatientDepartment extends Model
 {
     public $table = 'opd_patient_departments';
 
-    const PAYMENT_MODES = [
-        1 => 'Cash',
-        2 => 'Cheque',
-    ];
-
     public $fillable = [
         'patient_id',
         'opd_number',
@@ -134,6 +129,6 @@ class OpdPatientDepartment extends Model
 
     public function getPaymentModeNameAttribute()
     {
-        return self::PAYMENT_MODES[$this->payment_mode];
+        return PaymentMethod::label($this->payment_mode);
     }
 }

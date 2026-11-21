@@ -2386,6 +2386,7 @@ return [
             'dose_duration' => '用药疗程',
             'meal_timing' => '用餐时间',
             'id_document_type' => '身份证件类型',
+            'payment_method' => '支付方式',
         ],
     ],
 

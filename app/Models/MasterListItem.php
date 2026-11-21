@@ -33,10 +33,12 @@ class MasterListItem extends Model
         'dose_duration' => ['prescriptions_medicines', 'day'],
         'meal_timing' => ['prescriptions_medicines', 'time'],
         'id_document_type' => ['patients', 'id_document_type'],
+        'payment_method' => ['opd_patient_departments', 'payment_mode'],
     ];
 
     // Other tables that also store codes of a list.
     const ALSO_USED_IN = [
+        'payment_method' => [['ipd_payments', 'payment_mode'], ['appointments', 'payment_type'], ['appointment_transactions', 'payment_type']],
         'charge_type' => [['charges', 'charge_type'], ['ipd_charges', 'charge_type_id']],
         'dose_interval' => [['ipd_prescription_items', 'dose_interval'], ['opd_prescription_items', 'dose_interval']],
         'dose_duration' => [['ipd_prescription_items', 'day'], ['opd_prescription_items', 'day']],
@@ -116,9 +118,17 @@ class MasterListItem extends Model
         return self::items($type)->firstWhere('code', (int) $code)?->label ?? $default;
     }
 
+    /**
+     * Lowest code for items the admin adds. Payment methods share their column with the
+     * online gateway codes (3-9), so new methods start above them.
+     */
+    const FIRST_NEW_CODE = [
+        'payment_method' => 100,
+    ];
+
     public static function nextCode(string $type): int
     {
-        return (int) self::where('type', $type)->max('code') + 1;
+        return max((int) self::where('type', $type)->max('code') + 1, self::FIRST_NEW_CODE[$type] ?? 1);
     }
 
     /** Whether any record still stores this item's code. */

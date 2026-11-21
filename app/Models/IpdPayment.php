@@ -56,9 +56,8 @@ class IpdPayment extends Model implements HasMedia
     public const PAYMENT_MODES_PHONEPE = 5;
     public const PAYMENT_MODES_PAYSTACK = 6;
 
+    // Online gateways; counter methods (cash, cheque...) come from PaymentMethod.
     const PAYMENT_MODES = [
-        1 => 'Cash',
-        2 => 'Cheque',
         3 => 'Stripe',
         4 => 'Razorpay',
         8 => 'FlutterWave',
@@ -108,6 +107,6 @@ class IpdPayment extends Model implements HasMedia
 
     public function getPaymentModeNameAttribute()
     {
-        return self::PAYMENT_MODES[$this->payment_mode];
+        return PaymentMethod::label($this->payment_mode, self::PAYMENT_MODES);
     }
 }

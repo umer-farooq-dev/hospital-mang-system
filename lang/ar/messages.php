@@ -2392,6 +2392,7 @@ return [
             'dose_duration' => 'مدد الجرعات',
             'meal_timing' => 'أوقات الوجبات',
             'id_document_type' => 'أنواع وثائق الهوية',
+            'payment_method' => 'طرق الدفع',
         ],
     ],
 

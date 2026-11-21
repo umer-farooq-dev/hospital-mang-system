@@ -27,7 +27,10 @@ class MasterListRepository extends BaseRepository
             'type' => $input['type'],
             'code' => MasterListItem::nextCode($input['type']),
             'name' => $input['name'],
-            'sort_order' => $input['sort_order'] ?? 0,
+            // Without an order, a new item goes to the end of the list.
+            'sort_order' => isset($input['sort_order']) && $input['sort_order'] !== ''
+                ? $input['sort_order']
+                : (int) MasterListItem::where('type', $input['type'])->max('sort_order') + 1,
             'is_active' => ! empty($input['is_active']),
         ]);
     }
