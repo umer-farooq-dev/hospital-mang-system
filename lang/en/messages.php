@@ -2665,4 +2665,14 @@ return [
         'printed_at' => 'Printed on',
         'no_id' => 'No ID document',
     ],
+
+    'money_format' => [
+        'decimals' => 'Decimal places',
+        'symbol_position' => 'Currency symbol',
+        'before' => 'Before the amount',
+        'after' => 'After the amount',
+        'thousands_separator' => 'Thousands separator',
+        'decimal_separator' => 'Decimal separator',
+        'example' => 'Example',
+    ],
 ];

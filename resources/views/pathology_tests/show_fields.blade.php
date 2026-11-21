@@ -63,7 +63,7 @@
                             <div class="col-lg-4 d-flex flex-column mb-md-5 mb-5">
                                 <label class="pb-2 fs-5 text-gray-600 py-3">{{ __('messages.pathology_test.standard_charge')  }}</label>
                                 <span
-                                    class="fs-5 text-gray-800">{{ getCurrencySymbol() }} {{ number_format($pathologyTest->standard_charge,2) }}</span>
+                                    class="fs-5 text-gray-800">{{ formatMoney($pathologyTest->standard_charge) }}</span>
                             </div>
                             <div class="col-lg-4 d-flex flex-column mb-md-5 mb-5">
                                 <label class="pb-2 fs-5 text-gray-600 py-3">{{ __('messages.common.created_on')  }}</label>

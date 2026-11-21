@@ -11,19 +11,19 @@
                             </div>
                             <div class="col-lg-4 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.purchase_medicine.total')  }}</label>
-                                <span class="fw-bold fs-6 text-gray-800">{{number_format($medicinePurchase->total)}}</span>
+                                <span class="fw-bold fs-6 text-gray-800">{{formatAmount($medicinePurchase->total)}}</span>
                             </div>
                             <div class="col-lg-4 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.purchase_medicine.tax_amount')  }}</label>
-                                <span class="fw-bold fs-6 text-gray-800">{{number_format($medicinePurchase->tax)}}</span>
+                                <span class="fw-bold fs-6 text-gray-800">{{formatAmount($medicinePurchase->tax)}}</span>
                             </div>
                             <div class="col-lg-4 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.purchase_medicine.discount')  }}</label>
-                                <span class="fw-bold fs-6 text-gray-800">{{ number_format($medicinePurchase->discount)}}</span>
+                                <span class="fw-bold fs-6 text-gray-800">{{ formatAmount($medicinePurchase->discount)}}</span>
                             </div>
                             <div class="col-lg-4 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.purchase_medicine.net_amount')  }}</label>
-                                <span class="fw-bold fs-6 text-gray-800">{{ number_format($medicinePurchase->net_amount) }}</span>
+                                <span class="fw-bold fs-6 text-gray-800">{{ formatAmount($medicinePurchase->net_amount) }}</span>
                             </div>
                             <div class="col-lg-4 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.purchase_medicine.created_mode')  }}</label>

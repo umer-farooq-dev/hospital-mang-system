@@ -31,13 +31,13 @@
                                 <label
                                     class="fw-bold text-muted py-3">{{ __('messages.medicine.selling_price') }}</label>
                                 <span class="fw-bolder fs-6 text-gray-800">{{ getCurrencySymbol() }}</b>
-                                    {{ number_format($medicine->selling_price, 2) }}</span>
+                                    {{ formatAmount($medicine->selling_price) }}</span>
                             </div>
                             <div class="col-lg-4 d-flex flex-column">
                                 <label
                                     class="fw-bold text-muted py-3">{{ __('messages.medicine.buying_price') }}</label>
                                 <span class="fw-bolder fs-6 text-gray-800"><b>{{ getCurrencySymbol() }}</b>
-                                    {{ number_format($medicine->buying_price, 2) }}</span>
+                                    {{ formatAmount($medicine->buying_price) }}</span>
                             </div>
                             <div class="col-lg-4 d-flex flex-column">
                                 <label

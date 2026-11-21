@@ -2480,4 +2480,14 @@ return [
         'printed_at' => 'Impresso em',
         'no_id' => 'Sem documento de identidade',
     ],
+
+    'money_format' => [
+        'decimals' => 'Casas decimais',
+        'symbol_position' => 'Símbolo da moeda',
+        'before' => 'Antes do valor',
+        'after' => 'Depois do valor',
+        'thousands_separator' => 'Separador de milhar',
+        'decimal_separator' => 'Separador decimal',
+        'example' => 'Exemplo',
+    ],
 ];

@@ -26,7 +26,7 @@
                             <div class="col-lg-4 col-md-4 col-sm-2 d-flex flex-column">
                                 {{ Form::label('amount', __('messages.payment.amount') . ':', ['class' => 'fw-bold text-muted py-3']) }}
                                 <span class="fw-bolder fs-6 text-gray-800"><b>{{ getCurrencySymbol() }}</b>
-                                    {{ number_format($payment->amount, 2) }}</span>
+                                    {{ formatAmount($payment->amount) }}</span>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-2 d-flex flex-column">
                                 {{ Form::label('created_at', __('messages.common.created_on') . ':', ['class' => 'fw-bold text-muted py-3']) }}

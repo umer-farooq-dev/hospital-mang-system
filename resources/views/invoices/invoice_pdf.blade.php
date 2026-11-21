@@ -131,14 +131,14 @@
                                     <td class="number-align">{{ $invoiceItems->quantity }}</td>
                                     <td class="number-align">
                                           {{-- {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($invoiceItems->price, strtoupper($invoice->currency_symbol ?? getCurrentCurrency())) :
-                                        number_format($invoiceItems->price) . '' . ($invoice->currency_symbol ? getSymbols($invoice->currency_symbol) : getCurrencySymbol()) }} --}}
-                                        {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat(strtoupper($invoice->currency_symbol ?? getCurrentCurrency()), $invoiceItems->price) :
-                                            getCurrencySymbol() . number_format($invoiceItems->price,2) }}
+                                        formatMoney($invoiceItems->price, $invoice->currency_symbol ? getSymbols($invoice->currency_symbol) : getCurrencySymbol()) }} --}}
+                                        {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($invoiceItems->price, strtoupper($invoice->currency_symbol ?? getCurrentCurrency())) :
+                                            formatMoney($invoiceItems->price) }}
                                         </td>
                                     <td class="number-align">
                                         {{-- {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($invoiceItems->total, strtoupper($invoice->currency_symbol ?? getCurrentCurrency())) :
-                                        number_format($invoiceItems->total) . '' . ($invoice->currency_symbol ? getSymbols($invoice->currency_symbol) : getCurrencySymbol()) }} --}}
-                                        {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat(strtoupper($invoice->currency_symbol ?? getCurrentCurrency()), $invoiceItems->total) : getCurrencySymbol() . number_format($invoiceItems->total,2) }}
+                                        formatMoney($invoiceItems->total, $invoice->currency_symbol ? getSymbols($invoice->currency_symbol) : getCurrencySymbol()) }} --}}
+                                        {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($invoiceItems->total, strtoupper($invoice->currency_symbol ?? getCurrentCurrency())) : formatMoney($invoiceItems->total) }}
                                         </td>
                                 </tr>
                             @endforeach
@@ -158,9 +158,9 @@
                                 <td class="font-weight-bold text-start">{{ __('messages.invoice.sub_total') }}:</td>
                                 <td>
                                     {{-- {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($invoice->amount, strtoupper($invoice->currency_symbol ?? getCurrentCurrency())) :
-                                        number_format($invoice->amount) . '' . ($invoice->currency_symbol ? getSymbols($invoice->currency_symbol) : getCurrencySymbol()) }} --}}
-                                        {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat(strtoupper($invoice->currency_symbol ?? getCurrentCurrency()), $invoice->amount) :
-                                            getCurrencySymbol() . number_format($invoice->amount,2) }}
+                                        formatMoney($invoice->amount, $invoice->currency_symbol ? getSymbols($invoice->currency_symbol) : getCurrencySymbol()) }} --}}
+                                        {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($invoice->amount, strtoupper($invoice->currency_symbol ?? getCurrentCurrency())) :
+                                            formatMoney($invoice->amount) }}
 
                                 </td>
                             </tr>
@@ -172,17 +172,17 @@
                                 ?>
                                 <td class="font-weight-bold text-start">{{ __('messages.invoice.discount') }}:</td>
                                  <td >  {{--{{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($invoice->amount * $invoice->discount / 100, strtoupper($invoice->currency_symbol ?? getCurrentCurrency())) : number_format($invoice->amount * $invoice->discount / 100, 2) . '' . ($invoice->currency_symbol ? getSymbols($invoice->currency_symbol) : getCurrencySymbol()) }} --}}
-                                    {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat(strtoupper($invoice->currency_symbol ?? getCurrentCurrency()), $invoice->amount * $invoice->discount / 100) :
-                                        getCurrencySymbol() . number_format($invoice->amount * $invoice->discount / 100, 2) }}
+                                    {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($invoice->amount * $invoice->discount / 100, strtoupper($invoice->currency_symbol ?? getCurrentCurrency())) :
+                                        formatMoney($invoice->amount * $invoice->discount / 100) }}
                                     ({{$invoice->discount}}<span style="font-family: DejaVu Sans">&#37;</span>)</td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold text-start">{{ __('messages.invoice.total') }}:</td>
                                 <td>
                                     {{-- {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($invoice->amount - ($invoice->amount * $invoice->discount / 100), strtoupper($invoice->currency_symbol ?? getCurrentCurrency())) :
-                                        number_format($invoice->amount - ($invoice->amount * $invoice->discount / 100), 2) . '' . ($invoice->currency_symbol ? getSymbols($invoice->currency_symbol) : getCurrencySymbol()) }} --}}
-                                        {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat(strtoupper($invoice->currency_symbol ?? getCurrentCurrency()), $invoice->amount - ($invoice->amount * $invoice->discount / 100)) :
-                                            getCurrencySymbol() . number_format($invoice->amount - ($invoice->amount * $invoice->discount / 100), 2) }}
+                                        formatMoney($invoice->amount - ($invoice->amount * $invoice->discount / 100), $invoice->currency_symbol ? getSymbols($invoice->currency_symbol) : getCurrencySymbol()) }} --}}
+                                        {{ checkValidCurrency($invoice->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($invoice->amount - ($invoice->amount * $invoice->discount / 100), strtoupper($invoice->currency_symbol ?? getCurrentCurrency())) :
+                                            formatMoney($invoice->amount - ($invoice->amount * $invoice->discount / 100)) }}
                                 </td>
                             </tr>
                         </tbody>

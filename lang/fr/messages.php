@@ -2656,4 +2656,14 @@ return [
         'printed_at' => 'Imprimé le',
         'no_id' => 'Sans pièce d\'identité',
     ],
+
+    'money_format' => [
+        'decimals' => 'Nombre de décimales',
+        'symbol_position' => 'Symbole monétaire',
+        'before' => 'Avant le montant',
+        'after' => 'Après le montant',
+        'thousands_separator' => 'Séparateur des milliers',
+        'decimal_separator' => 'Séparateur décimal',
+        'example' => 'Exemple',
+    ],
 ];

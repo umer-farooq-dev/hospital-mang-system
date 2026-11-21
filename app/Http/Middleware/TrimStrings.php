@@ -15,5 +15,7 @@ class TrimStrings extends Middleware
         'current_password',
         'password',
         'password_confirmation',
+        // A space is a valid thousands separator (6 000).
+        'currency_thousands_separator',
     ];
 }

@@ -42,28 +42,28 @@
                             {{ Form::label('salary', __('messages.employee_payroll.basic_salary').(':'), ['class' => 'pb-2 fs-5 text-gray-600']) }}
                             <span class="fs-5 text-gray-800"> 
 {{--                                {{ number_format($employeePayroll->basic_salary, 2) }}--}}
-                                {{ checkValidCurrency($employeePayroll->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($employeePayroll->basic_salary, strtoupper($employeePayroll->currency_symbol ?? getCurrentCurrency())) : number_format($employeePayroll->basic_salary) . '' . ($employeePayroll->currency_symbol ? getSymbols($employeePayroll->currency_symbol) : getCurrencySymbol()) }}
+                                {{ checkValidCurrency($employeePayroll->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($employeePayroll->basic_salary, strtoupper($employeePayroll->currency_symbol ?? getCurrentCurrency())) : formatMoney($employeePayroll->basic_salary, $employeePayroll->currency_symbol ? getSymbols($employeePayroll->currency_symbol) : getCurrencySymbol()) }}
                             </span>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-2 d-flex flex-column mb-md-10 mb-5">
                             {{ Form::label('allowance', __('messages.employee_payroll.allowance').(':'), ['class' => 'pb-2 fs-5 text-gray-600']) }}
                             <span class="fs-5 text-gray-800">
 {{--                                {{ number_format($employeePayroll->allowance, 2) }}--}}
-                                {{ checkValidCurrency($employeePayroll->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($employeePayroll->allowance, strtoupper($employeePayroll->currency_symbol ?? getCurrentCurrency())) : number_format($employeePayroll->allowance, 2) . '' . ($employeePayroll->currency_symbol ? getSymbols($employeePayroll->currency_symbol) : getCurrencySymbol()) }}
+                                {{ checkValidCurrency($employeePayroll->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($employeePayroll->allowance, strtoupper($employeePayroll->currency_symbol ?? getCurrentCurrency())) : formatMoney($employeePayroll->allowance, $employeePayroll->currency_symbol ? getSymbols($employeePayroll->currency_symbol) : getCurrencySymbol()) }}
                             </span>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-2 d-flex flex-column mb-md-10 mb-5">
                             {{ Form::label('deductions', __('messages.employee_payroll.deductions').(':'), ['class' => 'pb-2 fs-5 text-gray-600']) }}
                             <span class="fs-5 text-gray-800">
 {{--                                {{ number_format($employeePayroll->deductions, 2)}}--}}
-                                {{ checkValidCurrency($employeePayroll->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($employeePayroll->deductions, strtoupper($employeePayroll->currency_symbol ?? getCurrentCurrency())) : number_format($employeePayroll->deductions, 2) . '' . ($employeePayroll->currency_symbol ? getSymbols($employeePayroll->currency_symbol) : getCurrencySymbol()) }}
+                                {{ checkValidCurrency($employeePayroll->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($employeePayroll->deductions, strtoupper($employeePayroll->currency_symbol ?? getCurrentCurrency())) : formatMoney($employeePayroll->deductions, $employeePayroll->currency_symbol ? getSymbols($employeePayroll->currency_symbol) : getCurrencySymbol()) }}
                             </span>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-2 d-flex flex-column mb-md-10 mb-5">
                             {{ Form::label('net salary', __('messages.employee_payroll.net_salary').(':'), ['class' => 'pb-2 fs-5 text-gray-600']) }}
                             <span class="fs-5 text-gray-800">
 {{--                                {{ number_format($employeePayroll->net_salary, 2)}}--}}
-                                {{ checkValidCurrency($employeePayroll->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($employeePayroll->net_salary, strtoupper($employeePayroll->currency_symbol ?? getCurrentCurrency())) : number_format($employeePayroll->net_salary, 2) . '' . ($employeePayroll->currency_symbol ? getSymbols($employeePayroll->currency_symbol) : getCurrencySymbol()) }}
+                                {{ checkValidCurrency($employeePayroll->currency_symbol ?? getCurrentCurrency()) ? moneyFormat($employeePayroll->net_salary, strtoupper($employeePayroll->currency_symbol ?? getCurrentCurrency())) : formatMoney($employeePayroll->net_salary, $employeePayroll->currency_symbol ? getSymbols($employeePayroll->currency_symbol) : getCurrencySymbol()) }}
                             </span>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-2 d-flex flex-column mb-md-10 mb-5">

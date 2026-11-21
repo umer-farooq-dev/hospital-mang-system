@@ -2482,4 +2482,14 @@ return [
         'printed_at' => 'Gedruckt am',
         'no_id' => 'Kein Ausweisdokument',
     ],
+
+    'money_format' => [
+        'decimals' => 'Nachkommastellen',
+        'symbol_position' => 'Währungssymbol',
+        'before' => 'Vor dem Betrag',
+        'after' => 'Nach dem Betrag',
+        'thousands_separator' => 'Tausendertrennzeichen',
+        'decimal_separator' => 'Dezimaltrennzeichen',
+        'example' => 'Beispiel',
+    ],
 ];

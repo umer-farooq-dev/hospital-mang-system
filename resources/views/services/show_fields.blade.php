@@ -20,7 +20,7 @@
                             </div>
                             <div class="col-lg-3 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.service.rate').(':')  }}</label>
-                                <span class="fw-bolder fs-6 text-gray-800">{{ getCurrencySymbol() }}</b> {{ number_format($service->rate,2)}}</span>
+                                <span class="fw-bolder fs-6 text-gray-800">{{ formatMoney($service->rate)}}</span>
                             </div>
                             <div class="col-lg-3 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.common.status').(':')  }}</label>

@@ -35,7 +35,7 @@
                             <div class="col-lg-4 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.incomes.amount') }}</label>
                                 <span class="fw-bolder fs-6 text-gray-800"><b>{{ getCurrencySymbol() }}</b>
-                                    {{ number_format($incomes->amount, 2) }}</span>
+                                    {{ formatAmount($incomes->amount) }}</span>
                             </div>
                             <div class="col-lg-4 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.incomes.attachment') }}</label>

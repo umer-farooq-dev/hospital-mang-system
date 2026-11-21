@@ -28,7 +28,7 @@
                             </div>
                             <div class="col-lg-3 d-flex flex-column">
                                 <label class="fw-bold text-muted py-3">{{ __('messages.ambulance_call.amount').(':')  }}</label>
-                                <p><span class="fw-bolder fs-6 text-gray-800"><b>{{ getCurrencySymbol() }}</b> {{ number_format($ambulanceCall->amount,2) }}</span>
+                                <p><span class="fw-bolder fs-6 text-gray-800">{{ formatMoney($ambulanceCall->amount) }}</span>
                                 </p>
                             </div>
                             <div class="col-lg-3 d-flex flex-column">

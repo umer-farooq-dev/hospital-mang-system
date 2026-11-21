@@ -65,11 +65,19 @@ class SettingRepository extends BaseRepository
         $input['current_currency'] = $input['current_currency'];
         $input['open_ai_enable'] = isset($input['open_ai_enable']) ? 1 : 0;
         $input['custom_sr_no_enable'] = isset($input['custom_sr_no_enable']) ? 1 : 0;
+        // Validation skips whitespace-only strings, so keep only an exact allowed separator.
+        if (array_key_exists('currency_thousands_separator', $input)) {
+            $separator = (string) $input['currency_thousands_separator'];
+            $input['currency_thousands_separator'] = array_key_exists($separator, Setting::THOUSANDS_SEPARATORS)
+                ? $separator
+                : (trim($separator) === '' && $separator !== '' ? ' ' : ',');
+        }
 
         $settingInputArray = Arr::only($input, [
             'app_name', 'company_name', 'hospital_email', 'hospital_phone', 'hospital_from_day', 'hospital_from_time',
             'hospital_address', 'current_currency', 'facebook_url', 'twitter_url', 'instagram_url', 'linkedIn_url', 'about_us', 'country_code', 'country_name','default_lang',
             'open_ai_enable','open_ai_key','model_name','custom_sr_no_enable','custom_serial_prefix',
+            'currency_decimals', 'currency_decimal_separator', 'currency_thousands_separator', 'currency_symbol_position',
         ]);
 
         foreach ($settingInputArray as $key => $value) {
