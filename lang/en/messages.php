@@ -2826,6 +2826,9 @@ return [
             'not_covered' => 'This payer does not cover this department.',
             'approval_needed' => 'This payer needs an approval: enter the voucher number to apply the cover.',
             'limit_reached' => 'The policy limit is reached: the rest is the patient\'s share.',
+            'followup_free' => 'Follow-up visit within the validity: free.',
+            'followup_reduced' => 'Follow-up visit within the validity: reduced price.',
+            'policy_blocked' => 'The patient\'s policy is not valid on this date: choose self-pay or another payer.',
         ],
     ],
     'coverage' => [
@@ -2931,6 +2934,19 @@ return [
         ],
         'receipt_footer_text' => 'Receipt footer text',
         'receipt_footer_hint' => 'Printed on consultation receipts. Use :days and :date for the validity. Empty = the default text.',
+        'followup_mode' => 'Follow-up visit (same doctor, within the validity days)',
+        'followup_percent' => 'Reduction',
+        'followup_hint' => 'A consultation with the same doctor within the follow-up validity of a paid consultation is free or reduced.',
+        'policy_expired_mode' => 'When the patient\'s policy is not valid',
+        'followup_modes' => [
+            'off' => 'Charged normally',
+            'free' => 'Free',
+            'percent' => 'Reduced by the %',
+        ],
+        'policy_expired_modes' => [
+            'self_pay' => 'The patient pays everything (warning)',
+            'block' => 'Refuse to save',
+        ],
     ],
     'receipts' => [
         'receipts' => 'Receipts',

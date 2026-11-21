@@ -73,6 +73,15 @@ class PriceSplit
         ];
     }
 
+    /** With the setting "policy not valid: refuse", a visit or exam with an invalid policy is not saved. */
+    public static function assertPolicyAllowed(array $split): void
+    {
+        if (in_array('policy_not_valid', $split['warnings'])
+            && \App\Models\Setting::where('key', 'policy_expired_mode')->value('value') === 'block') {
+            throw \Illuminate\Validation\ValidationException::withMessages(['patient_insurance_id' => __('messages.split.warnings.policy_blocked')]);
+        }
+    }
+
     /** What is left of the policy's annual limit, or null when it has none. */
     private static function annualLeft(PatientInsurance $policy, Carbon $date, $ignoreVisitId): ?float
     {
