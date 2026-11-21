@@ -39,6 +39,29 @@ class CashSession extends Model
         return $this->hasMany(Receipt::class);
     }
 
+    public function refunds(): HasMany
+    {
+        return $this->hasMany(Refund::class);
+    }
+
+    /** Amount refunded from this register during the session, per payment method. */
+    public function refundsByMethod(): array
+    {
+        return $this->refunds()->selectRaw('payment_method, SUM(amount) as total')
+            ->groupBy('payment_method')->pluck('total', 'payment_method')->map(fn ($t) => (float) $t)->all();
+    }
+
+    /** What is in the register per payment method: receipts minus refunds. */
+    public function netByMethod(): array
+    {
+        $net = $this->totalsByMethod();
+        foreach ($this->refundsByMethod() as $method => $amount) {
+            $net[$method] = ($net[$method] ?? 0) - $amount;
+        }
+
+        return $net;
+    }
+
     /** Amount collected per payment method (valid receipts only). */
     public function totalsByMethod(): array
     {

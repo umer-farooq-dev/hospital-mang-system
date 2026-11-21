@@ -2646,4 +2646,10 @@ return [
         'cashier' => 'Касса',
         'counters' => 'Кассы',
     ],
+    'receipts' => [
+        'receipts' => 'Квитанции',
+    ],
+    'cash_journal' => [
+        'title' => 'Кассовый журнал',
+    ],
 ];

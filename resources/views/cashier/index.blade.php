@@ -6,13 +6,11 @@
     <div class="container-fluid">
         <div class="d-md-flex align-items-center justify-content-between mb-7">
             <h1 class="mb-0">@yield('title')</h1>
-            <div class="d-flex gap-2">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
                 @if ($session)
-                    <span class="badge bg-light-success fs-6 align-self-center">{{ $session->counter->code }} · {{ $session->counter->name }}</span>
+                    <span class="badge bg-light-success fs-6">{{ $session->counter->code }} · {{ $session->counter->name }}</span>
                 @endif
-                @canroute('cash-counters.index')
-                <a href="{{ route('cash-counters.index') }}" class="btn btn-outline-primary"><i class="fas fa-cog me-1"></i>{{ __('messages.cashier.counters') }}</a>
-                @endcanroute
+                @include('cashier.nav')
             </div>
         </div>
     </div>

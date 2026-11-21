@@ -46,7 +46,7 @@
     {{-- Cashier --}}
     @module('Cashier', $modules)
         @canroute('cashier.index')
-        <li class="nav-item {{ Request::is('cashier*', 'cash-counters*', 'receipts*', 'cash-sessions*') ? 'active' : '' }}">
+        <li class="nav-item {{ Request::is('cashier*', 'cash-counters*', 'receipts*', 'cash-sessions*', 'cash-journal*') ? 'active' : '' }}">
             <a class="nav-link  d-flex align-items-center py-3" href="{{ route('cashier.index') }}">
                 <span class="aside-menu-icon me-3"><i class="fas fa-cash-register"></i></span>
                 <span class="aside-menu-title">{{ __('messages.cashier.cashier') }}</span>
@@ -954,7 +954,7 @@
             {{-- Cashier --}}
             @module('Cashier', $modules)
                 @canroute('cashier.index')
-                <li class="nav-item {{ Request::is('cashier*', 'cash-counters*', 'receipts*', 'cash-sessions*') ? 'active' : '' }}">
+                <li class="nav-item {{ Request::is('cashier*', 'cash-counters*', 'receipts*', 'cash-sessions*', 'cash-journal*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ route('cashier.index') }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-cash-register"></i></span>
                         <span class="aside-menu-title">{{ __('messages.cashier.cashier') }}</span>

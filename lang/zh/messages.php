@@ -2650,4 +2650,10 @@ return [
         'cashier' => '收银',
         'counters' => '收银台',
     ],
+    'receipts' => [
+        'receipts' => '收据',
+    ],
+    'cash_journal' => [
+        'title' => '现金日记账',
+    ],
 ];

@@ -33,3 +33,13 @@ document.addEventListener('DOMContentLoaded', function () {
         window.open(printUrl + '?autoprint=1', '_blank');
     }
 });
+
+// Receipts log: the void/refund and payment method modals post to the receipt's own URL.
+listenClick('.receipt-action', function () {
+    let modal = $($(this).data('bs-target'));
+    modal.find('form').attr('action', $(this).data('url'));
+    modal.find('.receipt-modal-number').text($(this).data('number'));
+    if ($(this).data('title')) {
+        modal.find('.receipt-modal-title').text($(this).data('title'));
+    }
+});

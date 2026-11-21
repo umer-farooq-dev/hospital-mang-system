@@ -69,6 +69,20 @@ class CashierTest extends TestCase
             $t->string('cheque_number')->nullable();
             $t->string('cheque_drawer')->nullable();
             $t->dateTime('voided_at')->nullable();
+            $t->unsignedInteger('void_reason')->nullable();
+            $t->unsignedBigInteger('voided_by')->nullable();
+            $t->timestamps();
+        });
+        Schema::create('refunds', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('receipt_id');
+            $t->unsignedBigInteger('cash_session_id');
+            $t->unsignedBigInteger('cash_counter_id');
+            $t->unsignedBigInteger('user_id');
+            $t->unsignedInteger('reason');
+            $t->unsignedInteger('payment_method');
+            $t->decimal('amount', 15, 2);
+            $t->text('notes')->nullable();
             $t->timestamps();
         });
         Schema::create('receipt_lines', function (Blueprint $t) {
@@ -82,6 +96,22 @@ class CashierTest extends TestCase
             $t->decimal('payer_amount', 15, 2)->default(0);
             $t->decimal('amount', 15, 2);
             $t->timestamps();
+        });
+        Schema::create('master_list_items', function (Blueprint $t) {
+            $t->id();
+            $t->string('type');
+            $t->unsignedInteger('code');
+            $t->string('name');
+            $t->string('lang_key')->nullable();
+            $t->unsignedInteger('sort_order')->default(0);
+            $t->boolean('is_active')->default(true);
+            $t->timestamps();
+        });
+        \App\Models\MasterListItem::flushCache();
+        Schema::create('patients', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('user_id');
+            $t->string('patient_unique_id')->nullable();
         });
         Schema::create('doctors', function (Blueprint $t) {
             $t->id();
@@ -109,6 +139,7 @@ class CashierTest extends TestCase
         $this->user = User::unguarded(fn () => User::create(['first_name' => 'Awa', 'last_name' => 'Caissière', 'cash_counter_id' => $counter->id]));
         DB::table('settings')->insert([['key' => 'receipt_start_number', 'value' => '117511'], ['key' => 'cash_payment_method', 'value' => '1']]);
         $doctorUser = DB::table('users')->insertGetId(['first_name' => 'Dr', 'last_name' => 'Ouattara']);
+        DB::table('patients')->insert(['id' => 7, 'user_id' => DB::table('users')->insertGetId(['first_name' => 'Aminata', 'last_name' => 'Ouedraogo']), 'patient_unique_id' => 'P7']);
         DB::table('doctor_departments')->insert(['id' => 1, 'title' => 'Médecine générale']);
         DB::table('doctors')->insert(['id' => 1, 'user_id' => $doctorUser, 'doctor_department_id' => 1]);
         DB::table('opd_patient_departments')->insert([
@@ -169,5 +200,59 @@ class CashierTest extends TestCase
     {
         $this->expectException(ValidationException::class);
         $this->cashier->open(User::unguarded(fn () => User::create(['first_name' => 'Sans', 'last_name' => 'Caisse'])), 0);
+    }
+
+    public function test_void_only_while_the_session_is_open_and_the_items_become_payable_again(): void
+    {
+        $session = $this->cashier->open($this->user, 0);
+        $receipt = $this->cashier->collect($session, $this->user, 7, [1], ['payment_method' => 1]);
+
+        $this->cashier->changeMethod($receipt, 2);
+        $this->assertSame([2 => 6000.0], $session->fresh()->netByMethod(), 'method corrected while open');
+
+        $this->cashier->void($receipt, $this->user, 4);
+        $this->assertSame('voided', $receipt->fresh()->status);
+        $this->assertSame([], $session->fresh()->netByMethod());
+        $this->assertSame([1, 2], $this->cashier->unpaidVisits(7)->pluck('id')->all());
+
+        $again = $this->cashier->collect($session, $this->user, 7, [1], ['payment_method' => 1]);
+        $this->cashier->close($session, 6000, null);
+        $this->expectException(ValidationException::class);
+        $this->cashier->void($again, $this->user, 5);
+    }
+
+    public function test_refund_leaves_the_closed_session_unchanged_and_comes_out_of_the_current_one(): void
+    {
+        $first = $this->cashier->open($this->user, 0);
+        $receipt = $this->cashier->collect($first, $this->user, 7, [1], ['payment_method' => 1]);
+        $this->cashier->close($first, 6000, null);
+
+        $second = $this->cashier->open($this->user, 10000);
+        $refund = $this->cashier->refund($receipt, $this->user, 1, 'patient parti');
+
+        $this->assertSame([6000.0, 1], [$refund->amount, $refund->payment_method]);
+        $this->assertSame([1 => 6000.0], $first->fresh()->netByMethod(), 'closed session keeps its total');
+        $this->assertSame([1 => -6000.0], $second->fresh()->netByMethod());
+        $this->assertSame(4000.0, $this->cashier->close($second, 4000, null)->expected_cash, 'float 10 000 minus the refund');
+
+        $this->expectException(ValidationException::class);
+        $this->cashier->refund($receipt->fresh(), $this->user, 1, null);
+    }
+
+    public function test_cash_journal_runs_the_balance_from_the_session_float(): void
+    {
+        $session = $this->cashier->open($this->user, 10000);
+        $a = $this->cashier->collect($session, $this->user, 7, [1], ['payment_method' => 1]);
+        $this->cashier->collect($session, $this->user, 7, [2], ['payment_method' => 1]);
+        $this->cashier->refund($a, $this->user, 1, null);
+
+        $repo = app(\App\Repositories\CashJournalRepository::class);
+        $journal = $repo->journal($repo->filters(['session' => $session->id, 'counter' => $session->cash_counter_id], $this->user));
+
+        $this->assertSame(10000.0, $journal['opening']);
+        $this->assertSame([16000.0, 17242.0, 11242.0], $journal['rows']->pluck('balance')->all());
+        $this->assertSame([true, true, false], $journal['rows']->pluck('credit')->all());
+        $this->assertSame([1 => 1242.0], $journal['totals']);
+        $this->assertSame(11242.0, $journal['closing']);
     }
 }

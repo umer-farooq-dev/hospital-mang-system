@@ -2653,4 +2653,10 @@ return [
         'cashier' => 'Kasa',
         'counters' => 'Kasalar',
     ],
+    'receipts' => [
+        'receipts' => 'Makbuzlar',
+    ],
+    'cash_journal' => [
+        'title' => 'Kasa defteri',
+    ],
 ];
