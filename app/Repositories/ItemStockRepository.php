@@ -51,7 +51,7 @@ class ItemStockRepository extends BaseRepository
             $itemStockInputArray = Arr::except($input, ['attachment']);
 
             $itemStock = $this->create($itemStockInputArray);
-            $itemStock->item()->update(['available_quantity' => $itemStockInputArray['quantity']]);
+            $itemStock->receiveStock();
 
             if (isset($input['attachment']) && ! empty($input['attachment'])) {
                 $itemStock->addMedia($input['attachment'])->toMediaCollection(ItemStock::PATH,
@@ -76,17 +76,8 @@ class ItemStockRepository extends BaseRepository
             $itemStockInputArray = Arr::except($input, ['attachment']);
 
             if (is_numeric($itemStockInputArray['quantity'])) {
-                $newItemQty = abs($itemStock->quantity - $itemStockInputArray['quantity']);
-                if ($itemStockInputArray['quantity'] !== $itemStock->quantity) {
-                    if ($itemStockInputArray['quantity'] < $itemStock->quantity) {
-                        $newItemAvailableQty = $itemStock->item->available_quantity - $newItemQty;
-                    } else {
-                        $newItemAvailableQty = $itemStock->item->available_quantity + $newItemQty;
-                    }
-
-                    $itemStock->item()->update(['available_quantity' => $newItemAvailableQty]);
-                }
                 $itemStock->update($itemStockInputArray);
+                $itemStock->refresh()->receiveStock();
             }
 
             if (isset($input['attachment']) && ! empty($input['attachment'])) {
@@ -114,8 +105,7 @@ class ItemStockRepository extends BaseRepository
     public function destroyItemStock($itemStock)
     {
         try {
-            $newItemAvailableQty = $itemStock->item->available_quantity - $itemStock->quantity;
-            $itemStock->item()->update(['available_quantity' => $newItemAvailableQty]);
+            \App\Utils\Stock::reverse($itemStock);
 
             $attachment = $this->find($itemStock->id);
 

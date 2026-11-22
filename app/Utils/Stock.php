@@ -37,10 +37,12 @@ class Stock
 
     const ADJUSTMENT = 'adjustment';  // stock count difference
 
-    const TYPES = [self::OPENING, self::RECEIPT, self::SALE, self::RETURN, self::REVERSAL, self::TRANSFER_OUT, self::TRANSFER_IN, self::SUPPLIER_RETURN, self::ADJUSTMENT];
+    const ISSUE = 'issue';            // general item given to a department
+
+    const TYPES = [self::OPENING, self::RECEIPT, self::SALE, self::RETURN, self::REVERSAL, self::TRANSFER_OUT, self::TRANSFER_IN, self::SUPPLIER_RETURN, self::ADJUSTMENT, self::ISSUE];
 
     // Item class => table whose available_quantity caches the total.
-    const TOTALS = [Medicine::class => 'medicines'];
+    const TOTALS = [Medicine::class => 'medicines', \App\Models\Item::class => 'items'];
 
     public static function setting(string $key, $default = null)
     {
@@ -78,6 +80,14 @@ class Stock
         }
 
         return Store::where('is_active', true)->orderByDesc('can_sell')->orderBy('sort_order')->orderBy('id')->value('id');
+    }
+
+    /** Store for general items (linen, consumables) when an entry names none. */
+    public static function inventoryStoreId(): ?int
+    {
+        $id = (int) self::setting('inventory_default_store', 0);
+
+        return $id && Store::where('id', $id)->where('is_active', true)->exists() ? $id : self::defaultStoreId();
     }
 
     public static function onHand(Model $item, int $storeId): int

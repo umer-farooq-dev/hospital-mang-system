@@ -20,11 +20,11 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-2 d-flex flex-column">
                                 {{ Form::label('supplier_name', __('messages.item_stock.supplier_name').(':'), ['class' => 'fw-bold text-muted py-3']) }}
-                                <span class="fw-bolder fs-6 text-gray-800">{{ !empty($itemStock->supplier_name) ? $itemStock->supplier_name : __('messages.common.n/a')}}</span>
+                                <span class="fw-bolder fs-6 text-gray-800">{{ $itemStock->supplier->name ?? (!empty($itemStock->supplier_name) ? $itemStock->supplier_name : __('messages.common.n/a')) }}</span>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-2 d-flex flex-column">
                                 {{ Form::label('store_name', __('messages.item_stock.store_name').(':'), ['class' => 'fw-bold text-muted py-3']) }}
-                                <span class="fw-bolder fs-6 text-gray-800">{{ !empty($itemStock->store_name) ? $itemStock->store_name : __('messages.common.n/a')}}</span>
+                                <span class="fw-bolder fs-6 text-gray-800">{{ $itemStock->store->name ?? (!empty($itemStock->store_name) ? $itemStock->store_name : __('messages.common.n/a')) }}</span>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-2 d-flex flex-column">
                                 {{ Form::label('quality', __('messages.item_stock.quantity').(':'), ['class' => 'fw-bold text-muted py-3']) }}

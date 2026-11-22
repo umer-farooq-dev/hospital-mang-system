@@ -18,7 +18,13 @@
         @include('flash::message')
         <div class="card">
             <div class="card-body">
+                <ul class="nav nav-tabs mb-5">
+                    @foreach (array_keys(\App\Http\Controllers\StockController::KINDS) as $option)
+                        <li class="nav-item"><a class="nav-link {{ $kind === $option ? 'active' : '' }}" href="{{ route('stock.index', ['kind' => $option]) }}">{{ __('messages.stock.kinds.' . $option) }}</a></li>
+                    @endforeach
+                </ul>
                 <form method="get" class="row g-3 mb-5">
+                    <input type="hidden" name="kind" value="{{ $kind }}">
                     <div class="col-md-3">{{ Form::select('store_id', $stores, $storeId ?: null, ['class' => 'form-select', 'placeholder' => __('messages.stock.all_stores')]) }}</div>
                     <div class="col-md-3">
                         <select name="filter" class="form-select">
@@ -63,7 +69,7 @@
                                     <td class="text-end {{ $batch->quantity < 0 ? 'text-danger fw-bold' : '' }}">{{ $batch->quantity }}</td>
                                     <td class="text-end">{{ formatMoney($batch->unit_cost) }}</td>
                                     <td class="text-end">{{ formatMoney($batch->quantity * $batch->unit_cost) }}</td>
-                                    <td class="text-end"><a href="{{ route('stock.movements', ['medicine' => $batch->stockable_id, 'store_id' => $batch->store_id]) }}">{{ __('messages.stock.movements') }}</a></td>
+                                    <td class="text-end"><a href="{{ $kind === 'items' ? route('stock.items.movements', ['item' => $batch->stockable_id, 'store_id' => $batch->store_id]) : route('stock.movements', ['medicine' => $batch->stockable_id, 'store_id' => $batch->store_id]) }}">{{ __('messages.stock.movements') }}</a></td>
                                 </tr>
                             @empty
                                 <tr><td colspan="8" class="text-center text-muted">{{ __('messages.stock.no_batches') }}</td></tr>

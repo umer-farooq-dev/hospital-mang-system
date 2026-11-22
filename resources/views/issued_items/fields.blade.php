@@ -1,6 +1,13 @@
 <div class="row">
     <div class="col-lg-4 col-md-4 col-sm-12">
         <div class="form-group mb-5">
+            {!! Form::label('store_id', __('messages.stock.store') . ':', ['class' => 'form-label']) !!}
+            <span class="required"></span>
+            {{ Form::select('store_id', \App\Models\Store::options(), \App\Utils\Stock::inventoryStoreId(), ['class' => 'form-select', 'required']) }}
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-12">
+        <div class="form-group mb-5">
             {!! Form::label('department_id', __('messages.issued_item.department_id') . ':', ['class' => 'form-label']) !!}
             <span class="required"></span>
             {{ Form::select('department_id', $data['userTypes'], null, ['id' => 'issueUserType', 'class' => 'form-select', 'required', 'placeholder' => __('messages.common.choose') . ' ' . __('messages.issued_item.department_id'), 'data-control' => 'select2']) }}

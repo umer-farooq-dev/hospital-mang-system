@@ -207,6 +207,31 @@ class StockTest extends TestCase
             $t->integer('counted_quantity')->nullable();
             $t->timestamps();
         });
+        Schema::create('items', function (Blueprint $t) {
+            $t->id();
+            $t->string('name');
+            $t->integer('available_quantity')->default(0);
+            $t->timestamps();
+        });
+        Schema::create('item_stocks', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('item_category_id')->default(1);
+            $t->unsignedBigInteger('item_id');
+            $t->unsignedBigInteger('store_id')->nullable();
+            $t->unsignedBigInteger('supplier_id')->nullable();
+            $t->integer('quantity');
+            $t->double('purchase_price')->default(0);
+            $t->timestamps();
+        });
+        Schema::create('issued_items', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('item_id');
+            $t->unsignedBigInteger('store_id')->nullable();
+            $t->integer('quantity');
+            $t->boolean('status')->default(false);
+            $t->date('return_date')->nullable();
+            $t->timestamps();
+        });
         $this->pharmacy = DB::table('stores')->insertGetId(['name' => 'Pharmacy', 'can_sell' => true, 'sort_order' => 1]);
         $this->ward = DB::table('stores')->insertGetId(['name' => 'Ward', 'sort_order' => 2]);
         DB::table('settings')->insert(['key' => 'pharmacy_default_store', 'value' => (string) $this->pharmacy]);
@@ -488,5 +513,34 @@ class StockTest extends TestCase
         $other->receive([[$other->items()->first(), 4, 'L4', null, 80]], 0, false, null);
         $other->fresh()->close(1);
         $this->assertSame('closed', $other->fresh()->status);
+    }
+
+    public function test_general_items_are_received_issued_and_returned_through_the_same_stock(): void
+    {
+        $item = \App\Models\Item::find(DB::table('items')->insertGetId(['name' => 'Gloves']));
+        $entry = \App\Models\ItemStock::create(['item_category_id' => 1, 'item_id' => $item->id, 'store_id' => $this->ward, 'quantity' => 100, 'purchase_price' => 25]);
+        $entry->receiveStock();
+        $this->assertSame(100, (int) $item->fresh()->available_quantity);
+        $this->assertSame(100, Stock::onHand($item, $this->ward));
+
+        $entry->update(['quantity' => 80]);
+        $entry->refresh()->receiveStock();
+        $this->assertSame(80, Stock::onHand($item, $this->ward), 'editing the entry redoes the receipt');
+
+        $issued = \App\Models\IssuedItem::unguarded(fn () => \App\Models\IssuedItem::create(['item_id' => $item->id, 'store_id' => $this->ward, 'quantity' => 30]));
+        Stock::issue($item, $this->ward, 30, $issued, Stock::ISSUE);
+        $this->assertSame(50, (int) $item->fresh()->available_quantity);
+        Stock::reverse($issued, Stock::RETURN);
+        Stock::reverse($issued, Stock::RETURN);
+        $this->assertSame(80, Stock::onHand($item, $this->ward), 'returned once, a second undo changes nothing');
+
+        Stock::issue($item, $this->ward, 70, $issued, Stock::ISSUE);
+        try {
+            $entry->update(['quantity' => 75]);
+            $entry->refresh()->receiveStock();
+            $this->fail('the receipt was used');
+        } catch (UnprocessableEntityHttpException $e) {
+            $this->assertSame(10, Stock::onHand($item, $this->ward));
+        }
     }
 }

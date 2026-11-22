@@ -21,6 +21,8 @@ class StockMovement extends Model
         MedicineBill::class => ['bill_number', 'medicine-bills.show', 'medicine_bill'],
         StockTransfer::class => ['number', 'stock-transfers.show', 'stockTransfer'],
         StockCount::class => ['number', 'stock-counts.show', 'stockCount'],
+        ItemStock::class => ['id', 'item.stock.show', 'itemStock'],
+        IssuedItem::class => ['id', 'issued.item.show', 'issuedItem'],
     ];
 
     public function store(): BelongsTo

@@ -15,7 +15,7 @@ use Laracasts\Flash\Flash;
 class StoreController extends AppBaseController
 {
     const SETTINGS = ['stock_fefo', 'stock_allow_negative', 'stock_sell_expired', 'stock_expiry_alert_days', 'pharmacy_default_store',
-        'stock_transfer_approval', 'stock_transfer_prefix', 'stock_count_blind', 'stock_count_prefix', 'purchase_order_prefix', 'pharmacy_charge_category'];
+        'stock_transfer_approval', 'stock_transfer_prefix', 'stock_count_blind', 'stock_count_prefix', 'purchase_order_prefix', 'pharmacy_charge_category', 'inventory_default_store'];
 
     public function index()
     {
@@ -56,6 +56,7 @@ class StoreController extends AppBaseController
         $data = $request->validate([
             'stock_expiry_alert_days' => 'required|integer|min:0|max:3650',
             'pharmacy_default_store' => ['required', Rule::exists('stores', 'id')->where('is_active', true)],
+            'inventory_default_store' => ['required', Rule::exists('stores', 'id')->where('is_active', true)],
             'stock_transfer_prefix' => ['required', 'string', 'max:10', 'regex:/^[A-Za-z0-9]+$/'],
             'stock_count_prefix' => ['required', 'string', 'max:10', 'regex:/^[A-Za-z0-9]+$/'],
             'purchase_order_prefix' => ['required', 'string', 'max:10', 'regex:/^[A-Za-z0-9]+$/'],

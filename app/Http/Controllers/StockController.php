@@ -15,6 +15,9 @@ class StockController extends AppBaseController
 {
     const FILTERS = ['in_stock', 'expiring', 'expired', 'all'];
 
+    // What the stock page can list: kind => [model, table].
+    const KINDS = ['medicines' => [Medicine::class, 'medicines'], 'items' => [\App\Models\Item::class, 'items']];
+
     public function index(Request $request)
     {
         $stores = Store::options();
@@ -23,12 +26,15 @@ class StockController extends AppBaseController
         $search = trim((string) $request->input('search'));
         $alertDays = Stock::expiryAlertDays();
         $today = now()->toDateString();
+        $kind = isset(self::KINDS[$request->input('kind')]) ? $request->input('kind') : 'medicines';
+        [$class, $table] = self::KINDS[$kind];
 
-        $query = StockBatch::query()->join('medicines', 'medicines.id', '=', 'stock_batches.stockable_id')
-            ->where('stock_batches.stockable_type', Medicine::class)
+        $query = StockBatch::query()->join($table.' as medicines', 'medicines.id', '=', 'stock_batches.stockable_id')
+            ->where('stock_batches.stockable_type', $class)
             ->whereIn('stock_batches.store_id', $storeId && isset($stores[$storeId]) ? [$storeId] : array_keys($stores))
             ->when($search !== '', fn ($q) => $q->where(fn ($q) => $q->where('medicines.name', 'like', "%{$search}%")
-                ->orWhere('medicines.common_name', 'like', "%{$search}%")->orWhere('medicines.barcode', $search)->orWhere('stock_batches.batch_no', $search)))
+                ->when($kind === 'medicines', fn ($q) => $q->orWhere('medicines.common_name', 'like', "%{$search}%")->orWhere('medicines.barcode', $search))
+                ->orWhere('stock_batches.batch_no', $search)))
             ->when($filter === 'in_stock', fn ($q) => $q->where('stock_batches.quantity', '!=', 0))
             ->when($filter === 'expiring', fn ($q) => $q->where('stock_batches.quantity', '>', 0)
                 ->whereBetween('stock_batches.expiry_date', [$today, now()->addDays($alertDays)->toDateString()]))
@@ -39,15 +45,25 @@ class StockController extends AppBaseController
             ->orderBy('medicines.name')->orderByRaw('stock_batches.expiry_date IS NULL')->orderBy('stock_batches.expiry_date')
             ->paginate(50)->withQueryString();
 
-        return view('stock.index', compact('stores', 'storeId', 'filter', 'search', 'batches', 'value', 'alertDays'));
+        return view('stock.index', compact('stores', 'storeId', 'filter', 'search', 'batches', 'value', 'alertDays', 'kind'));
     }
 
-    /** Ledger of one medicine (optionally one store) with the running balance. */
     public function movements(Request $request, Medicine $medicine)
+    {
+        return $this->ledger($request, $medicine);
+    }
+
+    public function itemMovements(Request $request, \App\Models\Item $item)
+    {
+        return $this->ledger($request, $item);
+    }
+
+    /** Ledger of one medicine or item (optionally one store) with the running balance. */
+    private function ledger(Request $request, \Illuminate\Database\Eloquent\Model $medicine)
     {
         $stores = Store::options();
         $storeId = (int) $request->input('store_id');
-        $query = StockMovement::where('stockable_type', Medicine::class)->where('stockable_id', $medicine->id)
+        $query = StockMovement::where('stockable_type', $medicine->getMorphClass())->where('stockable_id', $medicine->id)
             ->whereIn('store_id', $storeId && isset($stores[$storeId]) ? [$storeId] : array_keys($stores));
         // ponytail: the last 300 lines with the balance before them; add paging if one item's ledger often gets longer.
         $moves = (clone $query)->with('store', 'batch', 'user', 'document')->orderByDesc('id')->limit(300)->get()->reverse()->values();
