@@ -20,7 +20,11 @@ class CreateIpdPatientDepartmentRequest extends FormRequest
      */
     public function rules(): array
     {
-        return IpdPatientDepartment::$rules;
+        return IpdPatientDepartment::$rules + [
+            'patient_insurance_id' => 'nullable|integer|exists:patient_insurances,id',
+            'price_list_id' => 'nullable|integer|exists:price_lists,id',
+            'voucher_number' => 'nullable|string|max:50',
+        ];
     }
 
     public function messages(): array

@@ -153,6 +153,13 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="row mb-5">
+                        <div class="col-md-4">
+                            {{ Form::label('bed_charge_basis', __('messages.ipd_bill_extra.bed_basis') . ':', ['class' => 'form-label']) }}
+                            {{ Form::select('bed_charge_basis', collect(\App\Repositories\IpdBillRepository::BED_BASES)->mapWithKeys(fn ($b) => [$b => __('messages.ipd_bill_extra.basis_names.' . $b)]), \App\Models\Setting::where('key', 'bed_charge_basis')->value('value') ?? 'day', ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                        </div>
+                        <div class="col-md-8 text-muted fs-7 d-flex align-items-end">{{ __('messages.ipd_bill_extra.bed_basis_hint') }}</div>
+                    </div>
                     @if ($canEdit)
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="text-muted fs-7">{{ __('messages.price_list.periods_time_hint') }}</div>

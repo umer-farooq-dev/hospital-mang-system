@@ -24,6 +24,14 @@
                             </td>
                         </tr>
                     @endforeach
+                    @foreach ($bill['exam_items'] ?? [] as $exam)
+                        <tr>
+                            <td>{{ __('messages.exam_orders.exam') }}</td>
+                            <td>{{ $exam->description }}</td>
+                            <td>{{ $exam->order->ordered_at->format('d/m/Y') }}</td>
+                            <td class="d-flex justify-content-end me-5">{{ formatMoney($exam->total) }}</td>
+                        </tr>
+                    @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
@@ -99,7 +107,11 @@
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
                             <tr>
-                                <td>{{ __('messages.bed.bed_charge') . ':' }}</td>
+                                <td>{{ __('messages.bed.bed_charge') . ':' }}
+                                    @foreach ($bill['bed_lines'] ?? [] as $line)
+                                        <div class="text-muted fs-7">{{ $line['bed']->name }} · {{ $line['units'] }} {{ __('messages.ipd_bill_extra.bases.' . $line['basis']) }} × {{ formatAmount($line['unit_price']) }}</div>
+                                    @endforeach
+                                </td>
                                 <td class="d-flex justify-content-end me-5 font-weight-bold">
                                     <span id="bedCharge" data-amount={{$bill['bed_charges']}}>
                                         {{ checkNumberFormat($bill['bed_charges'], strtoupper(getCurrentCurrency())) }}
@@ -121,6 +133,19 @@
                                     <span id="grossTotal" data-amount={{$grossTotal}}>
                                         {{ checkNumberFormat($grossTotal, strtoupper($bill['payment_currency']->currency_symbol ?? getCurrentCurrency())) }}
                                     </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{{ __('messages.ipd_bill_extra.cover_amount') . ':' }}
+                                    <div class="text-muted fs-7">{{ $bill['policy']?->option_label ?? __('messages.patient_insurance.self_pay') }}</div></td>
+                                <td class="d-flex justify-content-end me-5 font-weight-bold">
+                                    <span id="coverAmount" data-amount="{{ $bill['cover_amount'] ?? 0 }}">-{{ formatMoney($bill['cover_amount'] ?? 0) }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{{ __('messages.ipd_bill_extra.advances') . ':' }}</td>
+                                <td class="d-flex justify-content-end me-5 font-weight-bold">
+                                    <span id="advancesTotal" data-amount="{{ $bill['advances_total'] ?? 0 }}">-{{ formatMoney($bill['advances_total'] ?? 0) }}</span>
                                 </td>
                             </tr>
                             <tr>
@@ -177,6 +202,7 @@
             <a href="{{ url('ipd-bills/' . $ipdPatientDepartment->id . '/pdf') }}" target="_blank"
                 class="btn btn-success mb-5 btn-active-light-primary me-2 {{ $ipdPatientDepartment->bill ? '' : 'disabled' }} "
                 id="printBillBtn" role="button" aria-pressed="true">{{ __('messages.bill.print_bill') }}</a>
+            <a href="{{ route('ipd.bill.interim', $ipdPatientDepartment->id) }}" target="_blank" class="btn mb-5 btn-light-primary me-2">{{ __('messages.ipd_bill_extra.interim_bill') }}</a>
             <a href="{{  url('ipd-discharge-patient/' . $ipdPatientDepartment->id . '/pdf') }}" target="_blank"
                 class="btn btn-success mb-5 btn-active-light-primary me-2 {{ $ipdPatientDepartment->bill ? '' : 'disabled' }} "
                 id="printIpdPatientDischargeSlipBtn" role="button" aria-pressed="true">{{ __('messages.ipd_patient.print_discharge_slip') }}</a>

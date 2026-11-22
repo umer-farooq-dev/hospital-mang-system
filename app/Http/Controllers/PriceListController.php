@@ -41,7 +41,7 @@ class PriceListController extends AppBaseController
 
     public function updatePeriods(Request $request)
     {
-        $this->priceListRepository->savePeriods((array) $request->input('periods', []), $request->input('new_period'));
+        $this->priceListRepository->savePeriods((array) $request->input('periods', []), $request->input('new_period'), $request->input('bed_charge_basis'));
         Flash::success(__('messages.price_list.periods').' '.__('messages.common.updated_successfully'));
 
         return redirect(route('price-lists.index'));

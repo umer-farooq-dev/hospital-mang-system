@@ -292,6 +292,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('ipd-timelines', [IpdTimelineController::class, 'index'])->name('ipd.timelines.index');
         Route::get('ipd-payments', [IpdPaymentController::class, 'index'])->name('ipd.payments.index');
         Route::get('ipd-bills/{ipdPatientDepartment}/pdf', [IpdBillController::class, 'ipdBillConvertToPdf'])->where('ipdPatientDepartment', '[0-9]+');
+        Route::get('ipds/{ipdPatientDepartment}/interim-bill', [IpdBillController::class, 'interimBill'])->name('ipd.bill.interim');
 
         Route::get('ipd-diagnosis-download/{ipdDiagnosis}', [IpdDiagnosisController::class, 'downloadMedia']);
         Route::get('ipd-payment-download/{ipdPayment}', [IpdPaymentController::class, 'downloadMedia']);

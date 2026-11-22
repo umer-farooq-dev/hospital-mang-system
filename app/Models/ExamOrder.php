@@ -14,7 +14,7 @@ class ExamOrder extends Model
 {
     protected $table = 'exam_orders';
 
-    protected $fillable = ['patient_id', 'doctor_id', 'patient_insurance_id', 'price_list_id', 'voucher_number', 'ordered_at', 'user_id', 'notes'];
+    protected $fillable = ['patient_id', 'ipd_patient_department_id', 'doctor_id', 'patient_insurance_id', 'price_list_id', 'voucher_number', 'ordered_at', 'user_id', 'notes'];
 
     protected $casts = [
         'patient_id' => 'integer',
