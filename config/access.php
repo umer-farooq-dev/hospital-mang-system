@@ -71,6 +71,7 @@ return [
         'certificates' => 'patients',
         'certificate_templates' => 'settings',
         'lab_worklist' => 'laboratory',
+        'imaging_report_templates' => 'radiology',
         'ipd_timelines' => 'ipd',
         'ipd_payments' => 'ipd',
         'ipd_bills' => 'ipd',
@@ -269,6 +270,7 @@ return [
         Controllers\CertificateController::class => 'certificates',
         Controllers\CertificateTemplateController::class => 'certificate_templates',
         Controllers\LabWorklistController::class => 'lab_worklist',
+        Controllers\ImagingReportTemplateController::class => 'imaging_report_templates',
         Controllers\IpdTimelineController::class => 'ipd_timelines',
         Controllers\IpdPaymentController::class => 'ipd_payments',
         Controllers\IpdBillController::class => 'ipd_bills',
@@ -394,6 +396,8 @@ return [
         // Lab settings sit on the worklist; changing them is editing the module.
         Controllers\LabWorklistController::class.'@updateSettings' => ['lab_worklist', 'edit'],
         Controllers\LabWorklistController::class.'@collect' => ['lab_worklist', 'edit'],
+        Controllers\LabWorklistController::class.'@storeFile' => ['lab_worklist', 'edit'],
+        Controllers\LabWorklistController::class.'@destroyFile' => ['lab_worklist', 'edit'],
         // Importing replaces titles in bulk: same right as editing the list.
         Controllers\Icd10Controller::class.'@import' => ['icd10', 'edit'],
         // Post-op notes are written on the operation sheet.

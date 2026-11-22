@@ -39,6 +39,7 @@
             {{ Form::number('report_days', null, ['class' => 'form-control','placeholder'=>__('messages.radiology_test.report_days')]) }}
         </div>
     </div>
+    @include('radiology_tests.imaging_fields')
 
 
     <div class="col-md-3">

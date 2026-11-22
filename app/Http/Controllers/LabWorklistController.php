@@ -65,7 +65,15 @@ class LabWorklistController extends AppBaseController
             ? $item->results->map(fn ($r) => $r->only(['pathology_parameter_id', 'label', 'unit', 'reference_range', 'value']))->all()
             : ($item->is_lab ? ExamOrderItem::parametersOf($item->testable()) : []);
 
-        return view('lab_worklist.results', ['item' => $item, 'rows' => $rows]);
+        $test = $item->is_lab ? null : $item->testable();
+        $templates = $item->is_lab ? collect() : \App\Models\ImagingReportTemplate::forModality($test?->modality);
+        $report = $item->report_text;
+        if (! $item->is_lab && $report === null && $test?->report_template_id) {
+            $report = \App\Models\ImagingReportTemplate::find($test->report_template_id)?->text;
+        }
+
+        return view('lab_worklist.results', ['item' => $item, 'rows' => $rows, 'templates' => $templates, 'report' => $report,
+            'files' => $item->getMedia(ExamOrderItem::FILES), 'pacsUrl' => $item->pacsUrl($this->setting('pacs_viewer_url', ''))]);
     }
 
     public function update(Request $request, ExamOrderItem $item)
@@ -101,6 +109,32 @@ class LabWorklistController extends AppBaseController
                 'collected_at' => $item->collected_at ?? now()]);
         });
         Flash::success(__('messages.lab.results_saved'));
+
+        return redirect()->route('lab-worklist.show', $item->id);
+    }
+
+    public function storeFile(Request $request, ExamOrderItem $item)
+    {
+        abort_if(in_array($item->status, ['validated', 'released'], true), 403, __('messages.lab.locked'));
+        $request->validate(['files' => 'required|array|max:20', 'files.*' => 'file|max:51200']);
+        foreach ($request->file('files') as $file) {
+            if (! in_array(strtolower($file->getClientOriginalExtension()), ExamOrderItem::FILE_EXTENSIONS, true)) {
+                return redirect()->back()->withErrors(['files' => __('messages.imaging.bad_file', ['types' => implode(', ', ExamOrderItem::FILE_EXTENSIONS)])]);
+            }
+        }
+        foreach ($request->file('files') as $file) {
+            $item->addMedia($file)->toMediaCollection(ExamOrderItem::FILES, config('app.media_disc'));
+        }
+        Flash::success(__('messages.imaging.files_saved'));
+
+        return redirect()->route('lab-worklist.show', $item->id);
+    }
+
+    public function destroyFile(ExamOrderItem $item, int $media)
+    {
+        abort_if(in_array($item->status, ['validated', 'released'], true), 403, __('messages.lab.locked'));
+        $item->getMedia(ExamOrderItem::FILES)->firstWhere('id', $media)?->delete();
+        Flash::success(__('messages.imaging.file_deleted'));
 
         return redirect()->route('lab-worklist.show', $item->id);
     }
@@ -141,7 +175,8 @@ class LabWorklistController extends AppBaseController
 
     public function updateSettings(Request $request)
     {
-        $request->validate(['lab_sample_prefix' => ['required', 'string', 'max:6', 'regex:/^[A-Za-z0-9]+$/']]);
+        $request->validate(['lab_sample_prefix' => ['required', 'string', 'max:6', 'regex:/^[A-Za-z0-9]+$/'], 'pacs_viewer_url' => 'nullable|url|max:500']);
+        Setting::updateOrCreate(['key' => 'pacs_viewer_url'], ['value' => (string) $request->input('pacs_viewer_url')]);
         foreach (['lab_sample_prefix' => strtoupper($request->input('lab_sample_prefix')),
             'lab_auto_release' => $request->boolean('lab_auto_release') ? '1' : '0',
             'lab_require_payment' => $request->boolean('lab_require_payment') ? '1' : '0'] as $key => $value) {

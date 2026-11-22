@@ -63,6 +63,8 @@ class RadiologyTest extends Model
         'charge_category_id',
         'standard_charge',
         'charge_id',
+        'modality',
+        'report_template_id',
     ];
 
     protected $casts = [
@@ -84,6 +86,8 @@ class RadiologyTest extends Model
         'category_id' => 'required',
         'charge_category_id' => 'required',
         'standard_charge' => 'required',
+        'modality' => 'nullable|integer',
+        'report_template_id' => 'nullable|integer|exists:imaging_report_templates,id',
     ];
 
     public function radiologycategory(): BelongsTo

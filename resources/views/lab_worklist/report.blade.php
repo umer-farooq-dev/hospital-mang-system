@@ -38,7 +38,9 @@
     @endif
     @if ($item->report_text)<div style="margin-top:6px">{!! nl2br(e($item->report_text)) !!}</div>@endif
     @if ($item->result_note)<div class="muted" style="margin-top:6px">{!! nl2br(e($item->result_note)) !!}</div>@endif
-    <div class="sign">{{ __('messages.lab.validated_by', ['name' => $item->stepUser('validated')?->full_name, 'date' => $item->validated_at?->format('d/m/Y H:i')]) }}</div>
+    @php($attached = $item->getMedia(\App\Models\ExamOrderItem::FILES)->count())
+    @if ($attached)<div class="muted" style="margin-top:6px">{{ __('messages.imaging.attached', ['count' => $attached]) }}</div>@endif
+    <div class="sign">{{ __($item->is_lab ? 'messages.lab.validated_by' : 'messages.imaging.signed_by', ['name' => $item->stepUser('validated')?->full_name, 'date' => $item->validated_at?->format('d/m/Y H:i')]) }}</div>
 @empty
     <p class="muted">{{ __('messages.lab.nothing_validated') }}</p>
 @endforelse
