@@ -1419,6 +1419,12 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::delete('ipd-operations/{id}', [IpdOperationController::class, 'delete'])->name('operation.delete');
         Route::get('ipd-operations/{id}/edit', [IpdOperationController::class, 'edit'])->name('operation.edit');
         Route::post('ipd-operations/{id}', [IpdOperationController::class, 'update'])->name('operation.update');
+        Route::get('ipd-operations/{id}/sheet', [IpdOperationController::class, 'show'])->name('operation.sheet');
+        Route::get('ipd-operations/{id}/print', [IpdOperationController::class, 'print'])->name('operation.print');
+        Route::post('ipd-operations/{id}/followups', [IpdOperationController::class, 'storeFollowup'])->name('operation.followups.store');
+        Route::get('ot-calendar', [\App\Http\Controllers\OtCalendarController::class, 'index'])->name('ot-calendar.index')->middleware('modules');
+        Route::get('ot-calendar/events', [\App\Http\Controllers\OtCalendarController::class, 'getEvents'])->name('ot-calendar.events');
+        Route::post('ot-calendar/settings', [\App\Http\Controllers\OtCalendarController::class, 'update'])->name('ot-calendar.update');
 
         // IPD Consultant Register routes.
         Route::post('ipd-consultant-register', [IpdConsultantRegisterController::class, 'store'])->name('ipd.consultant.store');

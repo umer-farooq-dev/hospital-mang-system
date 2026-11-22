@@ -32,6 +32,7 @@
                         <span class="required"></span>
                         {{ Form::select('doctor_id', $doctors, null, ['class' => 'form-select select2Selector', 'id' => 'ipdOperationDoctorId', 'required', 'data-is-charge-edit' => 0, 'placeholder' => __('messages.web_appointment.select_doctor')]) }}
                     </div>
+                    @include('ipd_operation.ot_fields')
                     <div class="form-group col-md-6 mb-5">
                         <div class="form-group">
                             {{ Form::label('assistant_consultant_1', __('messages.ipd_patient_consultant_register.assistant_consultant_1') . ':', ['class' => 'form-label']) }}
@@ -50,13 +51,7 @@
                             {{ Form::text('anesthetist', null, ['class' => 'form-control','placeholder' => __('messages.ipd_patient_consultant_register.anesthetist')]) }}
                         </div>
                     </div>
-                    <div class="form-group col-md-6 mb-5">
-                        <div class="form-group">
-                            {{ Form::label('anesthesia_type', __('messages.ipd_patient_consultant_register.anesthesia_type') . ':', ['class' => 'form-label']) }}
-                            {{ Form::text('anesthesia_type', null, ['class' => 'form-control','placeholder' => __('messages.ipd_patient_consultant_register.anesthesia_type')]) }}
-                        </div>
-                    </div>
-                    <div class="form-group col-md-6 mb-5">
+                                        <div class="form-group col-md-6 mb-5">
                         <div class="form-group">
                             {{ Form::label('ot_technician', __('messages.operation.ot_technician') . ':', ['class' => 'form-label']) }}
                             {{ Form::text('ot_technician', null, ['class' => 'form-control','placeholder' => __('messages.operation.ot_technician')]) }}

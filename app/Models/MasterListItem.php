@@ -41,6 +41,11 @@ class MasterListItem extends Model
         'refund_reason' => ['refunds', 'reason'],
         'transfer_destination' => ['fund_transfers', 'destination'],
         'guardian_relation' => ['ipd_patient_departments', 'guardian_relation'],
+        'ot_room' => ['ipd_operation', 'ot_room'],
+        'operation_status' => ['ipd_operation', 'status'],
+        'intervention_type' => ['ipd_operation', 'intervention_type'],
+        'anaesthesia_type' => ['ipd_operation', 'anesthesia_type'],
+        'preop_check' => ['ipd_operation', 'preop_checks'],
     ];
 
     // Other tables that also store codes of a list.

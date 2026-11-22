@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateIPDOperationRequest;
 use App\Models\IpdOperation;
+use App\Models\MasterListItem;
+use App\Models\OperationFollowup;
+use Illuminate\Http\Request;
+use Laracasts\Flash\Flash;
 use Str;
 
 class IpdOperationController extends AppBaseController
@@ -35,7 +39,7 @@ class IpdOperationController extends AppBaseController
             'ot_assistant' => $request->ot_assistant,
             'remark' => $request->remark,
             'result' => $request->result,
-        ];
+        ] + $request->only(IpdOperation::OT_FIELDS);
 
         IpdOperation::create($input);
 
@@ -55,6 +59,39 @@ class IpdOperationController extends AppBaseController
         $ipdOperation->update($request->all());
 
         return $this->sendSuccess(__('messages.ipd_operation.ipd_operation').' '.__('messages.common.updated_successfully'));
+    }
+
+    /** Operation sheet: details, team, pre-op checklist, K fees and post-op notes. */
+    public function show($id)
+    {
+        return view('ipd_operation.sheet', $this->sheetData($id));
+    }
+
+    public function print($id)
+    {
+        return view('ipd_operation.print', $this->sheetData($id) + ['settings' => getSettingValue()]);
+    }
+
+    public function storeFollowup(Request $request, $id)
+    {
+        $operation = IpdOperation::findOrFail($id);
+        $data = $request->validate(['noted_at' => 'required|date', 'note' => 'required|string|max:5000']);
+        OperationFollowup::create($data + ['ipd_operation_id' => $operation->id, 'created_by' => auth()->id()]);
+        Flash::success(__('messages.ot.followup_saved'));
+
+        return redirect()->route('operation.sheet', $operation->id);
+    }
+
+    private function sheetData($id): array
+    {
+        $operation = IpdOperation::with(['ipd_patient_department.patient.patientUser', 'operations.operation_category', 'surgeon.doctorUser',
+            'assistantDoctor.doctorUser', 'anaesthetistDoctor.doctorUser', 'followups.author'])->findOrFail($id);
+
+        return [
+            'operation' => $operation,
+            'checklist' => MasterListItem::labels('preop_check'),
+            'activeChecks' => MasterListItem::options('preop_check'),
+        ];
     }
 
     public function delete($id)

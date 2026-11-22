@@ -25,6 +25,25 @@
                             {{ Form::text('name', null, ['class' => 'form-control','id' => 'operationName','placeholder'=>__('messages.user.name')]) }}
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-5">
+                            {{ Form::label('k_surgeon', __('messages.ot.k_surgeon') . ':', ['class' => 'form-label']) }}
+                            {{ Form::number('k_surgeon', null, ['class' => 'form-control', 'id' => 'addKSurgeon', 'step' => 'any', 'min' => 0]) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-5">
+                            {{ Form::label('k_assistant', __('messages.ot.k_assistant') . ':', ['class' => 'form-label']) }}
+                            {{ Form::number('k_assistant', null, ['class' => 'form-control', 'id' => 'addKAssistant', 'step' => 'any', 'min' => 0]) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-5">
+                            {{ Form::label('k_anaesthetist', __('messages.ot.k_anaesthetist') . ':', ['class' => 'form-label']) }}
+                            {{ Form::number('k_anaesthetist', null, ['class' => 'form-control', 'id' => 'addKAnaesthetist', 'step' => 'any', 'min' => 0]) }}
+                        </div>
+                    </div>
+                    <div class="col-12 form-text mt-n3 mb-3">{{ __('messages.ot.k_hint') }}</div>
                 </div>
             </div>
             <div class="modal-footer pt-0">

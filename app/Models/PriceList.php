@@ -21,7 +21,7 @@ class PriceList extends Model
 {
     protected $table = 'price_lists';
 
-    protected $fillable = ['name', 'lang_key', 'adjustment_percent', 'is_default', 'is_active', 'sort_order'];
+    protected $fillable = ['name', 'lang_key', 'adjustment_percent', 'k_value', 'is_default', 'is_active', 'sort_order'];
 
     protected $casts = [
         'adjustment_percent' => 'float',
@@ -35,6 +35,7 @@ class PriceList extends Model
         return [
             'name' => 'required|string|max:100',
             'adjustment_percent' => 'required|numeric|min:-100|max:1000',
+            'k_value' => 'nullable|numeric|min:0',
         ];
     }
 

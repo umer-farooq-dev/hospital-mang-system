@@ -54,7 +54,7 @@ listenClick('.updateIpdOperation', function (event) {
             $('#editIpdAssistantConsultant2').
                 val(result.data.assistant_consultant_2)
             $('#editAnesthetist').val(result.data.anesthetist)
-            $('#editAnesthesiaType').val(result.data.anesthesia_type)
+            fillTheatreFields(result.data)
             $('#editOTTechnician').val(result.data.ot_technician)
             $('#editOTAssistant').val(result.data.ot_assistant)
             $('#editIpdOperationRemark').val(result.data.remark)
@@ -63,6 +63,21 @@ listenClick('.updateIpdOperation', function (event) {
         },
     })
 })
+
+// Theatre fields (room, schedule, status, team, pre-op checklist) of the edit form.
+function fillTheatreFields (data) {
+    let form = $('#editIpdOperationNewForm')
+    ;['ot_room', 'status', 'intervention_type', 'anesthesia_type', 'assistant_doctor_id', 'anaesthetist_doctor_id'].forEach(function (name) {
+        form.find('[name="' + name + '"]').val(data[name] === null || data[name] === undefined ? '' : String(data[name]))
+    })
+    ;['scheduled_start', 'scheduled_end'].forEach(function (name) {
+        form.find('[name="' + name + '"]').val(data[name] ? data[name].replace(' ', 'T').substring(0, 16) : '')
+    })
+    let checks = (data.preop_checks || []).map(String)
+    form.find('input[type=checkbox][name="preop_checks[]"]').each(function () {
+        $(this).prop('checked', checks.includes(this.value))
+    })
+}
 
 listenChange('#ipdOperationCategoryId',
     function () {
@@ -122,6 +137,9 @@ listenSubmit('#addIpdOperationNewForm', function (event) {
             $('#addIpdOperationNewForm')[0].reset()
             Livewire.dispatch('refresh')
         },
+        error: function (result) {
+            displayErrorMessage(result.responseJSON.message)
+        },
     })
 })
 
@@ -144,10 +162,8 @@ listenSubmit('#editIpdOperationNewForm', function (event) {
             Livewire.dispatch('refresh')
         },
         error: function (result) {
+            // Keep the form open so a clash or a missing field can be corrected.
             displayErrorMessage(result.responseJSON.message)
-            $('#editIpdOperationModal').modal('hide')
-            $('#editIpdOperationNewForm')[0].reset()
-            Livewire.dispatch('refresh')
         },
     })
 })

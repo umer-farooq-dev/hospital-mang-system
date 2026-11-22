@@ -65,6 +65,7 @@ return [
         'ipd_charges' => 'ipd',
         'ipd_prescriptions' => 'ipd',
         'ipd_operations' => 'ipd',
+        'ot_calendar' => 'ipd',
         'ipd_timelines' => 'ipd',
         'ipd_payments' => 'ipd',
         'ipd_bills' => 'ipd',
@@ -256,6 +257,7 @@ return [
         Controllers\IpdChargeController::class => 'ipd_charges',
         Controllers\IpdPrescriptionController::class => 'ipd_prescriptions',
         Controllers\IpdOperationController::class => 'ipd_operations',
+        Controllers\OtCalendarController::class => 'ot_calendar',
         Controllers\IpdTimelineController::class => 'ipd_timelines',
         Controllers\IpdPaymentController::class => 'ipd_payments',
         Controllers\IpdBillController::class => 'ipd_bills',
@@ -378,6 +380,8 @@ return [
     //            and for any role that may create, edit or delete in the module.
     // "fixed":   allowed for the route's default roles only; not shown on the Roles screen.
     'methods' => [
+        // Post-op notes are written on the operation sheet.
+        Controllers\IpdOperationController::class.'@storeFollowup' => ['ipd_operations', 'edit'],
         // Searching is what the desk is for: anyone who can open it can search.
         Controllers\ReceptionDeskController::class.'@getSearch' => ['reception_desk', 'list'],
         // The tariff grid is part of the price lists screen.

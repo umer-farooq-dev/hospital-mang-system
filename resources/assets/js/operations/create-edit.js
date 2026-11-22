@@ -51,6 +51,9 @@ listenClick(".updateOperationBtn", function () {
         success: function (result) {
             $("#editOperationID").val(result.data.id);
             $("#editOperationName").val(result.data.name);
+            $("#editKSurgeon").val(result.data.k_surgeon);
+            $("#editKAssistant").val(result.data.k_assistant);
+            $("#editKAnaesthetist").val(result.data.k_anaesthetist);
             $("#editOperationCategoryId")
                 .val(result.data.operation_category_id)
                 .trigger("change.select2");
