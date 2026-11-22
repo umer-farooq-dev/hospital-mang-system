@@ -237,6 +237,17 @@ class CashierTest extends TestCase
             $t->string('note')->nullable();
             $t->timestamps();
         });
+        Schema::create('claim_lines', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('claim_invoice_id');
+            $t->unsignedInteger('patient_id')->nullable();
+            $t->string('description')->default('');
+            $t->decimal('payer_amount', 15, 2)->default(0);
+            $t->decimal('paid_amount', 15, 2)->default(0);
+            $t->string('status')->default('pending');
+            $t->date('settled_on')->nullable();
+            $t->timestamps();
+        });
         (require base_path('database/migrations/2026_11_20_120000_create_audit_logs_table.php'))->up();
 
         $counter = CashCounter::create(['code' => 'C04', 'name' => 'Caisse accueil']);

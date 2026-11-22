@@ -62,7 +62,7 @@ class ClaimController extends AppBaseController
 
     public function show(ClaimInvoice $claimInvoice)
     {
-        $claimInvoice->load('insurance', 'lines.patient.patientUser', 'author');
+        $claimInvoice->load('insurance', 'lines.patient.patientUser', 'author', 'payments');
 
         return view('claims.show', ['invoice' => $claimInvoice]);
     }

@@ -17,6 +17,16 @@
         <a class="nav-link p-0 {{ Request::is('third-party/claims*') ? 'active' : '' }}" href="{{ route('claims.index') }}">{{ __('messages.claims.claims') }}</a>
     </li>
     @endcanroute
+    @canroute('claims.ageing')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('third-party*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('third-party/ageing*') ? 'active' : '' }}" href="{{ route('claims.ageing') }}">{{ __('messages.claim_settlement.ageing') }}</a>
+    </li>
+    @endcanroute
+    @canroute('claims.statement')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('third-party*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('third-party/statement*') ? 'active' : '' }}" href="{{ route('claims.statement') }}">{{ __('messages.claim_settlement.statement') }}</a>
+    </li>
+    @endcanroute
 @endmodule
 @if (Auth::user()->hasRole('Admin') || hasCustomRole())
     @canroute('dashboard')

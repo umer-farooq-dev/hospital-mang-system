@@ -47,5 +47,7 @@
                 <div class="mt-5 text-muted fs-7 d-print-none">{{ __('messages.claims.made_by', ['name' => $invoice->author->full_name ?? '', 'date' => $invoice->created_at->format('d/m/Y H:i')]) }}</div>
             </div>
         </div>
+        @include('layouts.errors')
+        @include('claims.settlement')
     </div>
 @endsection

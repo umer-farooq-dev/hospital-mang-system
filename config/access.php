@@ -337,6 +337,7 @@ return [
         Controllers\PurchaseOrderController::class => 'purchase_orders',
         Controllers\StockReportController::class => 'stock_reports',
         Controllers\ClaimController::class => 'claims',
+        Controllers\ClaimSettlementController::class => 'claims',
         Controllers\StoreController::class => 'stores',
         Controllers\SupplierController::class => 'suppliers',
         Controllers\PathologyCategoryController::class => 'pathology_categories',

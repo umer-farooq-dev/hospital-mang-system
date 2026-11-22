@@ -66,6 +66,9 @@ class CashierRepository
         $bills = MedicineBill::with('store')->where('patient_id', $patientId)->whereNull('ipd_patient_department_id')
             ->where('payment_status', MedicineBill::UNPAID)->get();
         $paidBills = $this->paid('medicine_bill', $bills->pluck('id')->all());
+        // What a payer refused and was moved to the patient (P6).
+        $refused = \App\Models\ClaimLine::with('invoice.insurance')->where('patient_id', $patientId)->where('status', \App\Models\ClaimLine::TO_PATIENT)->get();
+        $paidRefused = $this->paid('claim_line', $refused->pluck('id')->all());
 
         $items = $visits->map(fn ($v) => [
             'type' => 'opd_visit', 'id' => $v->id, 'date' => $v->appointment_date,
@@ -86,6 +89,11 @@ class CashierRepository
             'total' => (float) $b->net_amount, 'payer' => (float) $b->payer_amount,
             'discount' => round(max(0, (float) $b->net_amount - (float) $b->payer_amount - $b->patientShare()), 2),
             'outstanding' => round($b->patientShare() - (float) ($paidBills[$b->id] ?? 0), 2),
+        ]))->concat($refused->map(fn ($l) => [
+            'type' => 'claim_line', 'id' => $l->id, 'date' => \Illuminate\Support\Carbon::parse($l->settled_on ?? $l->updated_at),
+            'description' => __('messages.claim_settlement.refused_by', ['payer' => $l->invoice->insurance->name ?? '']).' · '.$l->description,
+            'detail' => $l->invoice->number ?? '', 'total' => $l->rejectedAmount(), 'discount' => 0.0, 'payer' => 0.0,
+            'outstanding' => round($l->rejectedAmount() - (float) ($paidRefused[$l->id] ?? 0), 2),
         ]));
 
         return $items->filter(fn ($i) => $i['outstanding'] > 0)
@@ -103,6 +111,7 @@ class CashierRepository
         $candidates = OpdPatientDepartment::where('patient_amount', '>', 0)->where('appointment_date', '>=', $since)->pluck('patient_id')
             ->merge(ExamOrder::where('ordered_at', '>=', $since)->whereHas('items', fn ($q) => $q->where('patient_amount', '>', 0))->pluck('patient_id'))
             ->merge(MedicineBill::where('bill_date', '>=', $since)->whereNull('ipd_patient_department_id')->where('payment_status', MedicineBill::UNPAID)->pluck('patient_id'))
+            ->merge(\App\Models\ClaimLine::where('status', \App\Models\ClaimLine::TO_PATIENT)->where('settled_on', '>=', $since)->pluck('patient_id'))
             ->unique();
         $patientIds = $candidates->filter(fn ($id) => $this->unpaidItems((int) $id)->isNotEmpty());
 
