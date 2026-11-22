@@ -402,6 +402,7 @@ return [
         Controllers\LabWorklistController::class.'@collect' => ['lab_worklist', 'edit'],
         Controllers\LabWorklistController::class.'@storeFile' => ['lab_worklist', 'edit'],
         Controllers\LabWorklistController::class.'@importResults' => ['lab_worklist', 'edit'],
+        Controllers\LabWorklistController::class.'@storeCatalogue' => ['lab_worklist', 'edit'],
         Controllers\LabWorklistController::class.'@destroyFile' => ['lab_worklist', 'edit'],
         // Importing replaces titles in bulk: same right as editing the list.
         Controllers\Icd10Controller::class.'@import' => ['icd10', 'edit'],

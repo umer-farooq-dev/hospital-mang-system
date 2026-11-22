@@ -3341,6 +3341,14 @@ return [
                 'name' => 'Certificat d\'aptitude',
                 'body' => "Je soussigné(e), {doctor}, certifie avoir examiné ce jour {date} {patient_name}, âgé(e) de {age}, et n'avoir constaté aucun signe clinique contre-indiquant {notes}.",
             ],
+            'birth' => [
+                'name' => 'Certificat de naissance',
+                'body' => "Je soussigné(e), {doctor}, certifie que {patient_name}, âgée de {age}, a accouché le {start_date} à {hospital}.\n\nEnfant : {notes}\n\nCertificat établi pour la déclaration de naissance à l'état civil.",
+            ],
+            'death' => [
+                'name' => 'Certificat de décès',
+                'body' => "Je soussigné(e), {doctor}, certifie avoir constaté le décès de {patient_name}, âgé(e) de {age}, le {start_date} à {hospital}.\n\n{notes}\n\nCertificat établi pour la déclaration de décès à l'état civil.",
+            ],
             'hospital_stay' => [
                 'name' => 'Certificat d\'hospitalisation',
                 'body' => "Je soussigné(e), {doctor}, certifie que {patient_name}, âgé(e) de {age}, a été hospitalisé(e) dans notre établissement du {admission_date} au {discharge_date} (dossier n° {ipd_number}).\n\n{notes}",
@@ -3388,6 +3396,9 @@ return [
         'require_payment' => 'Ne prélever que les examens payés (ceux d\'hospitalisation sont facturés sur le séjour)',
         'auto_release' => 'Diffuser dès la validation',
         'settings_saved' => 'Paramètres du laboratoire enregistrés.',
+        'catalogue_button' => 'Ajouter le catalogue proposé',
+        'catalogue_hint' => "Ajoute une vingtaine d'analyses courantes (avec unités et valeurs de référence usuelles de l'adulte) et 8 examens d'imagerie dans votre langue, au prix 0. Les tests existants ne sont pas modifiés ; le laboratoire doit vérifier les valeurs de référence.",
+        'catalogue_added' => ':lab analyse(s) et :imaging examen(s) d\'imagerie ajoutés. Fixez leurs prix dans les listes de prix.',
         'settings_hint' => 'Qui peut valider et diffuser se règle dans Rôles (Paillasse > Approuver).',
         'statuses' => [
             'ordered' => 'Demandé',
