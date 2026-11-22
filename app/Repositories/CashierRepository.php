@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\CashSession;
 use App\Models\ExamOrder;
+use App\Models\MedicineBill;
 use App\Models\ExamOrderItem;
 use App\Models\FundTransfer;
 use App\Models\OpdPatientDepartment;
@@ -61,6 +62,10 @@ class CashierRepository
             ->whereHas('order', fn ($q) => $q->where('patient_id', $patientId)->whereNull('ipd_patient_department_id'))->get();
         $paidVisits = $this->paid('opd_visit', $visits->pluck('id')->all());
         $paidExams = $this->paid('exam_item', $exams->pluck('id')->all());
+        // Pharmacy bills not tied to an admission (those go on the admission bill).
+        $bills = MedicineBill::with('store')->where('patient_id', $patientId)->whereNull('ipd_patient_department_id')
+            ->where('payment_status', MedicineBill::UNPAID)->get();
+        $paidBills = $this->paid('medicine_bill', $bills->pluck('id')->all());
 
         $items = $visits->map(fn ($v) => [
             'type' => 'opd_visit', 'id' => $v->id, 'date' => $v->appointment_date,
@@ -74,6 +79,13 @@ class CashierRepository
             'detail' => __('messages.exam_orders.exam').($e->order->doctor ? ' · '.$e->order->doctor->doctorUser->full_name : ''),
             'total' => $e->total, 'discount' => $e->discount_amount, 'payer' => $e->payer_amount,
             'outstanding' => round($e->patient_amount - (float) ($paidExams[$e->id] ?? 0), 2),
+        ]))->concat($bills->map(fn ($b) => [
+            'type' => 'medicine_bill', 'id' => $b->id, 'date' => \Illuminate\Support\Carbon::parse($b->bill_date ?? $b->created_at),
+            'description' => __('messages.ipd_bill_extra.pharmacy').' · '.$b->bill_number,
+            'detail' => $b->store->name ?? '',
+            'total' => (float) $b->net_amount, 'payer' => (float) $b->payer_amount,
+            'discount' => round(max(0, (float) $b->net_amount - (float) $b->payer_amount - $b->patientShare()), 2),
+            'outstanding' => round($b->patientShare() - (float) ($paidBills[$b->id] ?? 0), 2),
         ]));
 
         return $items->filter(fn ($i) => $i['outstanding'] > 0)
@@ -90,6 +102,7 @@ class CashierRepository
         $since = now()->subDays(90);
         $candidates = OpdPatientDepartment::where('patient_amount', '>', 0)->where('appointment_date', '>=', $since)->pluck('patient_id')
             ->merge(ExamOrder::where('ordered_at', '>=', $since)->whereHas('items', fn ($q) => $q->where('patient_amount', '>', 0))->pluck('patient_id'))
+            ->merge(MedicineBill::where('bill_date', '>=', $since)->whereNull('ipd_patient_department_id')->where('payment_status', MedicineBill::UNPAID)->pluck('patient_id'))
             ->unique();
         $patientIds = $candidates->filter(fn ($id) => $this->unpaidItems((int) $id)->isNotEmpty());
 
@@ -140,6 +153,7 @@ class CashierRepository
                     'amount' => $item['outstanding'],
                 ]);
             }
+            $this->settlePayables($receipt, MedicineBill::FULLPAID);
 
             return $receipt;
         });
@@ -163,6 +177,7 @@ class CashierRepository
             $receipt = Receipt::with('session', 'refund')->lockForUpdate()->findOrFail($receipt->id);
             $this->assertCorrectable($receipt);
             $receipt->update(['voided_at' => now(), 'void_reason' => $reason, 'voided_by' => $user->id]);
+            $this->settlePayables($receipt, MedicineBill::UNPAID);
 
             return $receipt;
         });
@@ -181,6 +196,8 @@ class CashierRepository
                 throw ValidationException::withMessages(['receipt' => __('messages.cashier.open_first')]);
             }
 
+            $this->settlePayables($receipt, MedicineBill::UNPAID);
+
             return Refund::create([
                 'receipt_id' => $receipt->id,
                 'cash_session_id' => $session->id,
@@ -192,6 +209,19 @@ class CashierRepository
                 'notes' => $notes,
             ]);
         });
+    }
+
+    /**
+     * A pharmacy bill paid at the cashier is marked paid, so its medicines leave the store;
+     * a voided or refunded receipt makes it unpaid again (the medicines come back unless dispensed).
+     */
+    private function settlePayables(Receipt $receipt, int $status): void
+    {
+        $ids = $receipt->lines()->where('payable_type', 'medicine_bill')->pluck('payable_id');
+        foreach (MedicineBill::whereIn('id', $ids)->get() as $bill) {
+            $bill->update(['payment_status' => $status, 'payment_type' => MedicineBill::MEDICINE_BILL_CASH]);
+            $bill->syncStock();
+        }
     }
 
     /** Correct the payment method of a receipt of a session still open. */

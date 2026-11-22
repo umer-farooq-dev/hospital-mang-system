@@ -27,6 +27,12 @@
                 {{ Form::text('bill_date', null, ['placeholder' => __('messages.bill.bill_date'), 'class' => getLoggedInUser()->thememode ? 'bg-light form-control medicine_bill_date' : 'bg-white form-control medicine_bill_date', 'id' => 'medicine_bill_date', 'autocomplete' => 'off']) }}
             </div>
         @endif
+        @if (\App\Repositories\CashierRepository::sessionRequired())
+        <div class="col-lg-3 col-md-4 col-sm-12 d-flex flex-column">
+            <span class="form-label">{{ __('messages.medicine_bills.payment_status') . ' :' }}</span>
+            <div class="form-text mt-3">{{ !empty($medicineBill->payment_status) ? __('messages.stock_transfer.statuses.received') : __('messages.pharmacy_sale.pay_at_cashier') }}</div>
+        </div>
+        @else
         <div class="col-lg-3 col-md-4 col-sm-12 d-flex flex-column">
             <span class="form-label">{{ __('messages.medicine_bills.payment_status') . ' :' }}</span>
             <label class="form-check form-switch form-switch-sm">
@@ -36,6 +42,7 @@
                 <span class="custom-switch-indicator"></span>
             </label>
         </div>
+        @endif
     </div>
 </div>
 

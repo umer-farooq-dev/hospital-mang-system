@@ -94,6 +94,9 @@ class MedicineBillController extends AppBaseController
     public function store(CreateMedicineBillRequest $request)
     {
         $input = $request->all();
+        if (\App\Repositories\CashierRepository::sessionRequired()) {
+            unset($input['payment_status']); // paid at a cash register, never by ticking the bill
+        }
 
         if($input['payment_type'] == MedicineBill::MEDICINE_BILL_STRIPE){
 
@@ -172,6 +175,9 @@ class MedicineBillController extends AppBaseController
     public function update(MedicineBill $medicineBill, UpdateMedicineBillRequest $request)
     {
         $input = $request->all();
+        if (\App\Repositories\CashierRepository::sessionRequired()) {
+            unset($input['payment_status']);
+        }
 
         if (empty($input['medicine']) && $input['payment_status'] == false) {
 

@@ -3733,4 +3733,13 @@ return [
         'nothing_received' => 'Saisissez au moins une quantité livrée.',
         'wrong_status' => 'Cette commande est déjà passée à une autre étape. Rechargez la page.',
     ],
+    'pharmacy_sale' => [
+        'pay_at_cashier' => 'Payé à la caisse (la facture passe alors payée et les médicaments sortent du dépôt)',
+        'total' => 'Total de la facture',
+        'payer_share' => "Part de l'assureur",
+        'patient_share' => 'À payer par le patient',
+        'receipt' => 'Reçu',
+        'charge_category' => 'Catégorie de frais des ventes de pharmacie',
+        'charge_category_hint' => "Utilisée par les règles de prise en charge des assureurs pour couvrir (ou non) les médicaments. Vide : la couverture générale de la police s'applique.",
+    ],
 ];

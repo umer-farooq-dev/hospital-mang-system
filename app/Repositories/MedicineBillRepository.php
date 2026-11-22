@@ -85,7 +85,7 @@ class MedicineBillRepository extends BaseRepository
 
                     }
                 }
-                $medicineBill->refresh()->syncStock();
+                $medicineBill->refresh()->settle();
             }
 
             return true;
@@ -204,7 +204,7 @@ class MedicineBillRepository extends BaseRepository
 
                 }
             }
-            $medicineBill->refresh()->syncStock();
+            $medicineBill->refresh()->settle();
             DB::commit();
 
         } catch (Exception $e) {
@@ -281,7 +281,7 @@ class MedicineBillRepository extends BaseRepository
                     $saleMedicine->save();
 
                 }
-                $medicineBill->refresh()->syncStock();
+                $medicineBill->refresh()->settle();
                 DB::commit();
 
                 return $medicineBill;
@@ -554,7 +554,7 @@ class MedicineBillRepository extends BaseRepository
                     ]);
 
                 }
-                $medicineBill->refresh()->syncStock();
+                $medicineBill->refresh()->settle();
                 DB::commit();
 
                 return true;
@@ -633,7 +633,7 @@ class MedicineBillRepository extends BaseRepository
                     ]);
 
                 }
-                $medicineBill->refresh()->syncStock();
+                $medicineBill->refresh()->settle();
                 DB::commit();
 
                 return true;
@@ -752,7 +752,7 @@ class MedicineBillRepository extends BaseRepository
                             ]);
 
                         }
-                        $medicineBill->refresh()->syncStock();
+                        $medicineBill->refresh()->settle();
                         DB::commit();
                         session()->forget('flutterwaveMedicineBillData');
 
