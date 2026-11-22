@@ -781,6 +781,14 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('stock-transfers/{stockTransfer}/receive', [\App\Http\Controllers\StockTransferController::class, 'receive'])->name('stock-transfers.receive');
         Route::post('stock-transfers/{stockTransfer}/cancel', [\App\Http\Controllers\StockTransferController::class, 'cancel'])->name('stock-transfers.cancel');
     });
+    Route::middleware('access:Admin|Accountant')->group(function () {
+        Route::get('third-party/claims', [\App\Http\Controllers\ClaimController::class, 'index'])->name('claims.index')->middleware('modules');
+        Route::get('third-party/claims/create', [\App\Http\Controllers\ClaimController::class, 'create'])->name('claims.create');
+        Route::post('third-party/claims', [\App\Http\Controllers\ClaimController::class, 'store'])->name('claims.store');
+        Route::post('third-party/claims/settings', [\App\Http\Controllers\ClaimController::class, 'updateSettings'])->name('claims.settings');
+        Route::get('third-party/claims/{claimInvoice}', [\App\Http\Controllers\ClaimController::class, 'show'])->name('claims.show');
+        Route::post('third-party/claims/{claimInvoice}/cancel', [\App\Http\Controllers\ClaimController::class, 'cancel'])->name('claims.cancel');
+    });
     Route::middleware('access:Admin|Pharmacist')->group(function () {
         Route::get('suppliers', [\App\Http\Controllers\SupplierController::class, 'index'])->name('suppliers.index')->middleware('modules');
         Route::post('suppliers', [\App\Http\Controllers\SupplierController::class, 'update'])->name('suppliers.update');

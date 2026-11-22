@@ -10,6 +10,14 @@
     </a>
 </li>
 @endcanroute
+{{-- Third-party billing (P6) --}}
+@module('Claims', $modules)
+    @canroute('claims.index')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('third-party*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('third-party/claims*') ? 'active' : '' }}" href="{{ route('claims.index') }}">{{ __('messages.claims.claims') }}</a>
+    </li>
+    @endcanroute
+@endmodule
 @if (Auth::user()->hasRole('Admin') || hasCustomRole())
     @canroute('dashboard')
     <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('dashboard*') ? 'd-none' : '' }}">

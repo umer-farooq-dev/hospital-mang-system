@@ -54,6 +54,17 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Third-party billing --}}
+    @module('Claims', $modules)
+        @canroute('claims.index')
+        <li class="nav-item {{ Request::is('third-party*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('claims.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-file-invoice-dollar"></i></span>
+                <span class="aside-menu-title">{{ __('messages.claims.third_party') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
     {{-- Cashier --}}
     @module('Cashier', $modules)
         @canroute('cashier.index')
@@ -1929,6 +1940,16 @@
                     </a>
                 </li>
             @endif
+            @module('Claims', $modules)
+                @canroute('claims.index')
+                <li class="nav-item {{ Request::is('third-party*') ? 'active' : '' }}">
+                    <a class="nav-link  d-flex align-items-center py-3" href="{{ route('claims.index') }}">
+                        <span class="aside-menu-icon me-3"><i class="fas fa-file-invoice-dollar"></i></span>
+                        <span class="aside-menu-title">{{ __('messages.claims.third_party') }}</span>
+                    </a>
+                </li>
+                @endcanroute
+            @endmodule
 
             @if (moduleExists('Holiday'))
                 @canroute('calendar.view')
