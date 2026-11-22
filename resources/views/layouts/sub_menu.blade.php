@@ -843,6 +843,14 @@
     @endmodule
 @endif
 @if (Auth::user()->hasRole('Admin|Pharmacist|Lab Technician|Nurse') || hasCustomRole())
+    @module('Stock Counts', $modules)
+        @canroute('stock-counts.index')
+        <li
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
+            <a class="nav-link p-0 {{ Request::is('stock-counts*') ? 'active' : '' }}" href="{{ route('stock-counts.index') }}">{{ __('messages.stock_count.counts') }}</a>
+        </li>
+        @endcanroute
+    @endmodule
     @module('Stock Transfers', $modules)
         @canroute('stock-transfers.index')
         <li

@@ -138,6 +138,33 @@ class StockTest extends TestCase
             $t->integer('quantity_sent')->nullable();
             $t->timestamps();
         });
+        Schema::create('stock_counts', function (Blueprint $t) {
+            $t->id();
+            $t->string('number');
+            $t->unsignedBigInteger('store_id');
+            $t->string('status');
+            $t->boolean('blind')->default(false);
+            $t->string('note')->nullable();
+            $t->unsignedBigInteger('created_by')->nullable();
+            foreach (['submitted', 'approved', 'cancelled'] as $step) {
+                $t->unsignedBigInteger($step.'_by')->nullable();
+                $t->dateTime($step.'_at')->nullable();
+            }
+            $t->timestamps();
+        });
+        Schema::create('stock_count_lines', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('stock_count_id');
+            $t->unsignedBigInteger('stock_batch_id')->nullable();
+            $t->string('stockable_type');
+            $t->unsignedBigInteger('stockable_id');
+            $t->string('batch_no')->nullable();
+            $t->date('expiry_date')->nullable();
+            $t->decimal('unit_cost', 14, 2)->default(0);
+            $t->integer('system_quantity')->default(0);
+            $t->integer('counted_quantity')->nullable();
+            $t->timestamps();
+        });
         $this->pharmacy = DB::table('stores')->insertGetId(['name' => 'Pharmacy', 'can_sell' => true, 'sort_order' => 1]);
         $this->ward = DB::table('stores')->insertGetId(['name' => 'Ward', 'sort_order' => 2]);
         DB::table('settings')->insert(['key' => 'pharmacy_default_store', 'value' => (string) $this->pharmacy]);
@@ -327,5 +354,57 @@ class StockTest extends TestCase
         $this->assertSame(15, Stock::onHand($m, $this->pharmacy));
         $this->assertSame(15, (int) $m->fresh()->available_quantity);
         $this->assertSame('supplier_return', StockMovement::forDocument($toSupplier)->value('movement_type'));
+    }
+
+    public function test_after_a_ward_requisition_the_ward_count_shows_no_difference(): void
+    {
+        \App\Models\Setting::create(['key' => 'stock_transfer_approval', 'value' => '0']);
+        $m = $this->medicine();
+        Stock::receive($m, $this->pharmacy, 30, ['batch_no' => 'A', 'expiry_date' => now()->addYear()], $this->bill());
+        $req = \App\Models\StockTransfer::open('requisition', $this->pharmacy, $this->ward, null, [[$m, 12]], null, 1);
+        $req->send([], 1);
+        $req->fresh()->receive(1);
+
+        $count = \App\Models\StockCount::open($this->ward, false, null, 1);
+        $line = $count->lines()->first();
+        $this->assertSame(12, $line->system_quantity);
+        $count->record([$line->id => 12], []);
+        $count->submit(1);
+        $count->fresh()->approve(1);
+        $this->assertSame(0, $line->fresh()->variance());
+        $this->assertSame(0, StockMovement::forDocument($count)->count(), 'no difference, no adjustment');
+        $this->assertSame(12, Stock::onHand($m, $this->ward));
+    }
+
+    public function test_a_count_corrects_losses_keeps_sales_made_meanwhile_and_adds_goods_found(): void
+    {
+        $m = $this->medicine();
+        $other = $this->medicine('Ibuprofen');
+        Stock::receive($m, $this->pharmacy, 20, ['batch_no' => 'A', 'unit_cost' => 50], $this->bill());
+        $count = \App\Models\StockCount::open($this->pharmacy, true, null, 1);
+        $this->assertSame('SC-'.now()->year.'-0001', $count->number);
+        $line = $count->lines()->first();
+
+        Stock::issue($m, $this->pharmacy, 3, $this->bill()); // sold while counting: 17 left on the shelf
+        try {
+            $count->submit(1);
+            $this->fail('every line must be counted');
+        } catch (UnprocessableEntityHttpException $e) {
+        }
+        $count->record([$line->id => 15], [[$other, 'X9', '2030-01-31', 4]]); // 2 lost, 4 found
+        $count->submit(1);
+        $this->assertSame(-5, $line->fresh()->variance(), 'counted 15 against 20 on the sheet');
+        $count->fresh()->approve(1);
+
+        $this->assertSame(12, Stock::onHand($m, $this->pharmacy), '17 on the system - 5 = 12: the 3 sold are not counted twice');
+        $this->assertSame(4, Stock::onHand($other, $this->pharmacy));
+        $this->assertSame('2030-01-31', StockBatch::where('batch_no', 'X9')->value('expiry_date'));
+        $this->assertSame(['adjustment'], StockMovement::forDocument($count)->distinct()->pluck('movement_type')->all());
+
+        try {
+            $count->fresh()->approve(1);
+            $this->fail('cannot approve twice');
+        } catch (UnprocessableEntityHttpException $e) {
+        }
     }
 }

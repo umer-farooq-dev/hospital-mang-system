@@ -20,6 +20,7 @@ class StockMovement extends Model
         PurchaseMedicine::class => ['purchase_no', 'medicine-purchase.show', 'medicine_purchase'],
         MedicineBill::class => ['bill_number', 'medicine-bills.show', 'medicine_bill'],
         StockTransfer::class => ['number', 'stock-transfers.show', 'stockTransfer'],
+        StockCount::class => ['number', 'stock-counts.show', 'stockCount'],
     ];
 
     public function store(): BelongsTo

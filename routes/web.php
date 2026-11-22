@@ -751,6 +751,12 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('medicine-bills/{medicineBill}/dispense', [MedicineBillController::class, 'dispense'])->name('medicine-bills.dispense');
         Route::get('stock', [\App\Http\Controllers\StockController::class, 'index'])->name('stock.index')->middleware('modules');
         Route::get('stock/{medicine}/movements', [\App\Http\Controllers\StockController::class, 'movements'])->name('stock.movements');
+        Route::get('stock-counts', [\App\Http\Controllers\StockCountController::class, 'index'])->name('stock-counts.index')->middleware('modules');
+        Route::post('stock-counts', [\App\Http\Controllers\StockCountController::class, 'store'])->name('stock-counts.store');
+        Route::get('stock-counts/{stockCount}', [\App\Http\Controllers\StockCountController::class, 'show'])->name('stock-counts.show');
+        Route::post('stock-counts/{stockCount}', [\App\Http\Controllers\StockCountController::class, 'update'])->name('stock-counts.update');
+        Route::post('stock-counts/{stockCount}/approve', [\App\Http\Controllers\StockCountController::class, 'approveCount'])->name('stock-counts.approve');
+        Route::post('stock-counts/{stockCount}/cancel', [\App\Http\Controllers\StockCountController::class, 'cancel'])->name('stock-counts.cancel');
         Route::get('stock-transfers', [\App\Http\Controllers\StockTransferController::class, 'index'])->name('stock-transfers.index')->middleware('modules');
         Route::get('stock-transfers/create', [\App\Http\Controllers\StockTransferController::class, 'create'])->name('stock-transfers.create');
         Route::post('stock-transfers', [\App\Http\Controllers\StockTransferController::class, 'store'])->name('stock-transfers.store');
