@@ -140,6 +140,7 @@ return [
         'stock_counts' => 'pharmacy',
         'purchase_orders' => 'pharmacy',
         'stock_reports' => 'pharmacy',
+        'claims' => 'billing',
         'stores' => 'pharmacy',
         'suppliers' => 'pharmacy',
 
@@ -335,6 +336,7 @@ return [
         Controllers\StockCountController::class => 'stock_counts',
         Controllers\PurchaseOrderController::class => 'purchase_orders',
         Controllers\StockReportController::class => 'stock_reports',
+        Controllers\ClaimController::class => 'claims',
         Controllers\StoreController::class => 'stores',
         Controllers\SupplierController::class => 'suppliers',
         Controllers\PathologyCategoryController::class => 'pathology_categories',

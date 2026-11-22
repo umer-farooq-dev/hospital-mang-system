@@ -120,12 +120,20 @@ class IpdBillRepository extends BaseRepository
             ->whereNull('ipd_patient_department_id')->update(['ipd_patient_department_id' => $ipd->id]) : 0;
     }
 
+    /** Keep the insurer's share and the reductions on the saved bill, for the claim to the insurer. */
+    private function storeCover(IpdBill $bill): void
+    {
+        $list = $this->getBillList(IpdPatientDepartment::findOrFail($bill->ipd_patient_department_id));
+        $bill->forceFill(['payer_amount' => $list['payer_amount'], 'reduction_amount' => round($list['cover_amount'] - $list['payer_amount'], 2)])->saveQuietly();
+    }
+
     public function saveBill($input)
     {
         if (isset($input['bill_id'])) {
             $bill = $this->update($input, $input['bill_id']);
             self::claimAdvances($bill->ipd_patient_department_id);
-        self::claimMedicineBills($bill->ipd_patient_department_id);
+            self::claimMedicineBills($bill->ipd_patient_department_id);
+            $this->storeCover($bill);
 
             return $bill;
         }
@@ -135,6 +143,7 @@ class IpdBillRepository extends BaseRepository
         $bill = $this->create($input);
         self::claimAdvances($bill->ipd_patient_department_id);
         self::claimMedicineBills($bill->ipd_patient_department_id);
+        $this->storeCover($bill);
         $ipdPatientDepartment = IpdPatientDepartment::with('bedAssign')->find($bill->ipd_patient_department_id);
         $patient = Patient::with('user')->where('id', $ipdPatientDepartment->patient_id)->first();
         $ipdPatientDepartment->bill_status = 1;
@@ -246,23 +255,29 @@ class IpdBillRepository extends BaseRepository
         $departmentId = $ipd->doctor?->doctor_department_id;
         $options = ['voucher_number' => $ipd->voucher_number];
         $cover = 0;
+        $payer = 0;
         $split = fn ($amount, $category, $date) => \App\Utils\PriceSplit::compute((float) $amount, $policy, $departmentId, $options + ['charge_category_id' => $category, 'date' => $date]);
         foreach ($bill['charges'] as $charge) {
             $s = $split($charge->applied_charge, $charge->charge_category_id, $charge->date);
             $cover += $s['discount_amount'] + $s['payer_amount'];
+            $payer += $s['payer_amount'];
         }
         foreach ($bill['exam_items'] as $item) {
             $cover += $item->discount_amount + $item->payer_amount; // split when the exam was requested
+            $payer += $item->payer_amount;
         }
         foreach ($bill['bed_lines'] as $line) {
             $s = $split($line['total'], null, $line['from']);
             $cover += $s['discount_amount'] + $s['payer_amount'];
+            $payer += $s['payer_amount'];
         }
         foreach ($bill['extra_lines'] as $line) {
             $s = $split($line['amount'], null, $line['date']);
             $cover += $s['discount_amount'] + $s['payer_amount'];
+            $payer += $s['payer_amount'];
         }
         $bill['cover_amount'] = round($cover, 2);
+        $bill['payer_amount'] = round($payer, 2); // what the insurer is claimed for (P6)
         $bill['advances_total'] = (float) $bill['advances']->sum('amount');
         $bill['payments'] = IpdPayment::whereIpdPatientDepartmentId($ipdPatientDepartment->id)->get();
 

@@ -50,6 +50,8 @@ class IpdBill extends Model
         'tax_in_percentage',
         'other_charges',
         'net_payable_amount',
+        'payer_amount',
+        'reduction_amount',
     ];
 
     protected $casts = [
@@ -74,7 +76,7 @@ class IpdBill extends Model
         'net_payable_amount' => 'required',
     ];
 
-    public function ipdPatient(): hasOne
+    public function ipdPatient(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(IpdPatientDepartment::class, 'ipd_patient_department_id');
     }
