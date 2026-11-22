@@ -22,7 +22,26 @@ class CreateIPDOperationRequest extends FormRequest
      */
     public function rules(): array
     {
-        return IpdOperation::$rules;
+        return IpdOperation::$rules + IpdOperation::otRules();
+    }
+
+    /** A room or a surgeon cannot be booked twice at the same time. */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+            $id = $this->route('id');
+            $clash = IpdOperation::clash($this->all(), $id ? (int) $id : null);
+            if ($clash) {
+                [$other, $kind] = $clash;
+                $validator->errors()->add('scheduled_start', __('messages.ot.clash_' . $kind, [
+                    'room' => \App\Models\MasterListItem::label('ot_room', $other->ot_room, ''),
+                    'from' => $other->scheduled_start->format('d/m/Y H:i'), 'to' => $other->scheduled_end->format('H:i'), 'ref' => $other->ref_no,
+                ]));
+            }
+        });
     }
 
     /**

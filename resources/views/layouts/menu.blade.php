@@ -165,6 +165,18 @@
             </a>
         </li>
     @endif
+    {{-- OT calendar --}}
+    @module('OT Calendar', $modules)
+        @canroute('ot-calendar.index')
+        <li class="nav-item {{ Request::is('ot-calendar*', 'ipd-operations*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('ot-calendar.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-procedures"></i></span>
+                <span class="aside-menu-title">{{ __('messages.ot.calendar') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
     {{-- ipds/opds --}}
     <?php
@@ -752,6 +764,18 @@
                     </a>
                 </li>
             @endif
+    {{-- OT calendar --}}
+    @module('OT Calendar', $modules)
+        @canroute('ot-calendar.index')
+        <li class="nav-item {{ Request::is('ot-calendar*', 'ipd-operations*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('ot-calendar.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-procedures"></i></span>
+                <span class="aside-menu-title">{{ __('messages.ot.calendar') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
             {{-- ipds/opds --}}
             <?php
@@ -1158,6 +1182,18 @@
                     </a>
                 </li>
             @endif
+    {{-- OT calendar --}}
+    @module('OT Calendar', $modules)
+        @canroute('ot-calendar.index')
+        <li class="nav-item {{ Request::is('ot-calendar*', 'ipd-operations*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('ot-calendar.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-procedures"></i></span>
+                <span class="aside-menu-title">{{ __('messages.ot.calendar') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
             {{-- ipds/opds --}}
             <?php
@@ -1445,6 +1481,18 @@
                     </a>
                 </li>
             @endif
+    {{-- OT calendar --}}
+    @module('OT Calendar', $modules)
+        @canroute('ot-calendar.index')
+        <li class="nav-item {{ Request::is('ot-calendar*', 'ipd-operations*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('ot-calendar.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-procedures"></i></span>
+                <span class="aside-menu-title">{{ __('messages.ot.calendar') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
             {{-- ipds/opds --}}
             <?php
@@ -1635,6 +1683,18 @@
                     </a>
                 </li>
             @endif
+    {{-- OT calendar --}}
+    @module('OT Calendar', $modules)
+        @canroute('ot-calendar.index')
+        <li class="nav-item {{ Request::is('ot-calendar*', 'ipd-operations*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('ot-calendar.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-procedures"></i></span>
+                <span class="aside-menu-title">{{ __('messages.ot.calendar') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
             {{-- Diagnosis Test --}}
             <?php

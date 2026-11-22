@@ -51,6 +51,8 @@ class OperationTable extends LivewireTableComponent
             Column::make(__('messages.operation_category.operation_category'), 'operation_category.name')
                 ->sortable()
                 ->searchable(),
+            Column::make(__('messages.ot.k_coefficients'), 'k_surgeon')
+                ->view('operations.columns.k'),
             Column::make(__('messages.common.action'), 'created_at')
                 ->view('operations.action'),
             Column::make('updated_at')->sortable()->hideIf(1),

@@ -51,6 +51,13 @@ class IpdBillRepository extends BaseRepository
             $lines->push(['type' => __('messages.ipd_patient.package'), 'description' => $ipd->package->name, 'date' => $admitted,
                 'amount' => $list ? $list->priceFor($ipd->package, $admitted) : (float) $ipd->package->total_amount]);
         }
+        // Operations priced by K (not cancelled).
+        foreach (\App\Models\IpdOperation::with('operations')->where('ipd_patient_department_id', $ipd->id)->orderBy('operation_date')->get() as $operation) {
+            if ($operation->isBillable() && $operation->total_fee > 0) {
+                $lines->push(['type' => __('messages.ot.operation'), 'description' => ($operation->operations->name ?? '') . ' (' . $operation->ref_no . ')',
+                    'date' => \Illuminate\Support\Carbon::parse($operation->operation_date), 'amount' => $operation->total_fee]);
+            }
+        }
         foreach (self::medicineBillsFor($ipd)->orderBy('bill_date')->get() as $medicineBill) {
             $lines->push(['type' => __('messages.ipd_bill_extra.pharmacy'), 'description' => $medicineBill->bill_number,
                 'date' => \Illuminate\Support\Carbon::parse($medicineBill->bill_date), 'amount' => (float) $medicineBill->net_amount]);

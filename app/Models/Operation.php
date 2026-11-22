@@ -11,7 +11,7 @@ class Operation extends Model
 
     public $table = 'operations';
 
-    public $fillable = ['operation_category_id', 'name'];
+    public $fillable = ['operation_category_id', 'name', 'k_surgeon', 'k_assistant', 'k_anaesthetist'];
 
     protected $casts = [
         'id' => 'integer',
@@ -22,6 +22,9 @@ class Operation extends Model
     public static $rules = [
         'operation_category_id' => 'required',
         'name' => 'required|unique:operations,name',
+        'k_surgeon' => 'nullable|numeric|min:0|max:100000',
+        'k_assistant' => 'nullable|numeric|min:0|max:100000',
+        'k_anaesthetist' => 'nullable|numeric|min:0|max:100000',
     ];
 
     public function operation_category(): BelongsTo

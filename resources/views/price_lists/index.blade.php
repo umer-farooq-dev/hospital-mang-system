@@ -38,6 +38,7 @@
                                     <th class="text-center">{{ __('messages.price_list.default') }}</th>
                                     <th>{{ __('messages.price_list.name') }}</th>
                                     <th style="width: 180px">{{ __('messages.price_list.adjustment_percent') }}</th>
+                                    <th style="width: 160px" title="{{ __('messages.ot.k_value_hint') }}">{{ __('messages.ot.k_value') }}</th>
                                     <th class="text-center">{{ __('messages.common.active') }}</th>
                                     <th class="text-center">{{ __('messages.common.delete') }}</th>
                                 </tr>
@@ -57,6 +58,7 @@
                                                 <span class="input-group-text">%</span>
                                             </div>
                                         </td>
+                                        <td><input type="number" class="form-control" name="lists[{{ $list->id }}][k_value]" value="{{ old('lists.' . $list->id . '.k_value', $list->k_value !== null ? $list->k_value + 0 : '') }}" step="0.01" min="0" placeholder="{{ $list->is_default ? '0' : __('messages.ot.k_inherit') }}" {{ $canEdit ? '' : 'disabled' }}></td>
                                         <td class="text-center">
                                             <input type="checkbox" class="form-check-input" name="lists[{{ $list->id }}][is_active]" value="1" {{ $list->is_active ? 'checked' : '' }} {{ $canEdit ? '' : 'disabled' }}>
                                         </td>
@@ -79,6 +81,7 @@
                                                 <span class="input-group-text">%</span>
                                             </div>
                                         </td>
+                                        <td><input type="number" class="form-control" name="new[k_value]" value="{{ old('new.k_value') }}" step="0.01" min="0" placeholder="{{ __('messages.ot.k_inherit') }}"></td>
                                         <td colspan="2"></td>
                                     </tr>
                                 @endif
