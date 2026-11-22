@@ -236,7 +236,7 @@ return [
         'email_verified_successfully' => 'Email Verified successfully.',
         'invalid_password' => 'Current password is invalid.',
         'validate_confirm_password' => 'The password and confirm password must be matched.',
-        'validate_min_character_password' => 'Password must contain at least 6 characters.',
+        'validate_min_character_password' => 'Password must contain at least 8 characters.',
         'validate_image_type' => 'The image must be a file of type: jpg, jpeg, png.',
         'validate_image_size' => 'The document must be less than 10 mb',
         'validate_facebook_url' => 'Please enter a valid Facebook URL',

@@ -16,7 +16,7 @@ class RegistrationController extends AppBaseController
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email:filter', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $data = [

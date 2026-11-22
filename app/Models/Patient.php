@@ -161,7 +161,7 @@ class Patient extends Model
 
         // A password is only asked when patients may log in, and only for a patient with an e-mail.
         if ($userId === null && self::registrationSettings()['portal_login']) {
-            $rules['password'] = 'nullable|required_with:email|same:password_confirmation|min:6';
+            $rules['password'] = 'nullable|required_with:email|same:password_confirmation|min:8';
         }
 
         return $rules;

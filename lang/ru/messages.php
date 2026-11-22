@@ -235,7 +235,7 @@ return [
         'email_verified_successfully' => 'Электронная почта подтверждена успешно.',
         'invalid_password' => 'Текущий пароль недействителен.',
         'validate_confirm_password' => 'Пароль и пароль подтверждения должны совпадать.',
-        'validate_min_character_password' => 'Пароль должен содержать не менее 6 символов.',
+        'validate_min_character_password' => 'Пароль должен содержать не менее 8 символов.',
         'validate_image_type' => 'Изображение должно быть файлом типа: jpg, jpeg, png.',
         'validate_image_size' => 'Документ должен быть размером менее 10 МБ.',
         'validate_facebook_url' => 'Пожалуйста, введите действительный URL Facebook.',

@@ -21,7 +21,7 @@ class UpdateCaseHandlerRequest extends FormRequest
     public function rules(): array
     {
         $rules = CaseHandler::$rules;
-        $rules['password'] = 'same:password_confirmation|min:6';
+        $rules['password'] = 'same:password_confirmation|min:8';
         $rules['email'] = 'required|email|unique:users,email,'.$this->route('caseHandler')->user->id;
         $rules['image'] = 'mimes:jpeg,jpg,png,gif';
 

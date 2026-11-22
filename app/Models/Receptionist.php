@@ -68,7 +68,7 @@ class Receptionist extends Model
         'first_name' => 'required|string',
         'last_name' => 'required|string',
         'email' => 'required|email:filter|unique:users,email',
-        'password' => 'required|same:password_confirmation|min:6',
+        'password' => 'required|same:password_confirmation|min:8',
         'designation' => 'required|string',
         'qualification' => 'required|string',
         'address1' => 'nullable|string',

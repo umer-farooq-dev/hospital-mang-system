@@ -236,7 +236,7 @@ return [
         'email_verified_successfully' => 'E-mail verificado com sucesso.',
         'invalid_password' => 'A senha atual é inválida.',
         'validate_confirm_password' => 'A senha e a senha de confirmação devem corresponder.',
-        'validate_min_character_password' => 'A senha deve conter pelo menos 6 caracteres.',
+        'validate_min_character_password' => 'A senha deve conter pelo menos 8 caracteres.',
         'user_list' => 'Lista de Usuários',
         'validate_image_type' => 'A imagem deve ser um arquivo dos tipos: jpg, jpeg ou png.',
         'validate_image_size' => 'O documento deve ter menos de 10 MB de tamanho.',

@@ -235,7 +235,7 @@ return [
         'email_verified_successfully' => '邮箱验证成功。',
         'invalid_password' => '当前密码无效。',
         'validate_confirm_password' => '密码和确认密码必须匹配。',
-        'validate_min_character_password' => '密码必须至少包含 6 个字符。',
+        'validate_min_character_password' => '密码必须至少包含 8 个字符。',
         'validate_image_type' => '图片必须为以下文件类型之一：jpg、jpeg、png。',
         'validate_image_size' => '文档大小必须小于10 MB',
         'validate_facebook_url' => '请输入有效的 Facebook 链接',

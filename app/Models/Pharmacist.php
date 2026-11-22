@@ -75,7 +75,7 @@ class Pharmacist extends Model
         'email' => 'required|email:filter|unique:users,email',
         'designation' => 'required|string',
         'qualification' => 'required|string',
-        'password' => 'required|same:password_confirmation|min:6',
+        'password' => 'required|same:password_confirmation|min:8',
         'gender' => 'required',
         'dob' => 'nullable|date',
         'address1' => 'nullable|string',

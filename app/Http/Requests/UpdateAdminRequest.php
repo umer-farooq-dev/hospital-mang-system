@@ -21,7 +21,7 @@ class UpdateAdminRequest extends FormRequest
     public function rules(): array
     {
         $rules = admin::$rules;
-        $rules['password'] = 'same:password_confirmation|min:6';
+        $rules['password'] = 'same:password_confirmation|min:8';
         $rules['email'] = 'required|email:filter|unique:users,email,'.$this->route('admin')->id;
         $rules['image'] = 'mimes:jpeg,jpg,png,gif';
 
