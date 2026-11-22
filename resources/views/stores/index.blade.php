@@ -89,6 +89,15 @@
                         {{ Form::select('pharmacy_default_store', $stores->filter()->where('is_active', true)->pluck('name', 'id'), $settings['pharmacy_default_store'] ?? null, ['class' => 'form-select', 'required'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
                         <div class="form-text">{{ __('messages.stock.default_store_hint') }}</div>
                     </div>
+                    <div class="col-md-6 mb-5">
+                        <label class="form-check form-switch"><input type="checkbox" class="form-check-input" name="stock_transfer_approval" value="1" {{ ($settings['stock_transfer_approval'] ?? '1') === '1' ? 'checked' : '' }} {{ $canEdit ? '' : 'disabled' }}>
+                            <span class="form-check-label">{{ __('messages.stock_transfer.approval_setting') }}</span></label>
+                        <div class="form-text">{{ __('messages.stock_transfer.approval_hint') }}</div>
+                    </div>
+                    <div class="col-md-3 mb-5">
+                        {{ Form::label('stock_transfer_prefix', __('messages.stock_transfer.prefix') . ':', ['class' => 'form-label']) }}
+                        {{ Form::text('stock_transfer_prefix', $settings['stock_transfer_prefix'] ?? 'TR', ['class' => 'form-control', 'maxlength' => 10, 'required'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                    </div>
                 </div>
                 @if ($canEdit)
                     <div class="d-flex justify-content-end">{{ Form::submit(__('messages.common.save'), ['class' => 'btn btn-primary']) }}</div>

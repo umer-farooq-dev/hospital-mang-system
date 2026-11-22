@@ -113,6 +113,31 @@ class StockTest extends TestCase
             $t->float('amount');
             $t->timestamps();
         });
+        Schema::create('stock_transfers', function (Blueprint $t) {
+            $t->id();
+            $t->string('number');
+            $t->string('kind');
+            $t->string('status');
+            $t->unsignedBigInteger('from_store_id')->nullable();
+            $t->unsignedBigInteger('to_store_id')->nullable();
+            $t->unsignedBigInteger('supplier_id')->nullable();
+            $t->string('note')->nullable();
+            foreach (['requested', 'approved', 'sent', 'received', 'cancelled'] as $step) {
+                $t->unsignedBigInteger($step.'_by')->nullable();
+                $t->dateTime($step.'_at')->nullable();
+            }
+            $t->timestamps();
+        });
+        Schema::create('stock_transfer_items', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('stock_transfer_id');
+            $t->string('stockable_type');
+            $t->unsignedBigInteger('stockable_id');
+            $t->integer('quantity_requested');
+            $t->integer('quantity_approved')->nullable();
+            $t->integer('quantity_sent')->nullable();
+            $t->timestamps();
+        });
         $this->pharmacy = DB::table('stores')->insertGetId(['name' => 'Pharmacy', 'can_sell' => true, 'sort_order' => 1]);
         $this->ward = DB::table('stores')->insertGetId(['name' => 'Ward', 'sort_order' => 2]);
         DB::table('settings')->insert(['key' => 'pharmacy_default_store', 'value' => (string) $this->pharmacy]);
@@ -241,5 +266,66 @@ class StockTest extends TestCase
         Stock::reverse($purchase);
         $this->assertSame(0, $this->batchQty($m, 'L7'));
         $this->assertSame(0, (int) $m->fresh()->available_quantity);
+    }
+
+    public function test_a_ward_requisition_is_approved_sent_and_received_with_the_same_batches(): void
+    {
+        $m = $this->medicine();
+        $seed = $this->bill();
+        Stock::receive($m, $this->pharmacy, 10, ['batch_no' => 'SOON', 'expiry_date' => now()->addMonth(), 'unit_cost' => 120], $seed);
+        Stock::receive($m, $this->pharmacy, 50, ['batch_no' => 'LATE', 'expiry_date' => now()->addYear(), 'unit_cost' => 100], $seed);
+
+        $req = \App\Models\StockTransfer::open('requisition', $this->pharmacy, $this->ward, null, [[$m, 30]], 'night stock', 1);
+        $this->assertSame('requested', $req->status, 'approval is on by default');
+        $this->assertSame('TR-'.now()->year.'-0001', $req->number);
+        $line = $req->items()->first();
+
+        try {
+            $req->send([], 1);
+            $this->fail('cannot send before approval');
+        } catch (UnprocessableEntityHttpException $e) {
+        }
+        $req->approve([$line->id => 25], 1);
+        $req->refresh()->send([$line->id => 40], 1);
+        $this->assertSame(25, $line->fresh()->quantity_sent, 'never more than approved');
+        $this->assertSame(35, Stock::onHand($m, $this->pharmacy));
+        $this->assertSame(0, Stock::onHand($m, $this->ward), 'in transit until received');
+
+        $req->refresh()->receive(2);
+        $this->assertSame('received', $req->fresh()->status);
+        $this->assertSame(25, Stock::onHand($m, $this->ward));
+        $ward = StockBatch::where('store_id', $this->ward)->orderBy('expiry_date')->get();
+        $this->assertSame(['SOON', 'LATE'], $ward->pluck('batch_no')->all(), 'same batches, earliest expiry sent first');
+        $this->assertSame([10, 15], $ward->pluck('quantity')->all());
+        $this->assertEquals(120.0, $ward->first()->unit_cost, 'cost travels with the batch');
+        $this->assertSame(60, (int) $m->fresh()->available_quantity, 'a transfer does not change the total');
+
+        try {
+            $req->fresh()->receive(2);
+            $this->fail('cannot receive twice');
+        } catch (UnprocessableEntityHttpException $e) {
+        }
+    }
+
+    public function test_cancelling_a_sent_transfer_puts_the_stock_back_and_supplier_returns_leave_the_stock(): void
+    {
+        \App\Models\Setting::create(['key' => 'stock_transfer_approval', 'value' => '0']);
+        $m = $this->medicine();
+        Stock::receive($m, $this->pharmacy, 20, ['batch_no' => 'A'], $this->bill());
+
+        $back = \App\Models\StockTransfer::open('return', $this->pharmacy, $this->ward, null, [[$m, 8]], null, 1);
+        $this->assertSame('approved', $back->status, 'no approval needed when the setting is off');
+        $back->send([], 1);
+        $this->assertSame(12, Stock::onHand($m, $this->pharmacy));
+        $back->fresh()->cancel(1);
+        $this->assertSame(20, Stock::onHand($m, $this->pharmacy));
+        $this->assertSame('cancelled', $back->fresh()->status);
+
+        $toSupplier = \App\Models\StockTransfer::open('supplier_return', $this->pharmacy, $this->ward, 7, [[$m, 5]], 'damaged', 1);
+        $this->assertNull($toSupplier->to_store_id);
+        $toSupplier->send([], 1);
+        $this->assertSame(15, Stock::onHand($m, $this->pharmacy));
+        $this->assertSame(15, (int) $m->fresh()->available_quantity);
+        $this->assertSame('supplier_return', StockMovement::forDocument($toSupplier)->value('movement_type'));
     }
 }

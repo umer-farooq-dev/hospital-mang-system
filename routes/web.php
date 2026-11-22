@@ -751,6 +751,14 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('medicine-bills/{medicineBill}/dispense', [MedicineBillController::class, 'dispense'])->name('medicine-bills.dispense');
         Route::get('stock', [\App\Http\Controllers\StockController::class, 'index'])->name('stock.index')->middleware('modules');
         Route::get('stock/{medicine}/movements', [\App\Http\Controllers\StockController::class, 'movements'])->name('stock.movements');
+        Route::get('stock-transfers', [\App\Http\Controllers\StockTransferController::class, 'index'])->name('stock-transfers.index')->middleware('modules');
+        Route::get('stock-transfers/create', [\App\Http\Controllers\StockTransferController::class, 'create'])->name('stock-transfers.create');
+        Route::post('stock-transfers', [\App\Http\Controllers\StockTransferController::class, 'store'])->name('stock-transfers.store');
+        Route::get('stock-transfers/{stockTransfer}', [\App\Http\Controllers\StockTransferController::class, 'show'])->name('stock-transfers.show');
+        Route::post('stock-transfers/{stockTransfer}/approve', [\App\Http\Controllers\StockTransferController::class, 'approveTransfer'])->name('stock-transfers.approve');
+        Route::post('stock-transfers/{stockTransfer}/send', [\App\Http\Controllers\StockTransferController::class, 'send'])->name('stock-transfers.send');
+        Route::post('stock-transfers/{stockTransfer}/receive', [\App\Http\Controllers\StockTransferController::class, 'receive'])->name('stock-transfers.receive');
+        Route::post('stock-transfers/{stockTransfer}/cancel', [\App\Http\Controllers\StockTransferController::class, 'cancel'])->name('stock-transfers.cancel');
     });
     Route::middleware('access:Admin|Pharmacist')->group(function () {
         Route::get('suppliers', [\App\Http\Controllers\SupplierController::class, 'index'])->name('suppliers.index')->middleware('modules');

@@ -29,7 +29,13 @@ class Stock
 
     const REVERSAL = 'reversal';  // a document undone (purchase or bill deleted)
 
-    const TYPES = [self::OPENING, self::RECEIPT, self::SALE, self::RETURN, self::REVERSAL];
+    const TRANSFER_OUT = 'transfer_out';
+
+    const TRANSFER_IN = 'transfer_in';
+
+    const SUPPLIER_RETURN = 'supplier_return';
+
+    const TYPES = [self::OPENING, self::RECEIPT, self::SALE, self::RETURN, self::REVERSAL, self::TRANSFER_OUT, self::TRANSFER_IN, self::SUPPLIER_RETURN];
 
     // Item class => table whose available_quantity caches the total.
     const TOTALS = [Medicine::class => 'medicines'];

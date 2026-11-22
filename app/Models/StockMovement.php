@@ -19,6 +19,7 @@ class StockMovement extends Model
     const DOCUMENTS = [
         PurchaseMedicine::class => ['purchase_no', 'medicine-purchase.show', 'medicine_purchase'],
         MedicineBill::class => ['bill_number', 'medicine-bills.show', 'medicine_bill'],
+        StockTransfer::class => ['number', 'stock-transfers.show', 'stockTransfer'],
     ];
 
     public function store(): BelongsTo
