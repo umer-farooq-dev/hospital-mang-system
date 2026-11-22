@@ -18,6 +18,10 @@
                     <a href="{{ route('ipd.patient.edit',['ipdPatientDepartment' => $ipdPatientDepartment->id]) }}"
                     class="btn btn-primary {{getCurrentLoginUserLanguageName() == 'ar' ? 'ms-2' : 'me-2'}}">{{ __('messages.common.edit') }}</a>
                 @endrole
+                @canroute('ipd.discharge.show')
+                    <a href="{{ route('ipd.discharge.show', $ipdPatientDepartment->id) }}"
+                       class="btn btn-info {{getCurrentLoginUserLanguageName() == 'ar' ? 'ms-2' : 'me-2'}}"><i class="fas fa-door-open me-1"></i>{{ __('messages.discharge.discharge') }}</a>
+                @endcanroute
                 <a href="{{ route('ipd.patient.index') }}"
                    class="btn btn-outline-primary">{{ __('messages.common.back') }}</a>
             </div>

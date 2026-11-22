@@ -46,6 +46,8 @@ class MasterListItem extends Model
         'intervention_type' => ['ipd_operation', 'intervention_type'],
         'anaesthesia_type' => ['ipd_operation', 'anesthesia_type'],
         'preop_check' => ['ipd_operation', 'preop_checks'],
+        'discharge_check' => ['ipd_patient_departments', 'discharge_checks'],
+        'discharge_outcome' => ['ipd_patient_departments', 'discharge_outcome'],
     ];
 
     // Other tables that also store codes of a list.

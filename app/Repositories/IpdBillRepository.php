@@ -42,6 +42,30 @@ class IpdBillRepository extends BaseRepository
             ->where(fn ($q) => $q->where('ipd_patient_department_id', $ipd->id)->orWhereNull('ipd_patient_department_id'));
     }
 
+    /** Stops the discharge (saving the bill) while the admin's checklist or balance rule is not met. */
+    public function assertCanDischarge(IpdPatientDepartment $ipd, array $input): void
+    {
+        $settings = Setting::whereIn('key', ['discharge_block_unpaid', 'discharge_require_checklist'])->pluck('value', 'key');
+        $blockUnpaid = ($settings['discharge_block_unpaid'] ?? '0') === '1';
+        $requireChecklist = ($settings['discharge_require_checklist'] ?? '0') === '1';
+        if (! $blockUnpaid && ! $requireChecklist) {
+            return;
+        }
+        $balance = 0.0;
+        if ($blockUnpaid) {
+            $bill = $this->getBillList($ipd);
+            $balance = self::netPayable(['charges' => (float) $bill['total_charges'], 'bed' => (float) $bill['bed_charges'],
+                'other' => (float) ($input['other_charges'] ?? 0), 'discount_percent' => (float) ($input['discount_in_percentage'] ?? 0),
+                'tax_percent' => (float) ($input['tax_in_percentage'] ?? 0), 'cover' => (float) $bill['cover_amount'],
+                'payments' => (float) $bill['total_payment'], 'advances' => (float) $bill['advances_total']]);
+        }
+        $reasons = IpdPatientDepartment::dischargeBlockers(\App\Models\MasterListItem::options('discharge_check'), $ipd->discharge_checks,
+            $balance, $requireChecklist, $blockUnpaid);
+        if ($reasons) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['discharge' => implode(' ', $reasons)]);
+        }
+    }
+
     /** Package (priced from the admission's list) and the patient's pharmacy bills during the stay. */
     public function extraLines(IpdPatientDepartment $ipd, $list)
     {
@@ -107,6 +131,7 @@ class IpdBillRepository extends BaseRepository
         }
         $input['net_payable_amount'] = $input['net_payable_amount'];
         $input['other_charges'] = $input['other_charges'];
+        $this->assertCanDischarge(IpdPatientDepartment::findOrFail($input['ipd_patient_department_id']), $input);
         $bill = $this->create($input);
         self::claimAdvances($bill->ipd_patient_department_id);
         self::claimMedicineBills($bill->ipd_patient_department_id);
@@ -145,7 +170,7 @@ class IpdBillRepository extends BaseRepository
         // dd($bedAssign);
 
         $ipdPatientDepartment->bed->update(['is_available' => 1]);
-        $ipdPatientDepartment->update(['discharge' => 1]);
+        $ipdPatientDepartment->update(['discharge' => 1, 'discharge_date' => $ipdPatientDepartment->discharge_date ?? now(), 'discharged_by' => auth()->id()]);
 
         if ($ipdPatientDepartment->bedAssign) {
             BedAssign::where('id', $ipdPatientDepartment->bedAssign->id)->delete();

@@ -1197,6 +1197,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('checkRecord', [HospitalScheduleController::class, 'checkRecord'])->name('checkRecord');
         Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
         Route::post('settings/reception', [SettingController::class, 'updateReception'])->name('settings.reception.update');
+        Route::post('settings/inpatient', [SettingController::class, 'updateInpatient'])->name('settings.inpatient.update');
         Route::get('modules', [SettingController::class, 'getModule'])->name('module.index');
         Route::post('modules/{module}/active-deactive', [SettingController::class, 'activeDeactiveStatus'])->name('module.activeDeactiveStatus');
         Route::get('queue-theme-configuration', [SettingController::class, 'patientQueueThemeView'])->name('queue-theme-view');
@@ -1365,6 +1366,9 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('ipds/create', [IpdPatientDepartmentController::class, 'create'])->name('ipd.patient.create');
         Route::post('ipds', [IpdPatientDepartmentController::class, 'store'])->name('ipd.patient.store');
         Route::get('ipds/{ipdPatientDepartment}/edit', [IpdPatientDepartmentController::class, 'edit'])->name('ipd.patient.edit');
+        Route::get('ipds/{ipdPatientDepartment}/discharge', [\App\Http\Controllers\IpdDischargeController::class, 'show'])->name('ipd.discharge.show');
+        Route::post('ipds/{ipdPatientDepartment}/discharge', [\App\Http\Controllers\IpdDischargeController::class, 'update'])->name('ipd.discharge.update');
+        Route::get('ipds/{ipdPatientDepartment}/discharge/print', [\App\Http\Controllers\IpdDischargeController::class, 'print'])->name('ipd.discharge.print');
         Route::patch('ipds/{ipdPatientDepartment}', [IpdPatientDepartmentController::class, 'update'])->name('ipd.patient.update');
 
         // IPD Prescription routes

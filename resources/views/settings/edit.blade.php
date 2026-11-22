@@ -29,6 +29,8 @@
             @yield('section')
         </div>
     </div>
+        </div>
+    </div>
 @endsection
 {{-- JS File :-assets/js/settings/setting.js --}}
             

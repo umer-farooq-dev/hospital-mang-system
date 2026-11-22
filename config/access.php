@@ -257,6 +257,7 @@ return [
         Controllers\IpdChargeController::class => 'ipd_charges',
         Controllers\IpdPrescriptionController::class => 'ipd_prescriptions',
         Controllers\IpdOperationController::class => 'ipd_operations',
+        Controllers\IpdDischargeController::class => 'ipd_patients',
         Controllers\OtCalendarController::class => 'ot_calendar',
         Controllers\IpdTimelineController::class => 'ipd_timelines',
         Controllers\IpdPaymentController::class => 'ipd_payments',

@@ -114,7 +114,72 @@ class IpdPatientDepartment extends Model
         'guardian_relation',
         'guardian_contact',
         'guardian_address',
+        'discharge_date',
+        'discharge_outcome',
+        'discharge_checks',
+        'discharge_summary',
+        'discharged_by',
     ];
+
+    const SUMMARY_PLACEHOLDERS = ['hospital', 'patient_name', 'patient_id', 'age', 'gender', 'ipd_number', 'admission_date',
+        'discharge_date', 'stay_days', 'doctor', 'department', 'diagnosis', 'operations', 'outcome'];
+
+    public function setDischargeChecksAttribute($value): void
+    {
+        $this->attributes['discharge_checks'] = json_encode(array_values(array_unique(array_filter(array_map('intval', (array) $value)))));
+    }
+
+    public function getDischargeChecksAttribute($value): array
+    {
+        return array_map('intval', json_decode((string) $value, true) ?: []);
+    }
+
+    /** Draft of the discharge summary: the admin's template with this admission's details filled in. */
+    public function dischargeSummaryDraft(): string
+    {
+        $template = (string) Setting::where('key', 'discharge_summary_template')->value('value');
+        $user = $this->patient?->patientUser;
+        $discharged = $this->discharge_date ? \Illuminate\Support\Carbon::parse($this->discharge_date) : now();
+        $admitted = \Illuminate\Support\Carbon::parse($this->admission_date);
+        $values = [
+            'hospital' => getAppName(),
+            'patient_name' => $user?->full_name,
+            'patient_id' => $this->patient?->patient_unique_id,
+            'age' => $user?->dob ? \Illuminate\Support\Carbon::parse($user->dob)->age . ' ' . __('messages.discharge.years') : '',
+            'gender' => $user ? ($user->gender == 1 ? __('messages.user.female') : __('messages.user.male')) : '',
+            'ipd_number' => $this->ipd_number,
+            'admission_date' => $admitted->format('d/m/Y'),
+            'discharge_date' => $discharged->format('d/m/Y'),
+            'stay_days' => max(1, (int) ceil($admitted->diffInMinutes($discharged) / 1440)),
+            'doctor' => $this->doctor?->doctorUser?->full_name,
+            'department' => $this->doctor?->department?->title,
+            'diagnosis' => IpdDiagnosis::where('ipd_patient_department_id', $this->id)->orderBy('report_date')->get()
+                ->map(fn ($d) => '- ' . trim($d->report_type . ' ' . strip_tags((string) $d->description)))->implode("\n"),
+            'operations' => IpdOperation::with('operations')->where('ipd_patient_department_id', $this->id)->orderBy('operation_date')->get()
+                ->filter->isBillable()->map(fn ($o) => '- ' . \Illuminate\Support\Carbon::parse($o->operation_date)->format('d/m/Y') . ' ' . ($o->operations->name ?? ''))->implode("\n"),
+            'outcome' => MasterListItem::label('discharge_outcome', $this->discharge_outcome, ''),
+        ];
+
+        return strtr($template, collect($values)->mapWithKeys(fn ($v, $k) => ['{' . $k . '}' => (string) $v])->all());
+    }
+
+    /**
+     * Reasons that stop the discharge (empty = allowed): the checklist when the admin requires it,
+     * and a balance still due when the admin blocks unpaid discharges.
+     */
+    public static function dischargeBlockers(array $activeChecks, array $done, float $balance, bool $requireChecklist, bool $blockUnpaid): array
+    {
+        $reasons = [];
+        $missing = array_diff(array_keys($activeChecks), $done);
+        if ($requireChecklist && $missing) {
+            $reasons[] = __('messages.discharge.checklist_incomplete', ['items' => implode(', ', array_intersect_key($activeChecks, array_flip($missing)))]);
+        }
+        if ($blockUnpaid && $balance > 0.009) {
+            $reasons[] = __('messages.discharge.balance_unpaid', ['amount' => formatMoney($balance)]);
+        }
+
+        return $reasons;
+    }
 
     /** Package and guardian of the admission (moved from the old Patient Admissions screen). */
     public static function admissionRules(): array
