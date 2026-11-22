@@ -455,7 +455,7 @@
     ?>
     @if ($medicineMgt)
         <li
-            class="nav-item  {{ Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*') ? 'active' : '' }}">
+            class="nav-item  {{ Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'active' : '' }}">
             <a class="nav-link  d-flex align-items-center py-3" href="{{ $medicineMgt }}">
                 <span class="aside-menu-icon me-3"><i class="fas fa-capsules"></i></span>
                 <span class="aside-menu-title">{{ __('messages.medicines') }}</span>
@@ -1463,7 +1463,7 @@
             ?>
             @if ($medicinePharmacistMgt)
                 <li
-                    class="nav-item {{ Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*') ? 'active' : '' }}">
+                    class="nav-item {{ Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ $medicinePharmacistMgt }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-capsules"></i></span>
                         <span class="aside-menu-title">{{ __('messages.medicines') }}</span>
@@ -1861,7 +1861,7 @@
             ?>
             @if ($medicinelabMgt)
                 <li
-                    class="nav-item {{ Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*') ? 'active' : '' }}">
+                    class="nav-item {{ Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'active' : '' }}">
                     <a class="nav-link  d-flex align-items-center py-3" href="{{ $medicinelabMgt }}">
                         <span class="aside-menu-icon me-3"><i class="fas fa-capsules"></i></span>
                         <span class="aside-menu-title">{{ __('messages.medicines') }}</span>

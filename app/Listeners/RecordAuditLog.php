@@ -23,13 +23,16 @@ class RecordAuditLog
 
     const MASK = '******';
 
+    // Models that are already a ledger (every row says who moved what and why): auditing them only doubles the writes.
+    const OWN_LEDGER = [\App\Models\StockBatch::class, \App\Models\StockMovement::class];
+
     private static ?bool $tableExists = null;
 
     public function handle(string $eventName, array $payload): void
     {
         $model = $payload[0] ?? null;
 
-        if (! $model instanceof Model || $model instanceof AuditLog) {
+        if (! $model instanceof Model || $model instanceof AuditLog || in_array($model::class, self::OWN_LEDGER, true)) {
             return;
         }
 

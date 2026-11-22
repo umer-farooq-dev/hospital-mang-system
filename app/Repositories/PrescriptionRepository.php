@@ -184,6 +184,7 @@ class PrescriptionRepository extends BaseRepository
                 $medicineBill->update([
                     'net_amount' => $amount,
                 ]);
+                $medicineBill->refresh()->syncStock();
             }
 
         } catch (Exception $e) {

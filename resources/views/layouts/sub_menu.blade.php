@@ -761,7 +761,7 @@
     @module('Medicine Categories', $modules)
         @canroute('categories.index')
         <li
-            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*') ? 'd-none' : '' }}">
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
             <a class="nav-link p-0 {{ Request::is('categories*') ? 'active' : '' }}"
                 href="{{ route('categories.index') }}">
                 {{ __('messages.medicine_categories') }}
@@ -774,7 +774,7 @@
     @module('Medicine Brands', $modules)
         @canroute('brands.index')
         <li
-            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*') ? 'd-none' : '' }}">
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
             <a class="nav-link p-0 {{ Request::is('brands*') ? 'active' : '' }}" href="{{ route('brands.index') }}">
                 {{ __('messages.medicine_brands') }}
             </a>
@@ -786,7 +786,7 @@
     @module('Medicines', $modules)
         @canroute('medicines.index')
         <li
-            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*') ? 'd-none' : '' }}">
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
             <a class="nav-link p-0 {{ Request::is('medicines*') ? 'active' : '' }}" href="{{ route('medicines.index') }}">
                 {{ __('messages.medicines') }}
             </a>
@@ -798,7 +798,7 @@
     @module('Medicines', $modules)
         @canroute('medicine-purchase.index')
         <li
-            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*') ? 'd-none' : '' }}">
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
             <a class="nav-link p-0 {{ Request::is('medicine-purchase*') ? 'active' : '' }}"
                 href="{{ route('medicine-purchase.index') }}">
                 {{ __('messages.purchase_medicine.purchase_medicine') }}
@@ -812,7 +812,7 @@
     @module('Medicines', $modules)
         @canroute('used-medicine.index')
         <li
-            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*') ? 'd-none' : '' }}">
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
             <a class="nav-link p-0 {{ Request::is('used-medicine*') ? 'active' : '' }}"
                 href="{{ route('used-medicine.index') }}">{{ __('messages.used_medicine.used_medicine') }}</a>
         </li>
@@ -824,7 +824,7 @@
     @module('Medicines', $modules)
         @canroute('medicine-bills.index')
         <li
-            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*') ? 'd-none' : '' }}">
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
             <a class="nav-link p-0 {{ Request::is('medicine-bills*') ? 'active' : '' }}"
                 href="{{ route('medicine-bills.index') }}">
                 {{ __('messages.medicine_bills.medicine_bill') }}
@@ -832,6 +832,36 @@
         </li>
         @endcanroute
         @endmodule @endif
+@if (Auth::user()->hasRole('Admin|Pharmacist|Lab Technician|Nurse') || hasCustomRole())
+    @module('Stock', $modules)
+        @canroute('stock.index')
+        <li
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
+            <a class="nav-link p-0 {{ Request::is('stock*') ? 'active' : '' }}" href="{{ route('stock.index') }}">{{ __('messages.stock.stock') }}</a>
+        </li>
+        @endcanroute
+    @endmodule
+@endif
+@if (Auth::user()->hasRole('Admin|Pharmacist') || hasCustomRole())
+    @module('Suppliers', $modules)
+        @canroute('suppliers.index')
+        <li
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
+            <a class="nav-link p-0 {{ Request::is('suppliers*') ? 'active' : '' }}" href="{{ route('suppliers.index') }}">{{ __('messages.stock.suppliers') }}</a>
+        </li>
+        @endcanroute
+    @endmodule
+@endif
+@if (Auth::user()->hasRole('Admin') || hasCustomRole())
+    @module('Stores', $modules)
+        @canroute('stores.index')
+        <li
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
+            <a class="nav-link p-0 {{ Request::is('stores*') ? 'active' : '' }}" href="{{ route('stores.index') }}">{{ __('messages.stock.stores') }}</a>
+        </li>
+        @endcanroute
+    @endmodule
+@endif
 
         @if (Auth::user()->hasRole('Admin|Receptionist') || hasCustomRole())
             @module('Radiology Categories', $modules)

@@ -1,4 +1,13 @@
 <div class="row">
+    <div class="form-group col-md-4 mb-5">
+        {{ Form::label('store_id', __('messages.stock.receive_into') . ':', ['class' => 'form-label']) }}
+        <span class="required"></span>
+        {{ Form::select('store_id', \App\Models\Store::options(), \App\Utils\Stock::defaultStoreId(), ['class' => 'form-select', 'required']) }}
+    </div>
+    <div class="form-group col-md-4 mb-5">
+        {{ Form::label('supplier_id', __('messages.stock.supplier') . ':', ['class' => 'form-label']) }}
+        {{ Form::select('supplier_id', \App\Models\Supplier::options(), null, ['class' => 'form-select', 'placeholder' => __('messages.common.choose')]) }}
+    </div>
     <div class="col-sm-12">
         <div class="table-responsive-sm medicinePurchaseCreateTable">
             <div class="overflow-auto">

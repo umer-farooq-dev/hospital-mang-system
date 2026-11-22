@@ -9,6 +9,11 @@
             <span class="required"></span>
             {{ Form::select('patient_id', $patients, isset($medicineBill) ? $medicineBill->patient_id : null, ['class' => 'form-select', 'required', 'id' => 'prescriptionPatientId', 'placeholder' => __('messages.document.select_patient')]) }}
         </div>
+        <div class="form-group col-md-3 mb-5">
+            {{ Form::label('store_id', __('messages.stock.store') . ':', ['class' => 'form-label']) }}
+            <span class="required"></span>
+            {{ Form::select('store_id', \App\Models\Store::options(), $medicineBill->store_id ?? \App\Utils\Stock::defaultStoreId(), ['class' => 'form-select', 'required']) }}
+        </div>
         @if (isset($medicineBill))
             <div class="col-lg-3 col-md-4 col-sm-12 mb-5">
                 {{ Form::label('bill_date', __('messages.bill.bill_date') . ':', ['class' => 'form-label']) }}

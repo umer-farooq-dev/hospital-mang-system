@@ -19,6 +19,8 @@ class CreatePurchaseMedicineRequest extends FormRequest
     {
         return [
             'lot_no' => ['required', 'array'],
+            'store_id' => ['required', \Illuminate\Validation\Rule::in(array_keys(\App\Models\Store::options()))],
+            'supplier_id' => ['nullable', 'integer', 'exists:suppliers,id'],
             'lot_no.*' => ['required', 'regex:/^[A-Za-z0-9_#\-]+$/'],
         ];
     }

@@ -16,8 +16,6 @@
 <!-- Quantity Field -->
 
 {{ Form::hidden('quantity', isset($medicine) ? $medicine->quantity : 0, ['class' => 'form-control', 'placeholder' => __('messages.item_stock.quantity'), 'id' => 'quantityId']) }}
-<!-- Available Quantity Field -->
-{{ Form::hidden('available_quantity', isset($medicine) ? $medicine->quantity : 0, ['class' => 'form-control', 'placeholder' => __('messages.issued_item.available_quantity'), 'id' => 'AvailableQuantityId']) }}
 
 <!-- Name Field -->
 <div class="form-group col-md-6 mb-5">
@@ -33,6 +31,25 @@
         class="required"></span>
     {{ Form::text('salt_composition', null, ['class' => 'form-control','required','placeholder'=>__('messages.medicine.salt_composition')]) }}
 </div>
+
+<div class="form-group col-md-6 mb-5">
+    {{ Form::label('common_name', __('messages.stock.common_name') . ':', ['class' => 'form-label']) }}
+    {{ Form::text('common_name', null, ['class' => 'form-control', 'maxlength' => 191]) }}
+</div>
+<div class="form-group col-md-3 mb-5">
+    {{ Form::label('barcode', __('messages.stock.barcode') . ':', ['class' => 'form-label']) }}
+    {{ Form::text('barcode', null, ['class' => 'form-control', 'maxlength' => 100]) }}
+</div>
+<div class="form-group col-md-3 mb-5">
+    {{ Form::label('cis_code', __('messages.stock.cis_code') . ':', ['class' => 'form-label']) }}
+    {{ Form::text('cis_code', null, ['class' => 'form-control', 'maxlength' => 50]) }}
+</div>
+@foreach (['unit' => 'medicine_unit', 'dosage_form' => 'dosage_form', 'route' => 'medicine_route'] as $field => $list)
+    <div class="form-group col-md-4 mb-5">
+        {{ Form::label($field, __('messages.stock.' . $field) . ':', ['class' => 'form-label']) }}
+        {{ Form::select($field, \App\Models\MasterListItem::options($list, $medicine->{$field} ?? null), $medicine->{$field} ?? null, ['class' => 'form-select', 'placeholder' => __('messages.common.choose')]) }}
+    </div>
+@endforeach
 
 <!-- Buying Price Field -->
 <div class="form-group col-md-6 mb-5">

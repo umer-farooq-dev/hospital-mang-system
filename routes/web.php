@@ -748,6 +748,13 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('medicine-bills-pdf/{id}', [MedicineBillController::class, 'convertToPDF'])->name('medicine.bill.pdf');
         Route::get('medicines-uses-check/{medicine}', [MedicineController::class, 'checkUseOfMedicine'])->name('check.use.medicine');
         Route::get('get-medicine-category/{category}', [MedicineBillController::class, 'getMedicineCategory'])->name('get-medicine-category');
+        Route::post('medicine-bills/{medicineBill}/dispense', [MedicineBillController::class, 'dispense'])->name('medicine-bills.dispense');
+        Route::get('stock', [\App\Http\Controllers\StockController::class, 'index'])->name('stock.index')->middleware('modules');
+        Route::get('stock/{medicine}/movements', [\App\Http\Controllers\StockController::class, 'movements'])->name('stock.movements');
+    });
+    Route::middleware('access:Admin|Pharmacist')->group(function () {
+        Route::get('suppliers', [\App\Http\Controllers\SupplierController::class, 'index'])->name('suppliers.index')->middleware('modules');
+        Route::post('suppliers', [\App\Http\Controllers\SupplierController::class, 'update'])->name('suppliers.update');
     });
     Route::middleware('access:Admin|Lab Technician|Pharmacist|Nurse')->group(function () {
         Route::resource('categories', CategoryController::class)->parameters(['categories' => 'category']);
@@ -1203,6 +1210,9 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('settings/vital-types', [SettingController::class, 'updateVitalTypes'])->name('settings.vital-types.update');
         Route::get('certificate-templates', [\App\Http\Controllers\CertificateTemplateController::class, 'index'])->name('certificate-templates.index')->middleware('modules');
         Route::post('certificate-templates', [\App\Http\Controllers\CertificateTemplateController::class, 'update'])->name('certificate-templates.update');
+        Route::get('stores', [\App\Http\Controllers\StoreController::class, 'index'])->name('stores.index')->middleware('modules');
+        Route::post('stores', [\App\Http\Controllers\StoreController::class, 'update'])->name('stores.update');
+        Route::post('stores/settings', [\App\Http\Controllers\StoreController::class, 'updateSettings'])->name('stores.settings');
         Route::get('lab-import-profiles', [\App\Http\Controllers\LabImportProfileController::class, 'index'])->name('lab-import-profiles.index')->middleware('modules');
         Route::post('lab-import-profiles', [\App\Http\Controllers\LabImportProfileController::class, 'update'])->name('lab-import-profiles.update');
         Route::get('imaging-report-templates', [\App\Http\Controllers\ImagingReportTemplateController::class, 'index'])->name('imaging-report-templates.index')->middleware('modules');

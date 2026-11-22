@@ -64,6 +64,7 @@ class MedicineBillRepository extends BaseRepository
                     'tax_amount' => $input['tax'],
                     'payment_note' => $input['payment_note'],
                     'model_type' => \App\Models\MedicineBill::class,
+                    'store_id' => $input['store_id'] ?? null,
                 ]);
 
                 $medicineBill->update([
@@ -82,13 +83,9 @@ class MedicineBillRepository extends BaseRepository
                             'tax' => $input['tax_medicine'][$key],
                         ]);
 
-                        if ($input['payment_status'] == 1) {
-                            $medicine->update([
-                                'available_quantity' => $medicine->available_quantity - $input['quantity'][$key],
-                            ]);
-                        }
                     }
                 }
+                $medicineBill->refresh()->syncStock();
             }
 
             return true;
@@ -137,17 +134,6 @@ class MedicineBillRepository extends BaseRepository
                     }
 
                 }
-                foreach ($deleteIds as $deleteId) {
-                    $deleteMedicine = Medicine::find($deleteId);
-                    $saleMedicine = SaleMedicine::where('medicine_bill_id', $medicineBill->id)->where('medicine_id', $deleteId)->first();
-                    $deleteMedicine->update(['available_quantity' => $deleteMedicine->available_quantity + $saleMedicine->sale_quantity]);
-                }
-                foreach ($deleteIds as $key => $value) {
-                    $updatedMedicine = Medicine::find($input['medicine'][$key]);
-                    $updatedMedicine->update([
-                        'available_quantity' => $updatedMedicine->available_quantity - $input['quantity'][$key],
-                    ]);
-                }
             }
             $arr = collect($input['medicine']);
             $duplicateIds = $arr->duplicates();
@@ -181,15 +167,6 @@ class MedicineBillRepository extends BaseRepository
                     throw new UnprocessableEntityHttpException(__('messages.medicine_bills.available_quantity').' '.$medicine->name.' '.__('messages.medicine_bills.is').' '.$available.'.');
                 }
 
-                if (! is_null($saleMedicine) && $input['payment_status'] == 1 && $medicineBill['payment_status'] == 1) {
-                    $PreviousQty = $saleMedicine->sale_quantity == null ? 0 : $saleMedicine->sale_quantity;
-                    if ($PreviousQty > $qty) {
-                        $medicine->update([
-                            'available_quantity' => $medicine->available_quantity + $PreviousQty - $qty,
-                        ]);
-                    }
-                }
-
                 if (! array_key_exists($input['medicine'][$key], $result) && $medicine->available_quantity < $qty && $input['payment_status'] == false) {
                     $available = $medicine->available_quantity == null ? 0 : $medicine->available_quantity;
                     throw new UnprocessableEntityHttpException(__('messages.medicine_bills.available_quantity').' '.$medicine->name.' '.__('messages.medicine_bills.is').' '.$available.'.');
@@ -209,6 +186,7 @@ class MedicineBillRepository extends BaseRepository
                 'tax_amount' => $input['tax'],
                 'note' => $input['note'],
                 'bill_date' => $input['bill_date'],
+                'store_id' => $input['store_id'] ?? $medicineBill->store_id,
             ]);
 
             if ($input['category_id']) {
@@ -224,14 +202,9 @@ class MedicineBillRepository extends BaseRepository
                     $saleMedicine->tax = $input['tax_medicine'][$key] == null ? 0 : $input['tax_medicine'][$key];
                     $saleMedicine->save();
 
-                    if ($input['payment_status'] == 1 && $beforeStatus == 0
-                    ) {
-                        $medicine->update([
-                            'available_quantity' => $medicine->available_quantity - $input['quantity'][$key],
-                        ]);
-                    }
                 }
             }
+            $medicineBill->refresh()->syncStock();
             DB::commit();
 
         } catch (Exception $e) {
@@ -285,6 +258,7 @@ class MedicineBillRepository extends BaseRepository
                 'tax_amount' => $input['tax'],
                 'payment_note' => $input['payment_note'],
                 'model_type' => \App\Models\MedicineBill::class,
+                'store_id' => $input['store_id'] ?? null,
                 'bill_date' => $input['bill_date'],
             ]);
 
@@ -306,12 +280,8 @@ class MedicineBillRepository extends BaseRepository
                     $saleMedicine->tax = $tax;
                     $saleMedicine->save();
 
-                    if ($input['payment_status'] == 1) {
-                        $medicine->update([
-                            'available_quantity' => $medicine->available_quantity - $input['quantity'][$key],
-                        ]);
-                    }
                 }
+                $medicineBill->refresh()->syncStock();
                 DB::commit();
 
                 return $medicineBill;
@@ -391,14 +361,10 @@ class MedicineBillRepository extends BaseRepository
                         $saleMedicine = SaleMedicine::where('medicine_bill_id',$medicineBill->id)->first();
                         $saleMedicine->delete();
 
-                        if ($input['payment_status'] == 1) {
-                            $medicine->update([
-                                'available_quantity' => $input['quantity'][$key] + $medicine->available_quantity,
-                            ]);
-                        }
                     }
                 }
 
+                \App\Utils\Stock::reverse($medicineBill, \App\Utils\Stock::RETURN);
                 $medicineBill->delete();
 
                 return true;
@@ -565,6 +531,7 @@ class MedicineBillRepository extends BaseRepository
                 'tax_amount' => $input['tax'],
                 'payment_note' => $input['payment_note'] ?? null,
                 'model_type' => \App\Models\MedicineBill::class,
+                'store_id' => $input['store_id'] ?? null,
                 'bill_date' => $input['bill_date'],
             ]);
 
@@ -586,12 +553,8 @@ class MedicineBillRepository extends BaseRepository
                         'tax' => $tax,
                     ]);
 
-                    if ($input['payment_status'] == 1) {
-                        $medicine->update([
-                            'available_quantity' => $medicine->available_quantity - $input['quantity'][$key],
-                        ]);
-                    }
                 }
+                $medicineBill->refresh()->syncStock();
                 DB::commit();
 
                 return true;
@@ -647,6 +610,7 @@ class MedicineBillRepository extends BaseRepository
                 'tax_amount' => $input['tax'],
                 'payment_note' => $input['payment_note'] ?? null,
                 'model_type' => \App\Models\MedicineBill::class,
+                'store_id' => $input['store_id'] ?? null,
                 'bill_date' => $input['bill_date'],
             ]);
 
@@ -668,12 +632,8 @@ class MedicineBillRepository extends BaseRepository
                         'tax' => $tax,
                     ]);
 
-                    if ($input['payment_status'] == 1) {
-                        $medicine->update([
-                            'available_quantity' => $medicine->available_quantity - $input['quantity'][$key],
-                        ]);
-                    }
                 }
+                $medicineBill->refresh()->syncStock();
                 DB::commit();
 
                 return true;
@@ -769,6 +729,7 @@ class MedicineBillRepository extends BaseRepository
                         'tax_amount' => $sessionData['tax'],
                         'payment_note' => $sessionData['payment_note'] ?? null,
                         'model_type' => \App\Models\MedicineBill::class,
+                        'store_id' => $sessionData['store_id'] ?? null,
                         'bill_date' => $sessionData['bill_date'],
                     ]);
 
@@ -790,12 +751,8 @@ class MedicineBillRepository extends BaseRepository
                                 'tax' => $tax,
                             ]);
 
-                            if ($sessionData['payment_status'] == 1) {
-                                $medicine->update([
-                                    'available_quantity' => $medicine->available_quantity - $sessionData['quantity'][$key],
-                                ]);
-                            }
                         }
+                        $medicineBill->refresh()->syncStock();
                         DB::commit();
                         session()->forget('flutterwaveMedicineBillData');
 

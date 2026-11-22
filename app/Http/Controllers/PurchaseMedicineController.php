@@ -147,7 +147,7 @@ class PurchaseMedicineController extends AppBaseController
     public function getMedicine(Medicine $medicine)
     {
         $medicineExpiryDate = PurchasedMedicine::where('medicine_id', $medicine->id)->latest()->first();
-        $medicine['expiry_date'] = $medicineExpiryDate->expiry_date ?? null;
+        $medicine['expiry_date'] = \App\Utils\Stock::nextExpiry($medicine, \App\Utils\Stock::defaultStoreId()) ?? $medicineExpiryDate->expiry_date ?? null;
 
         return $this->sendResponse($medicine, 'retrieved');
     }
@@ -174,9 +174,12 @@ class PurchaseMedicineController extends AppBaseController
 
     public function destroy(PurchaseMedicine $medicinePurchase)
     {
-        $medicinePurchase->delete();
+        DB::transaction(function () use ($medicinePurchase) {
+            \App\Utils\Stock::reverse($medicinePurchase);
+            $medicinePurchase->delete();
+        });
 
-        return $this->sendSuccess(__('messages.flash.medicine_deleted'));
+        return $this->sendSuccess(__('messages.purchase_medicine.purchase_medicine').' '.__('messages.common.deleted_successfully'));
     }
 
     public function stripeSuccess(Request $request)
@@ -195,13 +198,13 @@ class PurchaseMedicineController extends AppBaseController
         $input = $request->all();
 
         $purchaseMedicine = PurchaseMedicine::where('purchase_no', $input['input']['purchase_no'])->first();
+        \App\Utils\Stock::reverse($purchaseMedicine);
         $purchaseMedicine->delete();
 
         foreach ($input['input']['medicine'] as $key => $value) {
             $medicine = Medicine::find($input['input']['medicine'][$key]);
             $medicineQtyArray = [
                 'quantity' => $medicine->quantity - $input['input']['quantity'][$key],
-                'available_quantity' => $medicine->available_quantity - $input['input']['quantity'][$key],
             ];
             $medicine->update($medicineQtyArray);
         }
@@ -233,13 +236,13 @@ class PurchaseMedicineController extends AppBaseController
         $input = $request->all();
 
         $purchaseMedicine = PurchaseMedicine::where('purchase_no', $input['purchase_no'])->first();
+        \App\Utils\Stock::reverse($purchaseMedicine);
         $purchaseMedicine->delete();
 
         foreach ($input['medicine'] as $key => $value) {
             $medicine = Medicine::find($input['medicine'][$key]);
             $medicineQtyArray = [
                 'quantity' => $medicine->quantity - $input['quantity'][$key],
-                'available_quantity' => $medicine->available_quantity - $input['quantity'][$key],
             ];
             $medicine->update($medicineQtyArray);
         }
