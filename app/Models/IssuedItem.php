@@ -71,9 +71,10 @@ class IssuedItem extends Model
         'return_date' => 'nullable',
         'item_category_id' => 'required',
         'item_id' => 'required',
-        'quantity' => 'required',
+        'quantity' => 'required|integer|min:1',
         'description' => 'nullable',
         'status' => 'nullable',
+        'store_id' => 'required|integer|exists:stores,id',
     ];
 
     public $table = 'issued_items';
@@ -89,6 +90,7 @@ class IssuedItem extends Model
         'quantity',
         'description',
         'status',
+        'store_id',
     ];
 
     protected $casts = [
@@ -118,5 +120,10 @@ class IssuedItem extends Model
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class, 'item_id');
+    }
+
+    public function store(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Store::class);
     }
 }

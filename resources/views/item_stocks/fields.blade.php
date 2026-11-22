@@ -16,14 +16,15 @@
     </div>
     <div class="col-md-4 col-sm-12">
         <div class="form-group mb-5">
-            {!! Form::label('supplier_name', __('messages.item_stock.supplier_name').':', ['class' => 'form-label']) !!}
-            {!! Form::text('supplier_name', null, ['id'=>'stockSupplierName','class' => 'form-control','placeholder'=>__('messages.item_stock.supplier_name')]) !!}
+            {!! Form::label('store_id', __('messages.stock.store') . ':', ['class' => 'form-label']) !!}
+            <span class="required"></span>
+            {{ Form::select('store_id', \App\Models\Store::options(), $itemStock->store_id ?? \App\Utils\Stock::inventoryStoreId(), ['class' => 'form-select', 'required']) }}
         </div>
     </div>
     <div class="col-md-4 col-sm-12">
         <div class="form-group mb-5">
-            {!! Form::label('store_name', __('messages.item_stock.store_name').':', ['class' => 'form-label']) !!}
-            {!! Form::text('store_name', null, ['id'=>'stockStoreName','class' => 'form-control','placeholder'=>__('messages.item_stock.store_name')]) !!}
+            {!! Form::label('supplier_id', __('messages.stock.supplier') . ':', ['class' => 'form-label']) !!}
+            {{ Form::select('supplier_id', \App\Models\Supplier::options($itemStock->supplier_id ?? null), $itemStock->supplier_id ?? null, ['class' => 'form-select', 'placeholder' => __('messages.common.choose')]) }}
         </div>
     </div>
     <div class="col-md-4 col-sm-12">

@@ -58,6 +58,8 @@ class ItemStock extends Model implements HasMedia
         'item_id' => 'required',
         'supplier_name' => 'string|nullable',
         'store_name' => 'string|nullable',
+        'store_id' => 'required|integer|exists:stores,id',
+        'supplier_id' => 'nullable|integer|exists:suppliers,id',
         'quantity' => 'numeric|required',
         'purchase_price' => 'required',
         'description' => 'nullable',
@@ -75,6 +77,8 @@ class ItemStock extends Model implements HasMedia
         'purchase_price',
         'description',
         'currency_symbol',
+        'store_id',
+        'supplier_id',
     ];
 
     protected $casts = [
@@ -104,5 +108,28 @@ class ItemStock extends Model implements HasMedia
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class, 'item_id');
+    }
+
+    public function store(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
+
+    public function supplier(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
+    /** The entry is a goods receipt: its quantity goes into its store; editing it redoes the receipt. */
+    public function receiveStock(): void
+    {
+        \App\Utils\Stock::reverse($this);
+        $storeId = $this->store_id ?: \App\Utils\Stock::inventoryStoreId();
+        if (! $storeId) {
+            throw new \Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException(__('messages.stock.no_store'));
+        }
+        if ((int) $this->quantity > 0 && $this->item) {
+            \App\Utils\Stock::receive($this->item, $storeId, (int) $this->quantity, ['unit_cost' => (float) $this->purchase_price, 'supplier_id' => $this->supplier_id], $this);
+        }
     }
 }

@@ -54,8 +54,7 @@ class IssuedItemRepository extends BaseRepository
             DB::beginTransaction();
 
             $issuedItem = IssuedItem::create($input);
-            $newItemAvailableQty = $issuedItem->item->available_quantity - $issuedItem->quantity;
-            $issuedItem->item()->update(['available_quantity' => $newItemAvailableQty]);
+            \App\Utils\Stock::issue($issuedItem->item, (int) ($issuedItem->store_id ?: \App\Utils\Stock::inventoryStoreId()), (int) $issuedItem->quantity, $issuedItem, \App\Utils\Stock::ISSUE);
 
             DB::commit();
 
@@ -69,19 +68,19 @@ class IssuedItemRepository extends BaseRepository
 
     public function destroyIssuedItemStock($issuedItem)
     {
-        if ($issuedItem->status == 0) {
-            $newItemAvailableQty = $issuedItem->item->available_quantity + $issuedItem->quantity;
-            $issuedItem->item()->update(['available_quantity' => $newItemAvailableQty]);
-        }
-        $this->delete($issuedItem->id);
+        DB::transaction(function () use ($issuedItem) {
+            \App\Utils\Stock::reverse($issuedItem, \App\Utils\Stock::RETURN); // nothing left to undo once returned
+            $this->delete($issuedItem->id);
+        });
     }
 
     public function returnIssuedItem($itemId)
     {
-        $issuedItem = IssuedItem::whereId($itemId)->first();
-        $newItemAvailableQty = $issuedItem->item->available_quantity + $issuedItem->quantity;
-        $issuedItem->item()->update(['available_quantity' => $newItemAvailableQty]);
-        $issuedItem->update(['return_date' => date('Y-m-d'), 'quantity' => 0, 'status' => IssuedItem::ITEM_RETURNED]);
+        $issuedItem = IssuedItem::whereId($itemId)->firstOrFail();
+        DB::transaction(function () use ($issuedItem) {
+            \App\Utils\Stock::reverse($issuedItem, \App\Utils\Stock::RETURN);
+            $issuedItem->update(['return_date' => date('Y-m-d'), 'quantity' => 0, 'status' => IssuedItem::ITEM_RETURNED]);
+        });
 
         return true;
     }
