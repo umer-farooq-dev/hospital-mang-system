@@ -173,6 +173,70 @@ class CashierTest extends TestCase
             $t->decimal('patient_amount', 15, 2)->nullable();
             $t->boolean('is_followup')->default(false);
         });
+        Schema::create('medicine_bills', function (Blueprint $t) {
+            $t->id();
+            $t->string('bill_number')->nullable();
+            $t->unsignedInteger('patient_id');
+            $t->unsignedBigInteger('ipd_patient_department_id')->nullable();
+            $t->unsignedBigInteger('store_id')->nullable();
+            $t->double('net_amount')->default(0);
+            $t->decimal('payer_amount', 15, 2)->default(0);
+            $t->decimal('patient_amount', 15, 2)->nullable();
+            $t->integer('payment_status')->default(0);
+            $t->integer('payment_type')->default(0);
+            $t->dateTime('bill_date')->nullable();
+            $t->dateTime('dispensed_at')->nullable();
+            $t->timestamps();
+        });
+        Schema::create('sale_medicines', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('medicine_bill_id');
+            $t->unsignedBigInteger('medicine_id');
+            $t->integer('sale_quantity');
+            $t->date('expiry_date')->nullable();
+            $t->timestamps();
+        });
+        Schema::create('medicines', function (Blueprint $t) {
+            $t->id();
+            $t->string('name');
+            $t->integer('available_quantity')->default(0);
+            $t->timestamps();
+        });
+        Schema::create('stores', function (Blueprint $t) {
+            $t->id();
+            $t->string('name');
+            $t->boolean('can_sell')->default(true);
+            $t->boolean('is_active')->default(true);
+            $t->unsignedInteger('sort_order')->default(0);
+            $t->timestamps();
+        });
+        Schema::create('stock_batches', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('store_id');
+            $t->string('stockable_type');
+            $t->unsignedBigInteger('stockable_id');
+            $t->string('batch_no')->nullable();
+            $t->date('expiry_date')->nullable();
+            $t->decimal('unit_cost', 14, 2)->default(0);
+            $t->integer('quantity')->default(0);
+            $t->unsignedBigInteger('supplier_id')->nullable();
+            $t->timestamps();
+        });
+        Schema::create('stock_movements', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('store_id');
+            $t->unsignedBigInteger('stock_batch_id');
+            $t->string('stockable_type');
+            $t->unsignedBigInteger('stockable_id');
+            $t->integer('quantity');
+            $t->decimal('unit_cost', 14, 2)->default(0);
+            $t->string('movement_type');
+            $t->string('document_type')->nullable();
+            $t->unsignedBigInteger('document_id')->nullable();
+            $t->unsignedBigInteger('user_id')->nullable();
+            $t->string('note')->nullable();
+            $t->timestamps();
+        });
         (require base_path('database/migrations/2026_11_20_120000_create_audit_logs_table.php'))->up();
 
         $counter = CashCounter::create(['code' => 'C04', 'name' => 'Caisse accueil']);
@@ -414,5 +478,30 @@ class CashierTest extends TestCase
         $this->assertSame([117511, 50000.0, 'ipd_payment'], [$receipt->receipt_number, $receipt->amount, $receipt->lines->first()->payable_type]);
         $this->assertSame([1 => 50000.0], $session->fresh()->netByMethod());
         $this->assertTrue($this->cashier->unpaidItems(7)->every(fn ($i) => $i['type'] === 'opd_visit'), 'not an item to collect');
+    }
+
+    public function test_a_pharmacy_bill_is_paid_at_the_cashier_and_its_medicines_leave_the_store_then_come_back_on_void(): void
+    {
+        $store = DB::table('stores')->insertGetId(['name' => 'Pharmacie']);
+        $medicine = \App\Models\Medicine::find(DB::table('medicines')->insertGetId(['name' => 'Amoxicilline']));
+        \App\Utils\Stock::receive($medicine, $store, 20, ['batch_no' => 'AMX'], \App\Models\Medicine::find($medicine->id));
+        $bill = DB::table('medicine_bills')->insertGetId(['bill_number' => 'PH1', 'patient_id' => 7, 'store_id' => $store, 'net_amount' => 5000,
+            'payer_amount' => 4000, 'patient_amount' => 1000, 'bill_date' => '2026-11-22 12:00']);
+        DB::table('sale_medicines')->insert(['medicine_bill_id' => $bill, 'medicine_id' => $medicine->id, 'sale_quantity' => 6]);
+        DB::table('medicine_bills')->insert(['bill_number' => 'PH2', 'patient_id' => 7, 'ipd_patient_department_id' => 3, 'net_amount' => 900, 'bill_date' => '2026-11-22 12:00']);
+
+        $item = $this->cashier->unpaidItems(7)->firstWhere('type', 'medicine_bill');
+        $this->assertSame(['medicine_bill:'.$bill, 1000.0, 4000.0], [$item['key'], $item['outstanding'], $item['payer']], 'only the patient share; admission bills are not listed');
+
+        $session = $this->cashier->open($this->user, 0);
+        $receipt = $this->cashier->collect($session, $this->user, 7, ['medicine_bill:'.$bill], ['payment_method' => 1]);
+        $this->assertSame(1, (int) DB::table('medicine_bills')->where('id', $bill)->value('payment_status'));
+        $this->assertSame(14, \App\Utils\Stock::onHand($medicine, $store), 'paid: the medicines leave the pharmacy');
+        $this->assertNull($this->cashier->unpaidItems(7)->firstWhere('type', 'medicine_bill'));
+
+        $this->cashier->void($receipt, $this->user, 4);
+        $this->assertSame(0, (int) DB::table('medicine_bills')->where('id', $bill)->value('payment_status'));
+        $this->assertSame(20, \App\Utils\Stock::onHand($medicine, $store), 'receipt cancelled: back in stock');
+        $this->assertSame('medicine_bill:'.$bill, $this->cashier->unpaidItems(7)->firstWhere('type', 'medicine_bill')['key']);
     }
 }

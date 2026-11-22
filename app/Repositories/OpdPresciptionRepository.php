@@ -182,7 +182,7 @@ class OpdPresciptionRepository extends BaseRepository
             $medicineBill->update([
                 'net_amount' => $amount,
             ]);
-            $medicineBill->refresh()->syncStock();
+            $medicineBill->refresh()->settle();
 
         } catch (Exception $e) {
             throw new UnprocessableEntityHttpException($e->getMessage());

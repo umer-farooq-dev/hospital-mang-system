@@ -28,6 +28,7 @@ class ReceiptLine extends Model
         'exam_item' => ExamOrderItem::class,
         'ipd_payment' => IpdPayment::class,
         'advance_payment' => AdvancedPayment::class,
+        'medicine_bill' => MedicineBill::class,
     ];
 
     public function receipt(): BelongsTo

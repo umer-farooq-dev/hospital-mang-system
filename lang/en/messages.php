@@ -3742,4 +3742,13 @@ return [
         'nothing_received' => 'Enter at least one quantity delivered.',
         'wrong_status' => 'This order has already moved to another step. Reload the page.',
     ],
+    'pharmacy_sale' => [
+        'pay_at_cashier' => 'Paid at the cashier (the bill then shows as paid and the medicines leave the store)',
+        'total' => 'Bill total',
+        'payer_share' => "Insurer's share",
+        'patient_share' => 'Patient pays',
+        'receipt' => 'Receipt',
+        'charge_category' => 'Charge category of pharmacy sales',
+        'charge_category_hint' => "Used by the insurers' coverage rules to cover (or not) medicines. Empty: the policy's general coverage applies.",
+    ],
 ];

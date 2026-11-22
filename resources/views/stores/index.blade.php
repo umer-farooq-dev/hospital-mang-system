@@ -102,6 +102,11 @@
                         {{ Form::label('stock_count_prefix', __('messages.stock_count.prefix') . ':', ['class' => 'form-label']) }}
                         {{ Form::text('stock_count_prefix', $settings['stock_count_prefix'] ?? 'SC', ['class' => 'form-control', 'maxlength' => 10, 'required'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
                     </div>
+                    <div class="col-md-6 mb-5">
+                        {{ Form::label('pharmacy_charge_category', __('messages.pharmacy_sale.charge_category') . ':', ['class' => 'form-label']) }}
+                        {{ Form::select('pharmacy_charge_category', \App\Models\ChargeCategory::orderBy('name')->pluck('name', 'id'), $settings['pharmacy_charge_category'] ?? null, ['class' => 'form-select', 'placeholder' => __('messages.common.choose')] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                        <div class="form-text">{{ __('messages.pharmacy_sale.charge_category_hint') }}</div>
+                    </div>
                     <div class="col-md-3 mb-5">
                         {{ Form::label('purchase_order_prefix', __('messages.purchase_order.prefix') . ':', ['class' => 'form-label']) }}
                         {{ Form::text('purchase_order_prefix', $settings['purchase_order_prefix'] ?? 'PO', ['class' => 'form-control', 'maxlength' => 10, 'required'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}

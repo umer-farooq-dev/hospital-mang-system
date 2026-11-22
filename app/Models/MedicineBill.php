@@ -90,6 +90,9 @@ class MedicineBill extends Model
         'store_id',
         'dispensed_at',
         'dispensed_by',
+        'patient_insurance_id',
+        'payer_amount',
+        'patient_amount',
     ];
 
     const MEDICINE_BILL_CASH = 0;
@@ -142,6 +145,40 @@ class MedicineBill extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function policy(): BelongsTo
+    {
+        return $this->belongsTo(PatientInsurance::class, 'patient_insurance_id');
+    }
+
+    /** What the patient pays here; bills priced before the split existed owe their net amount. */
+    public function patientShare(): float
+    {
+        return round((float) ($this->patient_amount ?? $this->net_amount), 2);
+    }
+
+    /**
+     * Split the bill between the patient's insurer and the patient (policy valid on the bill date).
+     * Bills of an admission are split on the admission bill; paid bills keep their split.
+     */
+    public function price(): void
+    {
+        if ($this->ipd_patient_department_id || ((int) $this->payment_status === self::FULLPAID && $this->patient_amount !== null)) {
+            return;
+        }
+        $policy = PatientInsurance::with('insurance')->where('patient_id', $this->patient_id)->validOn($this->bill_date ?? now())->orderBy('id')->first();
+        $departmentId = $this->doctor_id ? Doctor::whereKey($this->doctor_id)->value('doctor_department_id') : null;
+        $category = (int) \App\Utils\Stock::setting('pharmacy_charge_category', 0);
+        $split = \App\Utils\PriceSplit::compute((float) $this->net_amount, $policy, $departmentId, ['date' => $this->bill_date ?? now(), 'charge_category_id' => $category ?: null]);
+        $this->forceFill(['patient_insurance_id' => $policy?->id, 'payer_amount' => $split['payer_amount'], 'patient_amount' => $split['patient_amount']])->saveQuietly();
+    }
+
+    /** After every save: price the bill, then make the stock follow it. */
+    public function settle(): void
+    {
+        $this->price();
+        $this->syncStock();
     }
 
     /**

@@ -27,6 +27,21 @@
         @if ($isBill && ! $issued)
             <div class="form-text mb-3">{{ __('messages.stock.dispense_hint') }}</div>
         @endif
+        @if ($isBill && ! $document->ipd_patient_department_id)
+            @php
+                $receipts = \App\Models\ReceiptLine::with('receipt')->where('payable_type', 'medicine_bill')->where('payable_id', $document->id)->get();
+            @endphp
+            <div class="d-flex flex-wrap gap-5 mb-4">
+                <div><span class="text-muted">{{ __('messages.pharmacy_sale.total') }}:</span> {{ formatMoney($document->net_amount) }}</div>
+                @if ((float) $document->payer_amount > 0 || $document->policy)
+                    <div><span class="text-muted">{{ __('messages.pharmacy_sale.payer_share') }}{{ $document->policy?->insurance ? ' (' . $document->policy->insurance->name . ')' : '' }}:</span> {{ formatMoney($document->payer_amount) }}</div>
+                @endif
+                <div><span class="text-muted">{{ __('messages.pharmacy_sale.patient_share') }}:</span> <b>{{ formatMoney($document->patientShare()) }}</b></div>
+                @foreach ($receipts as $line)
+                    <div><span class="text-muted">{{ __('messages.pharmacy_sale.receipt') }}:</span> N° {{ $line->receipt->receipt_number ?? '' }} · {{ __('messages.receipts.status.' . ($line->receipt->status ?? 'valid')) }}</div>
+                @endforeach
+            </div>
+        @endif
         @if ($moves->isNotEmpty())
             <table class="table table-row-dashed align-middle mb-0">
                 <thead>
