@@ -40,6 +40,7 @@ class MasterListItem extends Model
         'referrer' => ['opd_patient_departments', 'referrer'],
         'refund_reason' => ['refunds', 'reason'],
         'transfer_destination' => ['fund_transfers', 'destination'],
+        'guardian_relation' => ['ipd_patient_departments', 'guardian_relation'],
     ];
 
     // Other tables that also store codes of a list.

@@ -126,6 +126,7 @@
         </div>
     </div>
     @include('ipd_patient_departments.payer_fields')
+    @include('ipd_patient_departments.admission_fields')
     <div class="col-md-12">
         <div class="mb-5">
             <div class="mb-5">

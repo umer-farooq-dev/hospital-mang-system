@@ -1579,6 +1579,21 @@ return [
     ],
 
     'ipd_patient' => [
+        'package' => 'Forfait',
+        'no_package' => 'Aucun forfait',
+        'guardian_name' => 'Accompagnant (personne à prévenir)',
+        'guardian_relation' => 'Lien de parenté',
+        'guardian_contact' => 'Téléphone de l\'accompagnant',
+        'guardian_address' => 'Adresse de l\'accompagnant',
+        'relations' => [
+            'father' => 'Père',
+            'mother' => 'Mère',
+            'spouse' => 'Conjoint(e)',
+            'child' => 'Enfant',
+            'sibling' => 'Frère ou sœur',
+            'other_relative' => 'Autre parent',
+            'friend' => 'Ami(e)',
+        ],
         'ipd_patient_in' => 'IPD - Entrée patient',
         'ipd_patient' => 'Patient IPD',
         'ipd_patients' => 'Patients IPD',
@@ -2622,6 +2637,7 @@ return [
             'referrer' => 'Apporteurs',
             'refund_reason' => 'Motifs de remboursement',
             'transfer_destination' => 'Destinations des transferts',
+            'guardian_relation' => 'Liens de parenté',
         ],
     ],
 
@@ -3046,6 +3062,7 @@ return [
         ],
     ],
     'ipd_bill_extra' => [
+        'pharmacy' => 'Pharmacie',
         'interim_bill' => 'Facture intermédiaire',
         'cover_amount' => 'Prise en charge (réduction + part assureur)',
         'advances' => 'Avances',

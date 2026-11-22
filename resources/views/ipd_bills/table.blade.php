@@ -32,6 +32,14 @@
                             <td class="d-flex justify-content-end me-5">{{ formatMoney($exam->total) }}</td>
                         </tr>
                     @endforeach
+                    @foreach ($bill['extra_lines'] ?? [] as $line)
+                        <tr>
+                            <td>{{ $line['type'] }}</td>
+                            <td>{{ $line['description'] }}</td>
+                            <td>{{ $line['date']->format('d/m/Y') }}</td>
+                            <td class="d-flex justify-content-end me-5">{{ formatMoney($line['amount']) }}</td>
+                        </tr>
+                    @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
