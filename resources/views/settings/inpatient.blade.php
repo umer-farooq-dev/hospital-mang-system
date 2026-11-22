@@ -40,7 +40,10 @@
         @endforeach
         @canroute('master-lists.index')
         <div class="col-md-12 mb-5">
-            @foreach (['discharge_check', 'discharge_outcome', 'nursing_shift', 'intake_type', 'output_type', 'mar_status', 'dose_interval', 'dose_duration'] as $list)
+            @canroute('icd10.index')
+                <a href="{{ route('icd10.index') }}" class="text-decoration-none me-5"><i class="fas fa-book-medical me-1"></i>{{ __('messages.icd10.list') }}</a>
+            @endcanroute
+            @foreach (['discharge_check', 'discharge_outcome', 'nursing_shift', 'intake_type', 'output_type', 'mar_status', 'dose_interval', 'dose_duration', 'diagnosis_status'] as $list)
                 <a href="{{ route('master-lists.index', ['type' => $list]) }}" class="text-decoration-none me-5">
                     <i class="fas fa-list me-1"></i>{{ __('messages.master_list.types.' . $list) }}
                 </a>

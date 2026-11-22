@@ -74,6 +74,11 @@ class IpdDiagnosisTable extends LivewireTableComponent
             Column::make(__('messages.ipd_patient_diagnosis.report_type'), 'report_type')
                 ->sortable()
                 ->searchable(),
+            Column::make(__('messages.icd10.code'), 'icd10_code')
+                ->sortable()
+                ->searchable()
+                ->view('icd10.column'),
+            Column::make('diagnosis_status', 'diagnosis_status')->hideIf(1),
             Column::make(__('messages.ipd_patient_diagnosis.report_date'), 'report_date')
                 ->view('ipd_diagnoses.columns.report_date')
                 ->sortable()

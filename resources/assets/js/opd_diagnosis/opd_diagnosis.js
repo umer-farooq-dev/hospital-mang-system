@@ -90,6 +90,7 @@ window.renderOpdDiagnosisData = function (id) {
                 }
                 $("#opdDiagnosisId").val(result.data.id);
                 $("#editOpdDiagnosisReportType").val(result.data.report_type);
+                setIcd10Fields($("#editOpdDiagnosisReportType").closest("form"), result.data);
                 document
                     .querySelector("#editOpdDiagnosisReportDate")
                     ._flatpickr.setDate(

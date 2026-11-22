@@ -1199,6 +1199,10 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('settings/reception', [SettingController::class, 'updateReception'])->name('settings.reception.update');
         Route::post('settings/inpatient', [SettingController::class, 'updateInpatient'])->name('settings.inpatient.update');
         Route::post('settings/vital-types', [SettingController::class, 'updateVitalTypes'])->name('settings.vital-types.update');
+        Route::get('icd10', [\App\Http\Controllers\Icd10Controller::class, 'index'])->name('icd10.index')->middleware('modules');
+        Route::post('icd10', [\App\Http\Controllers\Icd10Controller::class, 'store'])->name('icd10.store');
+        Route::post('icd10/import', [\App\Http\Controllers\Icd10Controller::class, 'import'])->name('icd10.import');
+        Route::post('icd10/{icd10Code}', [\App\Http\Controllers\Icd10Controller::class, 'update'])->name('icd10.update');
         Route::get('modules', [SettingController::class, 'getModule'])->name('module.index');
         Route::post('modules/{module}/active-deactive', [SettingController::class, 'activeDeactiveStatus'])->name('module.activeDeactiveStatus');
         Route::get('queue-theme-configuration', [SettingController::class, 'patientQueueThemeView'])->name('queue-theme-view');
@@ -1425,6 +1429,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('ipd-operations/{id}/edit', [IpdOperationController::class, 'edit'])->name('operation.edit');
         Route::post('ipd-operations/{id}', [IpdOperationController::class, 'update'])->name('operation.update');
         Route::get('ipd-operations/{id}/sheet', [IpdOperationController::class, 'show'])->name('operation.sheet');
+        Route::get('icd10-search', [\App\Http\Controllers\Icd10Controller::class, 'getSearch'])->name('icd10.search');
         Route::get('ipds/{ipdPatientDepartment}/nursing', [\App\Http\Controllers\NursingChartController::class, 'show'])->name('ipd.nursing.show')->middleware('modules');
         Route::post('ipds/{ipdPatientDepartment}/nursing/vitals', [\App\Http\Controllers\NursingChartController::class, 'storeVitals'])->name('ipd.nursing.vitals');
         Route::post('ipds/{ipdPatientDepartment}/nursing/notes', [\App\Http\Controllers\NursingChartController::class, 'storeNote'])->name('ipd.nursing.notes');

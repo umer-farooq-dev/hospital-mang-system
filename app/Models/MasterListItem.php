@@ -52,6 +52,7 @@ class MasterListItem extends Model
         'intake_type' => ['intake_outputs', 'intake_type'],
         'output_type' => ['intake_outputs', 'output_type'],
         'mar_status' => ['medication_administrations', 'status'],
+        'diagnosis_status' => ['ipd_diagnoses', 'diagnosis_status'],
     ];
 
     // Lists whose items carry a number, and what it means (shown on the Master Lists screen).
@@ -59,6 +60,7 @@ class MasterListItem extends Model
 
     // Other tables that also store codes of a list.
     const ALSO_USED_IN = [
+        'diagnosis_status' => [['opd_diagnoses', 'diagnosis_status']],
         'refund_reason' => [['receipts', 'void_reason']],
         'payment_method' => [['ipd_payments', 'payment_mode'], ['appointments', 'payment_type'], ['appointment_transactions', 'payment_type']],
         'charge_type' => [['charges', 'charge_type'], ['ipd_charges', 'charge_type_id']],

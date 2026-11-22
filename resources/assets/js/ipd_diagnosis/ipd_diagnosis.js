@@ -83,6 +83,7 @@ function renderDataIpdDiagnosis(id) {
                 }
                 $("#ipdDiagnosisId").val(result.data.id);
                 $("#editIpdDiagnosisReportType").val(result.data.report_type);
+                setIcd10Fields($("#editIpdDiagnosisReportType").closest("form"), result.data);
                 document
                     .querySelector("#editIpdDiagnosisReportDate")
                     ._flatpickr.setDate(

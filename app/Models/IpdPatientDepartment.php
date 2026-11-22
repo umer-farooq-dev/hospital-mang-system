@@ -154,7 +154,7 @@ class IpdPatientDepartment extends Model
             'doctor' => $this->doctor?->doctorUser?->full_name,
             'department' => $this->doctor?->department?->title,
             'diagnosis' => IpdDiagnosis::where('ipd_patient_department_id', $this->id)->orderBy('report_date')->get()
-                ->map(fn ($d) => '- ' . trim($d->report_type . ' ' . strip_tags((string) $d->description)))->implode("\n"),
+                ->map(fn ($d) => '- ' . ($d->icd10_code ? '[' . $d->icd10_code . '] ' : '') . trim($d->report_type . ' ' . strip_tags((string) $d->description)))->implode("\n"),
             'operations' => IpdOperation::with('operations')->where('ipd_patient_department_id', $this->id)->orderBy('operation_date')->get()
                 ->filter->isBillable()->map(fn ($o) => '- ' . \Illuminate\Support\Carbon::parse($o->operation_date)->format('d/m/Y') . ' ' . ($o->operations->name ?? ''))->implode("\n"),
             'outcome' => MasterListItem::label('discharge_outcome', $this->discharge_outcome, ''),

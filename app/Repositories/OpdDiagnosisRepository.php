@@ -18,6 +18,7 @@ class OpdDiagnosisRepository extends BaseRepository
     protected $fieldSearchable = [
         'opd_patient_department_id',
         'report_type',
+        'icd10_code',
         'report_date',
         'description',
     ];

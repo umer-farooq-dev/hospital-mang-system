@@ -51,6 +51,8 @@ class IpdDiagnosis extends Model implements HasMedia
     public $fillable = [
         'ipd_patient_department_id',
         'report_type',
+        'icd10_code',
+        'diagnosis_status',
         'report_date',
         'description',
     ];
@@ -65,11 +67,13 @@ class IpdDiagnosis extends Model implements HasMedia
 
     public static $rules = [
         'report_type' => 'required',
+        'icd10_code' => 'nullable|string|max:10|exists:icd10_codes,code',
+        'diagnosis_status' => 'nullable|integer',
         'report_date' => 'required',
         'file' => 'nullable|mimes:jpeg,png,pdf,docx,doc',
     ];
 
-    protected $appends = ['ipd_diagnosis_document_url'];
+    protected $appends = ['ipd_diagnosis_document_url', 'icd10_label'];
 
     public function getIpdDiagnosisDocumentUrlAttribute()
     {
@@ -79,5 +83,10 @@ class IpdDiagnosis extends Model implements HasMedia
         }
 
         return '';
+    }
+
+    public function getIcd10LabelAttribute(): ?string
+    {
+        return Icd10Code::labelFor($this->icd10_code);
     }
 }
