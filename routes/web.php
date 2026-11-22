@@ -309,6 +309,8 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
 
     // excel export routes.
     Route::middleware('access:Patient')->group(function () {
+        Route::get('my-results', [\App\Http\Controllers\PatientResultsController::class, 'index'])->name('my-results.index');
+        Route::get('my-results/{order}', [\App\Http\Controllers\PatientResultsController::class, 'show'])->name('my-results.show');
         Route::prefix('patient')->group(function () {
             Route::get('export-prescription', [Patient\PrescriptionController::class, 'prescriptionExport'])->name('prescription.excel');
 

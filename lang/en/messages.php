@@ -2509,6 +2509,7 @@ return [
             'lab_worklist' => 'Lab worklist',
             'imaging_report_templates' => 'Imaging report templates',
             'lab_import_profiles' => 'Lab import profiles',
+            'patient_results' => 'Results (patient portal)',
             'ipd_timelines' => 'IPD Timeline',
             'ipd_payments' => 'IPD Payments',
             'ipd_bills' => 'IPD Bills',
@@ -3469,6 +3470,15 @@ return [
         'done' => ':values value(s) written on :samples exam(s).',
         'unknown' => 'Samples not found: :list.',
         'locked' => 'Already validated, not changed: :list.',
+    ],
+    'exam_results' => [
+        'tab' => 'Results',
+        'investigations' => 'Investigations',
+        'request' => 'Request exams',
+        'pending' => 'Not released yet',
+        'empty' => 'No lab or imaging exam.',
+        'my_results' => 'My results',
+        'portal_setting' => 'Patients see their released results in the patient portal',
     ],
     'ipd_bill_extra' => [
         'pharmacy' => 'Pharmacy',

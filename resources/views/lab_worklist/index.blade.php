@@ -82,7 +82,7 @@
             </div>
         @endif
         @if (canAccessRoute('lab-worklist.settings'))
-            @php($labSettings = \App\Models\Setting::whereIn('key', ['lab_sample_prefix', 'lab_auto_release', 'lab_require_payment', 'pacs_viewer_url'])->pluck('value', 'key'))
+            @php($labSettings = \App\Models\Setting::whereIn('key', ['lab_sample_prefix', 'lab_auto_release', 'lab_require_payment', 'pacs_viewer_url', 'portal_show_results'])->pluck('value', 'key'))
             <div class="card">
                 <div class="card-body">
                     <h3 class="mb-5">{{ __('messages.lab.settings') }}</h3>
@@ -92,6 +92,7 @@
                     <div class="col-md-4"><label class="form-check form-switch"><input type="checkbox" class="form-check-input" name="lab_require_payment" value="1" {{ ($labSettings['lab_require_payment'] ?? '1') === '1' ? 'checked' : '' }}><span class="form-check-label">{{ __('messages.lab.require_payment') }}</span></label></div>
                     <div class="col-md-3"><label class="form-check form-switch"><input type="checkbox" class="form-check-input" name="lab_auto_release" value="1" {{ ($labSettings['lab_auto_release'] ?? '0') === '1' ? 'checked' : '' }}><span class="form-check-label">{{ __('messages.lab.auto_release') }}</span></label></div>
                     <div class="col-md-2">{{ Form::submit(__('messages.common.save'), ['class' => 'btn btn-primary w-100']) }}</div>
+                    <div class="col-md-12"><label class="form-check form-switch"><input type="checkbox" class="form-check-input" name="portal_show_results" value="1" {{ ($labSettings['portal_show_results'] ?? '0') === '1' ? 'checked' : '' }}><span class="form-check-label">{{ __('messages.exam_results.portal_setting') }}</span></label></div>
                     <div class="col-md-10">{{ Form::label('pacs_viewer_url', __('messages.imaging.pacs_url') . ':', ['class' => 'form-label']) }}
                         {{ Form::url('pacs_viewer_url', $labSettings['pacs_viewer_url'] ?? '', ['class' => 'form-control', 'maxlength' => 500, 'placeholder' => 'https://pacs.example/viewer?accession={sample_number}']) }}
                         <div class="form-text">{{ __('messages.imaging.pacs_hint') }}</div></div>

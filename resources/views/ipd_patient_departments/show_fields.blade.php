@@ -63,6 +63,11 @@
                     {{ __('messages.bills') }}
                 </button>
             </li>
+            <li class="nav-item position-relative me-7 mb-3" role="presentation">
+                <button class="nav-link p-0" data-bs-toggle="tab" data-bs-target="#ipdInvestigations" type="button" role="tab" aria-selected="false">
+                    {{ __('messages.exam_results.investigations') }}
+                </button>
+            </li>
         </ul>
 
         <div class="tab-content" id="myTabContent">
@@ -620,6 +625,10 @@
                 </a>
             @endif
             <livewire:ipd-payment-table ipdPatientDepartmentId="{{ $ipdPatientDepartment->id }}" />
+        </div>
+        <div class="tab-pane fade" id="ipdInvestigations" role="tabpanel">
+            @include('exam_results.list', ['examItems' => \App\Models\ExamOrderItem::workFor(null, $ipdPatientDepartment->id),
+                'requestUrl' => $ipdPatientDepartment->discharge ? null : route('exam-orders.create', ['patient_id' => $ipdPatientDepartment->patient_id])])
         </div>
         <div class="tab-pane fade" id="ipdBill" role="tabpanel" aria-labelledby="cases-tab">
             <div class="table-responsive viewList overflow-hidden">

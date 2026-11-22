@@ -225,6 +225,7 @@ class LabWorklistController extends AppBaseController
     {
         $request->validate(['lab_sample_prefix' => ['required', 'string', 'max:6', 'regex:/^[A-Za-z0-9]+$/'], 'pacs_viewer_url' => 'nullable|url|max:500']);
         Setting::updateOrCreate(['key' => 'pacs_viewer_url'], ['value' => (string) $request->input('pacs_viewer_url')]);
+        Setting::updateOrCreate(['key' => 'portal_show_results'], ['value' => $request->boolean('portal_show_results') ? '1' : '0']);
         foreach (['lab_sample_prefix' => strtoupper($request->input('lab_sample_prefix')),
             'lab_auto_release' => $request->boolean('lab_auto_release') ? '1' : '0',
             'lab_require_payment' => $request->boolean('lab_require_payment') ? '1' : '0'] as $key => $value) {
