@@ -134,6 +134,27 @@
                                                     <td>{{ __('messages.ipd_patient.bed_id') }}</td>
                                                     <td>{{ $ipdPatientDepartment->bed->name }}</td>
                                                 </tr>
+                                                <tr>
+                                                    <td>{{ __('messages.split.payer') }}</td>
+                                                    <td>{{ $ipdPatientDepartment->patientInsurance?->option_label ?? __('messages.patient_insurance.self_pay') }}</td>
+                                                </tr>
+                                                @if ($ipdPatientDepartment->package)
+                                                    <tr>
+                                                        <td>{{ __('messages.ipd_patient.package') }}</td>
+                                                        <td>{{ $ipdPatientDepartment->package->name }}</td>
+                                                    </tr>
+                                                @endif
+                                                @if ($ipdPatientDepartment->guardian_name)
+                                                    <tr>
+                                                        <td>{{ __('messages.ipd_patient.guardian_name') }}</td>
+                                                        <td>{{ $ipdPatientDepartment->guardian_name }}
+                                                            @if ($ipdPatientDepartment->guardian_relation)
+                                                                ({{ \App\Models\MasterListItem::label('guardian_relation', $ipdPatientDepartment->guardian_relation) }})
+                                                            @endif
+                                                            <div class="text-muted fs-7">{{ $ipdPatientDepartment->guardian_contact }} {{ $ipdPatientDepartment->guardian_address }}</div>
+                                                        </td>
+                                                    </tr>
+                                                @endif
                                             </tbody>
                                         </table>
                                     </div>

@@ -33,7 +33,7 @@ class UpdateIpdPatientDepartmentRequest extends FormRequest
             'patient_insurance_id' => 'nullable|integer|exists:patient_insurances,id',
             'price_list_id' => 'nullable|integer|exists:price_lists,id',
             'voucher_number' => 'nullable|string|max:50',
-        ];
+        ] + IpdPatientDepartment::admissionRules();
     }
 
     public function messages(): array

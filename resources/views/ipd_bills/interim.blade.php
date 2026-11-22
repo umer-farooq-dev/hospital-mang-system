@@ -36,6 +36,9 @@
     @foreach ($bill['exam_items'] as $e)
         <tr><td>{{ $e->order->ordered_at->format('d/m/Y') }}</td><td>{{ __('messages.exam_orders.exam') }} · {{ $e->description }}</td><td class="num">{{ formatAmount($e->total) }}</td></tr>
     @endforeach
+    @foreach ($bill['extra_lines'] as $line)
+        <tr><td>{{ $line['date']->format('d/m/Y') }}</td><td>{{ $line['type'] }} · {{ $line['description'] }}</td><td class="num">{{ formatAmount($line['amount']) }}</td></tr>
+    @endforeach
 </table>
 <h2>{{ __('messages.bill.bill_summary') }}</h2>
 <table>

@@ -33,6 +33,37 @@ class IpdBillTest extends TestCase
         $this->assertSame(9000.0, $net, '50 000 + 1 000 + 5 000 tax - 40 000 - 5 000 - 2 000');
     }
 
+    public function test_unpaid_pharmacy_bills_of_the_stay_go_on_one_admission_bill(): void
+    {
+        Schema::create('ipd_patient_departments', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('patient_id');
+            $t->dateTime('admission_date');
+            $t->timestamps();
+        });
+        Schema::create('medicine_bills', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('patient_id');
+            $t->unsignedBigInteger('ipd_patient_department_id')->nullable();
+            $t->string('bill_number');
+            $t->decimal('net_amount', 12, 2);
+            $t->integer('payment_status');
+            $t->dateTime('bill_date');
+            $t->timestamps();
+        });
+        DB::table('ipd_patient_departments')->insert([['id' => 1, 'patient_id' => 7, 'admission_date' => '2026-11-20 08:00'], ['id' => 2, 'patient_id' => 7, 'admission_date' => '2026-12-10 08:00']]);
+        DB::table('medicine_bills')->insert([
+            ['patient_id' => 7, 'bill_number' => 'M1', 'net_amount' => 4000, 'payment_status' => 0, 'bill_date' => '2026-11-21 10:00'], // during the stay
+            ['patient_id' => 7, 'bill_number' => 'M2', 'net_amount' => 900, 'payment_status' => 1, 'bill_date' => '2026-11-21 11:00'],  // paid at the pharmacy
+            ['patient_id' => 7, 'bill_number' => 'M3', 'net_amount' => 700, 'payment_status' => 0, 'bill_date' => '2026-11-10 09:00'],  // before admission
+        ]);
+
+        $this->assertSame(['M1'], IpdBillRepository::medicineBillsFor(IpdPatientDepartment::find(1))->pluck('bill_number')->all());
+        $this->assertSame(1, IpdBillRepository::claimMedicineBills(1));
+        $this->assertSame([], IpdBillRepository::medicineBillsFor(IpdPatientDepartment::find(2))->pluck('bill_number')->all(), 'billed once');
+        $this->assertSame(['M1'], IpdBillRepository::medicineBillsFor(IpdPatientDepartment::find(1))->pluck('bill_number')->all());
+    }
+
     public function test_an_advance_paid_before_admission_goes_on_one_bill_only(): void
     {
         Schema::create('ipd_patient_departments', function (Blueprint $t) {

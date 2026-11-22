@@ -42,6 +42,44 @@ class IpdBillRepository extends BaseRepository
             ->where(fn ($q) => $q->where('ipd_patient_department_id', $ipd->id)->orWhereNull('ipd_patient_department_id'));
     }
 
+    /** Package (priced from the admission's list) and the patient's pharmacy bills during the stay. */
+    public function extraLines(IpdPatientDepartment $ipd, $list)
+    {
+        $lines = collect();
+        $admitted = \Illuminate\Support\Carbon::parse($ipd->admission_date);
+        if ($ipd->package) {
+            $lines->push(['type' => __('messages.ipd_patient.package'), 'description' => $ipd->package->name, 'date' => $admitted,
+                'amount' => $list ? $list->priceFor($ipd->package, $admitted) : (float) $ipd->package->total_amount]);
+        }
+        foreach (self::medicineBillsFor($ipd)->orderBy('bill_date')->get() as $medicineBill) {
+            $lines->push(['type' => __('messages.ipd_bill_extra.pharmacy'), 'description' => $medicineBill->bill_number,
+                'date' => \Illuminate\Support\Carbon::parse($medicineBill->bill_date), 'amount' => (float) $medicineBill->net_amount]);
+        }
+
+        return $lines;
+    }
+
+    /** Pharmacy bills on this admission: those it already took, plus the patient's unpaid ones since admission. */
+    public static function medicineBillsFor(IpdPatientDepartment $ipd)
+    {
+        return \App\Models\MedicineBill::where('patient_id', $ipd->patient_id)
+            ->where(fn ($q) => $q->where('ipd_patient_department_id', $ipd->id)
+                ->orWhere(fn ($q) => $q->whereNull('ipd_patient_department_id')->where('payment_status', \App\Models\MedicineBill::UNPAID)
+                    ->whereDate('bill_date', '>=', \Illuminate\Support\Carbon::parse($ipd->admission_date)->toDateString())));
+    }
+
+    /** Saving the bill ties those pharmacy bills to this admission so the pharmacy does not collect them again. */
+    public static function claimMedicineBills(int $ipdId): int
+    {
+        $ipd = IpdPatientDepartment::find($ipdId);
+        if (! $ipd) {
+            return 0;
+        }
+        $ids = self::medicineBillsFor($ipd)->whereNull('ipd_patient_department_id')->pluck('id');
+
+        return \App\Models\MedicineBill::whereIn('id', $ids)->update(['ipd_patient_department_id' => $ipd->id]);
+    }
+
     /** Saving the bill ties the patient's unused advances to this admission so no later bill counts them again. */
     public static function claimAdvances(int $ipdId): int
     {
@@ -56,6 +94,7 @@ class IpdBillRepository extends BaseRepository
         if (isset($input['bill_id'])) {
             $bill = $this->update($input, $input['bill_id']);
             self::claimAdvances($bill->ipd_patient_department_id);
+        self::claimMedicineBills($bill->ipd_patient_department_id);
 
             return $bill;
         }
@@ -63,6 +102,7 @@ class IpdBillRepository extends BaseRepository
         $input['other_charges'] = $input['other_charges'];
         $bill = $this->create($input);
         self::claimAdvances($bill->ipd_patient_department_id);
+        self::claimMedicineBills($bill->ipd_patient_department_id);
         $ipdPatientDepartment = IpdPatientDepartment::with('bedAssign')->find($bill->ipd_patient_department_id);
         $patient = Patient::with('user')->where('id', $ipdPatientDepartment->patient_id)->first();
         $ipdPatientDepartment->bill_status = 1;
@@ -156,7 +196,7 @@ class IpdBillRepository extends BaseRepository
 
     public function getBillList($ipdPatientDepartment)
     {
-        $ipd = IpdPatientDepartment::with('bed', 'doctor', 'patientInsurance.insurance.priceList', 'priceList', 'bill')->find($ipdPatientDepartment->id);
+        $ipd = IpdPatientDepartment::with('bed', 'doctor', 'patientInsurance.insurance.priceList', 'priceList', 'bill', 'package')->find($ipdPatientDepartment->id);
         $policy = $ipd->patientInsurance;
         $list = $ipd->priceList ?? $policy?->insurance?->priceList ?? \App\Models\PriceList::defaultList();
         $bill['bed_lines'] = $this->bedLines($ipd, $list);
@@ -164,6 +204,7 @@ class IpdBillRepository extends BaseRepository
         $bill['bed_charges'] = $bedCharges;
         $bill['charges'] = IpdCharge::with(['chargecategory'])
             ->whereIpdPatientDepartmentId($ipdPatientDepartment->id)->get();
+        $bill['extra_lines'] = $this->extraLines($ipd, $list);
         $bill['exam_items'] = \App\Models\ExamOrderItem::with('order')->whereHas('order', fn ($q) => $q->where('ipd_patient_department_id', $ipd->id))->get();
         $bill['advances'] = self::advancesFor($ipd)->get();
         $bill['price_list'] = $list;
@@ -185,6 +226,10 @@ class IpdBillRepository extends BaseRepository
             $s = $split($line['total'], null, $line['from']);
             $cover += $s['discount_amount'] + $s['payer_amount'];
         }
+        foreach ($bill['extra_lines'] as $line) {
+            $s = $split($line['amount'], null, $line['date']);
+            $cover += $s['discount_amount'] + $s['payer_amount'];
+        }
         $bill['cover_amount'] = round($cover, 2);
         $bill['advances_total'] = (float) $bill['advances']->sum('amount');
         $bill['payments'] = IpdPayment::whereIpdPatientDepartmentId($ipdPatientDepartment->id)->get();
@@ -201,7 +246,7 @@ class IpdBillRepository extends BaseRepository
         $taxInPercentage = (! is_null($ipdPatientBill)) ? $ipdPatientBill->tax_in_percentage : 0;
         $otherChareges = (! is_null($ipdPatientBill)) ? $ipdPatientBill->other_charges : 0;
 
-        $totalCharges = $bill['charges']->sum('applied_charge') + $bill['exam_items']->sum('total');
+        $totalCharges = $bill['charges']->sum('applied_charge') + $bill['exam_items']->sum('total') + $bill['extra_lines']->sum('amount');
         $totalPayment = $bill['payments']->sum('amount');
 
         $netPayableAmount = self::netPayable([

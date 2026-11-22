@@ -109,7 +109,29 @@ class IpdPatientDepartment extends Model
         'patient_insurance_id',
         'price_list_id',
         'voucher_number',
+        'package_id',
+        'guardian_name',
+        'guardian_relation',
+        'guardian_contact',
+        'guardian_address',
     ];
+
+    /** Package and guardian of the admission (moved from the old Patient Admissions screen). */
+    public static function admissionRules(): array
+    {
+        return [
+            'package_id' => 'nullable|integer|exists:packages,id',
+            'guardian_name' => 'nullable|string|max:191',
+            'guardian_relation' => 'nullable|integer',
+            'guardian_contact' => 'nullable|string|max:50',
+            'guardian_address' => 'nullable|string|max:500',
+        ];
+    }
+
+    public function package(): BelongsTo
+    {
+        return $this->belongsTo(Package::class);
+    }
 
     protected $casts = [
         'id' => 'integer',

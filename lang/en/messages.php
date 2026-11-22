@@ -1585,6 +1585,21 @@ return [
     ],
 
     'ipd_patient' => [
+        'package' => 'Package',
+        'no_package' => 'No package',
+        'guardian_name' => 'Guardian (person to contact)',
+        'guardian_relation' => 'Relationship',
+        'guardian_contact' => 'Guardian phone',
+        'guardian_address' => 'Guardian address',
+        'relations' => [
+            'father' => 'Father',
+            'mother' => 'Mother',
+            'spouse' => 'Spouse',
+            'child' => 'Child',
+            'sibling' => 'Brother or sister',
+            'other_relative' => 'Other relative',
+            'friend' => 'Friend',
+        ],
         'ipd_patient_in' => 'IPD - Patient In',
         'ipd_patient' => 'IPD Patient',
         'ipd_patients' => 'IPD Patients',
@@ -2631,6 +2646,7 @@ return [
             'referrer' => 'Referrers',
             'refund_reason' => 'Refund reasons',
             'transfer_destination' => 'Transfer destinations',
+            'guardian_relation' => 'Guardian relationships',
         ],
     ],
 
@@ -3055,6 +3071,7 @@ return [
         ],
     ],
     'ipd_bill_extra' => [
+        'pharmacy' => 'Pharmacy',
         'interim_bill' => 'Interim bill',
         'cover_amount' => 'Payer\'s cover (reduction + share)',
         'advances' => 'Advances',
