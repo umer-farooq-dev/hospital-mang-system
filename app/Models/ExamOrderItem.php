@@ -6,12 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * One exam of a request, with its price and the payer/patient split.
  */
-class ExamOrderItem extends Model
+class ExamOrderItem extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+
+    public const FILES = 'exam_files';
+
+    // Images, PDF and DICOM files attached to a result.
+    public const FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'dcm', 'dicom'];
     protected $table = 'exam_order_items';
 
     protected $fillable = ['exam_order_id', 'testable_type', 'testable_id', 'description', 'total', 'discount_amount', 'payer_amount', 'patient_amount',
@@ -45,6 +53,17 @@ class ExamOrderItem extends Model
         $class = ExamOrder::TEST_TYPES[$this->testable_type] ?? null;
 
         return $class ? $class::find($this->testable_id) : null;
+    }
+
+    /** Viewer link built from the admin's PACS URL template, or null when no PACS is set. */
+    public function pacsUrl(?string $template): ?string
+    {
+        if (! $template || ! $this->sample_number) {
+            return null;
+        }
+
+        return strtr($template, ['{sample_number}' => rawurlencode($this->sample_number),
+            '{patient_id}' => rawurlencode((string) $this->order?->patient?->patient_unique_id)]);
     }
 
     public function getIsLabAttribute(): bool

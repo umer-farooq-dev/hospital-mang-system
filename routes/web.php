@@ -1201,6 +1201,8 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('settings/vital-types', [SettingController::class, 'updateVitalTypes'])->name('settings.vital-types.update');
         Route::get('certificate-templates', [\App\Http\Controllers\CertificateTemplateController::class, 'index'])->name('certificate-templates.index')->middleware('modules');
         Route::post('certificate-templates', [\App\Http\Controllers\CertificateTemplateController::class, 'update'])->name('certificate-templates.update');
+        Route::get('imaging-report-templates', [\App\Http\Controllers\ImagingReportTemplateController::class, 'index'])->name('imaging-report-templates.index')->middleware('modules');
+        Route::post('imaging-report-templates', [\App\Http\Controllers\ImagingReportTemplateController::class, 'update'])->name('imaging-report-templates.update');
         Route::get('icd10', [\App\Http\Controllers\Icd10Controller::class, 'index'])->name('icd10.index')->middleware('modules');
         Route::post('icd10', [\App\Http\Controllers\Icd10Controller::class, 'store'])->name('icd10.store');
         Route::post('icd10/import', [\App\Http\Controllers\Icd10Controller::class, 'import'])->name('icd10.import');
@@ -1443,6 +1445,8 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('lab-worklist/{item}', [\App\Http\Controllers\LabWorklistController::class, 'show'])->name('lab-worklist.show');
         Route::post('lab-worklist/{item}', [\App\Http\Controllers\LabWorklistController::class, 'update'])->name('lab-worklist.update');
         Route::post('lab-worklist/{item}/validate', [\App\Http\Controllers\LabWorklistController::class, 'validateResults'])->name('lab-worklist.validate');
+        Route::post('lab-worklist/{item}/files', [\App\Http\Controllers\LabWorklistController::class, 'storeFile'])->name('lab-worklist.files.store');
+        Route::post('lab-worklist/{item}/files/{media}/delete', [\App\Http\Controllers\LabWorklistController::class, 'destroyFile'])->name('lab-worklist.files.destroy');
         Route::post('lab-worklist/{item}/release', [\App\Http\Controllers\LabWorklistController::class, 'releaseResults'])->name('lab-worklist.release');
         Route::get('exam-orders/{order}/report', [\App\Http\Controllers\LabWorklistController::class, 'report'])->name('exam-orders.report');
         Route::get('icd10-search', [\App\Http\Controllers\Icd10Controller::class, 'getSearch'])->name('icd10.search');

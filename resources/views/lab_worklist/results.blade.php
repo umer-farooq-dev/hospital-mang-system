@@ -56,8 +56,20 @@
                     @endif
                 @else
                     <div class="mb-5">
-                        {{ Form::label('report_text', __('messages.lab.imaging_report') . ':', ['class' => 'form-label']) }}
-                        {{ Form::textarea('report_text', $item->report_text, ['class' => 'form-control', 'rows' => 14, 'maxlength' => 50000] + ($locked ? ['disabled' => 'disabled'] : [])) }}
+                        <div class="d-flex justify-content-between align-items-end mb-2 gap-3">
+                            {{ Form::label('report_text', __('messages.lab.imaging_report') . ':', ['class' => 'form-label mb-0']) }}
+                            @if (! $locked && $templates->isNotEmpty())
+                                <div class="d-flex gap-2">
+                                    <select class="form-select form-select-sm" id="imagingTemplate">
+                                        @foreach ($templates as $template)
+                                            <option value="{{ $template->id }}" data-body="{{ $template->text }}">{{ $template->label }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" class="btn btn-sm btn-light-primary text-nowrap" id="imagingTemplateInsert">{{ __('messages.imaging.insert_template') }}</button>
+                                </div>
+                            @endif
+                        </div>
+                        {{ Form::textarea('report_text', $report, ['class' => 'form-control', 'rows' => 16, 'maxlength' => 50000, 'id' => 'imagingReport'] + ($locked ? ['disabled' => 'disabled'] : [])) }}
                     </div>
                 @endif
                 <div class="mb-5">
@@ -70,6 +82,44 @@
                 {{ Form::close() }}
             </div>
         </div>
+        <div class="card mb-7">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0">{{ __('messages.imaging.files') }}</h3>
+                    @if ($pacsUrl)
+                        <a href="{{ $pacsUrl }}" target="_blank" rel="noopener" class="btn btn-sm btn-light-info"><i class="fas fa-external-link-alt me-1"></i>{{ __('messages.imaging.open_pacs') }}</a>
+                    @endif
+                </div>
+                <div class="d-flex flex-wrap gap-4 mb-4">
+                    @forelse ($files as $file)
+                        <div class="border rounded p-2 text-center" style="width:140px">
+                            <a href="{{ $file->getUrl() }}" target="_blank" class="text-decoration-none">
+                                @if (str_starts_with((string) $file->mime_type, 'image/'))
+                                    <img src="{{ $file->getUrl() }}" alt="" style="max-width:120px;max-height:90px">
+                                @else
+                                    <i class="fas fa-file-medical fs-1 text-primary"></i>
+                                @endif
+                                <div class="fs-8 text-truncate mt-1" title="{{ $file->file_name }}">{{ $file->file_name }}</div>
+                            </a>
+                            @unless ($locked)
+                                {{ Form::open(['route' => ['lab-worklist.files.destroy', $item->id, $file->id], 'method' => 'post']) }}
+                                <button class="btn btn-link btn-sm text-danger p-0">{{ __('messages.common.delete') }}</button>
+                                {{ Form::close() }}
+                            @endunless
+                        </div>
+                    @empty
+                        <div class="text-muted">{{ __('messages.imaging.no_files') }}</div>
+                    @endforelse
+                </div>
+                @unless ($locked)
+                    {{ Form::open(['route' => ['lab-worklist.files.store', $item->id], 'method' => 'post', 'files' => true, 'class' => 'd-flex gap-3']) }}
+                    <input type="file" name="files[]" class="form-control" multiple accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.dcm,.dicom" required>
+                    {{ Form::submit(__('messages.imaging.upload'), ['class' => 'btn btn-light-primary']) }}
+                    {{ Form::close() }}
+                    <div class="form-text">{{ __('messages.imaging.files_hint') }}</div>
+                @endunless
+            </div>
+        </div>
         <div class="card">
             <div class="card-body d-flex flex-wrap gap-5 align-items-center">
                 @foreach (['collected', 'result_entered', 'validated', 'released'] as $step)
@@ -79,7 +129,7 @@
                 @endforeach
                 <div class="ms-auto d-flex gap-2">
                     @if ($item->status === 'in_progress' && canAccessRoute('lab-worklist.validate'))
-                        {{ Form::open(['route' => ['lab-worklist.validate', $item->id], 'method' => 'post']) }}<button class="btn btn-primary">{{ __('messages.lab.validate') }}</button>{{ Form::close() }}
+                        {{ Form::open(['route' => ['lab-worklist.validate', $item->id], 'method' => 'post']) }}<button class="btn btn-primary">{{ $item->is_lab ? __('messages.lab.validate') : __('messages.imaging.sign') }}</button>{{ Form::close() }}
                     @endif
                     @if ($item->status === 'validated' && canAccessRoute('lab-worklist.release'))
                         {{ Form::open(['route' => ['lab-worklist.release', $item->id], 'method' => 'post']) }}<button class="btn btn-success">{{ __('messages.lab.release') }}</button>{{ Form::close() }}
