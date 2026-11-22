@@ -36,6 +36,7 @@ class StockTest extends TestCase
             $t->string('name');
             $t->string('code')->nullable();
             $t->unsignedInteger('store_type')->nullable();
+            $t->unsignedInteger('bed_type_id')->nullable();
             $t->boolean('can_sell')->default(false);
             $t->boolean('is_active')->default(true);
             $t->unsignedInteger('sort_order')->default(0);
@@ -230,6 +231,25 @@ class StockTest extends TestCase
             $t->integer('quantity');
             $t->boolean('status')->default(false);
             $t->date('return_date')->nullable();
+            $t->timestamps();
+        });
+        Schema::create('ipd_patient_departments', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedInteger('bed_type_id')->nullable();
+        });
+        Schema::create('ipd_prescription_items', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('medicine_id');
+        });
+        Schema::create('medication_administrations', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('ipd_patient_department_id');
+            $t->unsignedBigInteger('ipd_prescription_item_id');
+            $t->dateTime('scheduled_at')->nullable();
+            $t->unsignedInteger('status')->nullable();
+            $t->dateTime('administered_at')->nullable();
+            $t->string('note')->nullable();
+            $t->unsignedBigInteger('recorded_by')->nullable();
             $t->timestamps();
         });
         $this->pharmacy = DB::table('stores')->insertGetId(['name' => 'Pharmacy', 'can_sell' => true, 'sort_order' => 1]);
@@ -566,5 +586,29 @@ class StockTest extends TestCase
         $slow = $build(['report' => 'slow', 'days' => 30]);
         $this->assertSame(['Idle'], array_column($slow['rows'], 0), 'only what nothing was taken out of');
         $this->assertSame([16 + 5], [array_sum(array_column($build(['report' => 'valuation'])['rows'], 1))]);
+    }
+
+    public function test_a_dose_given_on_the_mar_takes_one_unit_from_the_ward_store_when_switched_on(): void
+    {
+        $m = $this->medicine();
+        DB::table('stores')->where('id', $this->ward)->update(['bed_type_id' => 4]);
+        Stock::receive($m, $this->ward, 10, ['batch_no' => 'W'], PurchaseMedicine::create(['purchase_no' => 'P-W']));
+        DB::table('ipd_patient_departments')->insert([['id' => 1, 'bed_type_id' => 4], ['id' => 2, 'bed_type_id' => 9]]);
+        DB::table('ipd_prescription_items')->insert(['id' => 1, 'medicine_id' => $m->id]);
+        $dose = \App\Models\MedicationAdministration::create(['ipd_patient_department_id' => 1, 'ipd_prescription_item_id' => 1, 'status' => 1]);
+
+        $this->assertNull($dose->syncStock());
+        $this->assertSame(10, Stock::onHand($m, $this->ward), 'off by default');
+
+        \App\Models\Setting::create(['key' => 'mar_auto_issue', 'value' => '1']);
+        $this->assertNull($dose->syncStock());
+        $dose->syncStock();
+        $this->assertSame(9, Stock::onHand($m, $this->ward), 'given: one unit, once');
+        $dose->update(['status' => 2]);
+        $dose->syncStock();
+        $this->assertSame(10, Stock::onHand($m, $this->ward), 'changed to held: back');
+
+        $elsewhere = \App\Models\MedicationAdministration::create(['ipd_patient_department_id' => 2, 'ipd_prescription_item_id' => 1, 'status' => 1]);
+        $this->assertNotNull($elsewhere->syncStock(), 'no store for that ward: the dose is kept, with a warning');
     }
 }

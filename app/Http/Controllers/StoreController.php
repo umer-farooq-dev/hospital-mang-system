@@ -15,13 +15,15 @@ use Laracasts\Flash\Flash;
 class StoreController extends AppBaseController
 {
     const SETTINGS = ['stock_fefo', 'stock_allow_negative', 'stock_sell_expired', 'stock_expiry_alert_days', 'pharmacy_default_store',
-        'stock_transfer_approval', 'stock_transfer_prefix', 'stock_count_blind', 'stock_count_prefix', 'purchase_order_prefix', 'pharmacy_charge_category', 'inventory_default_store'];
+        'stock_transfer_approval', 'stock_transfer_prefix', 'stock_count_blind', 'stock_count_prefix', 'purchase_order_prefix', 'pharmacy_charge_category', 'inventory_default_store', 'mar_auto_issue', 'mar_given_status'];
 
     public function index()
     {
         return view('stores.index', [
             'stores' => Store::with('users:id')->orderBy('sort_order')->orderBy('name')->get(),
             'types' => MasterListItem::options('store_type'),
+            'bedTypes' => \App\Models\BedType::orderBy('title')->pluck('title', 'id')->all(),
+            'marStatuses' => MasterListItem::options('mar_status'),
             'users' => User::whereDoesntHave('roles', fn ($q) => $q->where('name', 'Patient'))->orderBy('first_name')->get()
                 ->mapWithKeys(fn ($u) => [$u->id => $u->full_name])->all(),
             'settings' => Setting::whereIn('key', self::SETTINGS)->pluck('value', 'key'),
@@ -30,11 +32,11 @@ class StoreController extends AppBaseController
 
     public function update(Request $request)
     {
-        $rules = ['name' => 'required|string|max:150', 'code' => 'nullable|string|max:30', 'store_type' => 'nullable|integer',
+        $rules = ['name' => 'required|string|max:150', 'code' => 'nullable|string|max:30', 'store_type' => 'nullable|integer', 'bed_type_id' => 'nullable|integer|exists:bed_types,id',
             'sort_order' => 'nullable|integer|min:0|max:9999', 'users' => 'nullable|array', 'users.*' => 'integer|exists:users,id'];
         $save = function (Store $store, array $row) use ($rules) {
             $data = Validator::make($row, $rules)->validate();
-            $store->fill(['name' => $data['name'], 'code' => $data['code'] ?? null, 'store_type' => $data['store_type'] ?? null,
+            $store->fill(['name' => $data['name'], 'code' => $data['code'] ?? null, 'store_type' => $data['store_type'] ?? null, 'bed_type_id' => $data['bed_type_id'] ?? null,
                 'sort_order' => (int) ($data['sort_order'] ?? 0), 'can_sell' => ! empty($row['can_sell']),
                 'is_active' => $store->exists ? ! empty($row['is_active']) : true])->save();
             $store->users()->sync($data['users'] ?? []);
@@ -57,6 +59,7 @@ class StoreController extends AppBaseController
             'stock_expiry_alert_days' => 'required|integer|min:0|max:3650',
             'pharmacy_default_store' => ['required', Rule::exists('stores', 'id')->where('is_active', true)],
             'inventory_default_store' => ['required', Rule::exists('stores', 'id')->where('is_active', true)],
+            'mar_given_status' => ['required', 'integer'],
             'stock_transfer_prefix' => ['required', 'string', 'max:10', 'regex:/^[A-Za-z0-9]+$/'],
             'stock_count_prefix' => ['required', 'string', 'max:10', 'regex:/^[A-Za-z0-9]+$/'],
             'purchase_order_prefix' => ['required', 'string', 'max:10', 'regex:/^[A-Za-z0-9]+$/'],
@@ -68,6 +71,7 @@ class StoreController extends AppBaseController
             'stock_sell_expired' => $request->boolean('stock_sell_expired') ? '1' : '0',
             'stock_transfer_approval' => $request->boolean('stock_transfer_approval') ? '1' : '0',
             'stock_count_blind' => $request->boolean('stock_count_blind') ? '1' : '0',
+            'mar_auto_issue' => $request->boolean('mar_auto_issue') ? '1' : '0',
         ];
         $values['pharmacy_charge_category'] = (string) ($data['pharmacy_charge_category'] ?? '');
         foreach ($values as $key => $value) {

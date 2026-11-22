@@ -13,8 +13,14 @@
             <a href="{{ route('medicines.excel') }}"
                class="dropdown-item  px-5">{{ __('messages.common.export_to_excel') }}</a>
         </li>
+        @canroute('medicines.import')
+        <li><a href="{{ route('medicines.import') }}" class="dropdown-item px-5">{{ __('messages.medicine_import.title') }}</a></li>
+        @endcanroute
     </ul>
     @else
+        @canroute('medicines.import')
+        <a href="{{ route('medicines.import') }}" class="btn btn-outline-primary me-2">{{ __('messages.medicine_import.title') }}</a>
+        @endcanroute
         <a href="{{ route('medicines.create') }}"
            class="btn btn-primary">{{ __('messages.medicine.new_medicine') }}</a>
     @endif

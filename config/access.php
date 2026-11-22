@@ -325,6 +325,7 @@ return [
         Controllers\AmbulanceController::class => 'ambulances',
         Controllers\AmbulanceCallController::class => 'ambulance_calls',
         Controllers\MedicineController::class => 'medicines',
+        Controllers\MedicineImportController::class => 'medicines',
         Controllers\CategoryController::class => 'medicine_categories',
         Controllers\BrandController::class => 'medicine_brands',
         Controllers\PurchaseMedicineController::class => 'purchase_medicines',

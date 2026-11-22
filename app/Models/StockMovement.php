@@ -58,6 +58,11 @@ class StockMovement extends Model
     /** [label, url or null] of the document behind this movement. */
     public function documentLink(): array
     {
+        if ($this->document_type === MedicationAdministration::class) {
+            $ipd = $this->document?->ipd_patient_department_id;
+
+            return [__('messages.mar_stock.dose').' #'.$this->document_id, $ipd && canAccessRoute('ipd.nursing.show') ? route('ipd.nursing.show', $ipd) : null];
+        }
         [$column, $route, $parameter] = self::DOCUMENTS[$this->document_type] ?? [null, null, null];
         if (! $column) {
             return [$this->movement_type === 'opening' ? __('messages.stock.opening') : class_basename((string) $this->document_type), null];

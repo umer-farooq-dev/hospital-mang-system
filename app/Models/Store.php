@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 /** A place that holds stock: main store, pharmacy, branch pharmacy, ward, theatre. */
 class Store extends Model
 {
-    protected $fillable = ['name', 'code', 'store_type', 'can_sell', 'is_active', 'sort_order'];
+    protected $fillable = ['name', 'code', 'store_type', 'bed_type_id', 'can_sell', 'is_active', 'sort_order'];
 
     protected $casts = ['can_sell' => 'boolean', 'is_active' => 'boolean', 'store_type' => 'integer', 'sort_order' => 'integer'];
 

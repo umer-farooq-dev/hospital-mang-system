@@ -699,6 +699,8 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
             ->name('medicines.index')
             ->middleware('modules');
         Route::get('medicines-show-modal/{medicine}', [MedicineController::class, 'showModal'])->name('medicines.show.modal');
+        Route::get('medicines-import', [\App\Http\Controllers\MedicineImportController::class, 'create'])->name('medicines.import');
+        Route::post('medicines-import', [\App\Http\Controllers\MedicineImportController::class, 'store'])->name('medicines.import.store');
         Route::resource('medicine-purchase', PurchaseMedicineController::class)->parameters(['categories' => 'category']);
 
         // Medicine purchase stripe payment

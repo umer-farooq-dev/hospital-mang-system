@@ -108,7 +108,8 @@ class NursingChartController extends AppBaseController
             'note' => $data['note'] ?? null,
             'recorded_by' => auth()->id(),
         ]);
-        Flash::success(__('messages.nursing.dose_saved'));
+        $warning = $dose->syncStock();
+        $warning ? Flash::warning(__('messages.mar_stock.not_taken', ['reason' => $warning])) : Flash::success(__('messages.nursing.dose_saved'));
 
         return redirect()->to(route('ipd.nursing.show', $dose->ipd_patient_department_id) . '#mar');
     }
