@@ -2,8 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\IpdPatientDepartment;
 use App\Repositories\IpdBillRepository;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class IpdBillTest extends TestCase
@@ -27,5 +31,34 @@ class IpdBillTest extends TestCase
             'tax_percent' => 10, 'cover' => 40000, 'payments' => 5000, 'advances' => 2000]);
 
         $this->assertSame(9000.0, $net, '50 000 + 1 000 + 5 000 tax - 40 000 - 5 000 - 2 000');
+    }
+
+    public function test_an_advance_paid_before_admission_goes_on_one_bill_only(): void
+    {
+        Schema::create('ipd_patient_departments', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('patient_id');
+            $t->timestamps();
+        });
+        Schema::create('advanced_payments', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('patient_id');
+            $t->unsignedBigInteger('ipd_patient_department_id')->nullable();
+            $t->decimal('amount', 12, 2);
+            $t->timestamps();
+        });
+        DB::table('ipd_patient_departments')->insert([['id' => 1, 'patient_id' => 7], ['id' => 2, 'patient_id' => 7]]);
+        DB::table('advanced_payments')->insert([
+            ['patient_id' => 7, 'ipd_patient_department_id' => null, 'amount' => 50000], // paid before the surgery
+            ['patient_id' => 7, 'ipd_patient_department_id' => 1, 'amount' => 3000],    // already on admission 1
+            ['patient_id' => 9, 'ipd_patient_department_id' => null, 'amount' => 999],  // another patient
+        ]);
+        $first = IpdPatientDepartment::find(1);
+        $second = IpdPatientDepartment::find(2);
+
+        $this->assertSame(53000.0, (float) IpdBillRepository::advancesFor($first)->sum('amount'));
+        $this->assertSame(1, IpdBillRepository::claimAdvances(1));
+        $this->assertSame(0.0, (float) IpdBillRepository::advancesFor($second)->sum('amount'), 'a claimed advance is not counted twice');
+        $this->assertSame(53000.0, (float) IpdBillRepository::advancesFor($first)->sum('amount'));
     }
 }

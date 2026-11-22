@@ -14,6 +14,8 @@
         th { background: #eee; text-align: left; }
         .num { text-align: right; white-space: nowrap; }
         .void td { color: #b91c1c; text-decoration: line-through; }
+        .signatures td { border: 0; width: 50%; padding-top: 28px; vertical-align: top; }
+        .signatures .line { border-top: 1px solid #111; margin-top: 50px; padding-top: 4px; }
         @media print { .no-print { display: none; } }
     </style>
 </head>
@@ -95,5 +97,11 @@
 @if ($session->notes)
     <p class="muted">{{ $session->notes }}</p>
 @endif
+<table class="signatures">
+    <tr>
+        <td>{{ __('messages.cashier.signature_cashier') }}<div class="line">{{ $session->user->full_name ?? '' }}</div></td>
+        <td>{{ __('messages.cashier.signature_accountant') }}<div class="line">{{ __('messages.cashier.signature_name_date') }}</div></td>
+    </tr>
+</table>
 </body>
 </html>

@@ -35,16 +35,34 @@ class IpdBillRepository extends BaseRepository
         return IpdBill::class;
     }
 
+    /** Advances on this admission's bill: those it already took, plus the patient's unused ones (often paid before admission). */
+    public static function advancesFor(IpdPatientDepartment $ipd)
+    {
+        return \App\Models\AdvancedPayment::where('patient_id', $ipd->patient_id)
+            ->where(fn ($q) => $q->where('ipd_patient_department_id', $ipd->id)->orWhereNull('ipd_patient_department_id'));
+    }
+
+    /** Saving the bill ties the patient's unused advances to this admission so no later bill counts them again. */
+    public static function claimAdvances(int $ipdId): int
+    {
+        $ipd = IpdPatientDepartment::find($ipdId);
+
+        return $ipd ? \App\Models\AdvancedPayment::where('patient_id', $ipd->patient_id)
+            ->whereNull('ipd_patient_department_id')->update(['ipd_patient_department_id' => $ipd->id]) : 0;
+    }
+
     public function saveBill($input)
     {
         if (isset($input['bill_id'])) {
             $bill = $this->update($input, $input['bill_id']);
+            self::claimAdvances($bill->ipd_patient_department_id);
 
             return $bill;
         }
         $input['net_payable_amount'] = $input['net_payable_amount'];
         $input['other_charges'] = $input['other_charges'];
         $bill = $this->create($input);
+        self::claimAdvances($bill->ipd_patient_department_id);
         $ipdPatientDepartment = IpdPatientDepartment::with('bedAssign')->find($bill->ipd_patient_department_id);
         $patient = Patient::with('user')->where('id', $ipdPatientDepartment->patient_id)->first();
         $ipdPatientDepartment->bill_status = 1;
@@ -147,8 +165,7 @@ class IpdBillRepository extends BaseRepository
         $bill['charges'] = IpdCharge::with(['chargecategory'])
             ->whereIpdPatientDepartmentId($ipdPatientDepartment->id)->get();
         $bill['exam_items'] = \App\Models\ExamOrderItem::with('order')->whereHas('order', fn ($q) => $q->where('ipd_patient_department_id', $ipd->id))->get();
-        $bill['advances'] = \App\Models\AdvancedPayment::where('patient_id', $ipd->patient_id)
-            ->whereDate('date', '>=', \Illuminate\Support\Carbon::parse($ipd->admission_date)->toDateString())->get();
+        $bill['advances'] = self::advancesFor($ipd)->get();
         $bill['price_list'] = $list;
         $bill['policy'] = $policy;
 
