@@ -176,6 +176,18 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Certificates --}}
+    @module('Certificates', $modules)
+        @canroute('certificates.index')
+        <li class="nav-item {{ Request::is('certificates*', 'certificate-templates*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('certificates.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-file-signature"></i></span>
+                <span class="aside-menu-title">{{ __('messages.certificate.certificates') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
 
     {{-- ipds/opds --}}
@@ -775,6 +787,18 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Certificates --}}
+    @module('Certificates', $modules)
+        @canroute('certificates.index')
+        <li class="nav-item {{ Request::is('certificates*', 'certificate-templates*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('certificates.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-file-signature"></i></span>
+                <span class="aside-menu-title">{{ __('messages.certificate.certificates') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
 
             {{-- ipds/opds --}}
@@ -1193,6 +1217,18 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Certificates --}}
+    @module('Certificates', $modules)
+        @canroute('certificates.index')
+        <li class="nav-item {{ Request::is('certificates*', 'certificate-templates*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('certificates.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-file-signature"></i></span>
+                <span class="aside-menu-title">{{ __('messages.certificate.certificates') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
 
             {{-- ipds/opds --}}
@@ -1492,6 +1528,18 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Certificates --}}
+    @module('Certificates', $modules)
+        @canroute('certificates.index')
+        <li class="nav-item {{ Request::is('certificates*', 'certificate-templates*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('certificates.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-file-signature"></i></span>
+                <span class="aside-menu-title">{{ __('messages.certificate.certificates') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
 
             {{-- ipds/opds --}}
@@ -1694,6 +1742,18 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Certificates --}}
+    @module('Certificates', $modules)
+        @canroute('certificates.index')
+        <li class="nav-item {{ Request::is('certificates*', 'certificate-templates*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('certificates.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-file-signature"></i></span>
+                <span class="aside-menu-title">{{ __('messages.certificate.certificates') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
 
             {{-- Diagnosis Test --}}

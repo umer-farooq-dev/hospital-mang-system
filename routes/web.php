@@ -1199,6 +1199,8 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('settings/reception', [SettingController::class, 'updateReception'])->name('settings.reception.update');
         Route::post('settings/inpatient', [SettingController::class, 'updateInpatient'])->name('settings.inpatient.update');
         Route::post('settings/vital-types', [SettingController::class, 'updateVitalTypes'])->name('settings.vital-types.update');
+        Route::get('certificate-templates', [\App\Http\Controllers\CertificateTemplateController::class, 'index'])->name('certificate-templates.index')->middleware('modules');
+        Route::post('certificate-templates', [\App\Http\Controllers\CertificateTemplateController::class, 'update'])->name('certificate-templates.update');
         Route::get('icd10', [\App\Http\Controllers\Icd10Controller::class, 'index'])->name('icd10.index')->middleware('modules');
         Route::post('icd10', [\App\Http\Controllers\Icd10Controller::class, 'store'])->name('icd10.store');
         Route::post('icd10/import', [\App\Http\Controllers\Icd10Controller::class, 'import'])->name('icd10.import');
@@ -1372,6 +1374,11 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('ipds', [IpdPatientDepartmentController::class, 'store'])->name('ipd.patient.store');
         Route::get('ipds/{ipdPatientDepartment}/edit', [IpdPatientDepartmentController::class, 'edit'])->name('ipd.patient.edit');
         Route::get('ipds/{ipdPatientDepartment}/discharge', [\App\Http\Controllers\IpdDischargeController::class, 'show'])->name('ipd.discharge.show');
+        Route::get('certificates', [\App\Http\Controllers\CertificateController::class, 'index'])->name('certificates.index')->middleware('modules');
+        Route::get('certificates/create', [\App\Http\Controllers\CertificateController::class, 'create'])->name('certificates.create');
+        Route::get('certificates/preview', [\App\Http\Controllers\CertificateController::class, 'getPreview'])->name('certificates.preview');
+        Route::post('certificates', [\App\Http\Controllers\CertificateController::class, 'store'])->name('certificates.store');
+        Route::get('certificates/{certificate}', [\App\Http\Controllers\CertificateController::class, 'show'])->name('certificates.show');
         Route::post('ipds/{ipdPatientDepartment}/discharge', [\App\Http\Controllers\IpdDischargeController::class, 'update'])->name('ipd.discharge.update');
         Route::get('ipds/{ipdPatientDepartment}/discharge/print', [\App\Http\Controllers\IpdDischargeController::class, 'print'])->name('ipd.discharge.print');
         Route::patch('ipds/{ipdPatientDepartment}', [IpdPatientDepartmentController::class, 'update'])->name('ipd.patient.update');
