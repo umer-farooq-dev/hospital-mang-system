@@ -87,6 +87,9 @@ class MedicineBill extends Model
         'tax_amount',
         'total',
         'bill_date',
+        'store_id',
+        'dispensed_at',
+        'dispensed_by',
     ];
 
     const MEDICINE_BILL_CASH = 0;
@@ -134,5 +137,38 @@ class MedicineBill extends Model
     public function saleMedicine(): hasMany
     {
         return $this->hasMany(SaleMedicine::class, 'medicine_bill_id');
+    }
+
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
+
+    /**
+     * Stock follows the bill: a paid or dispensed bill has its lines taken out of its store
+     * (earliest expiry first); an unpaid, undispensed one has nothing out. Call after every save.
+     */
+    public function syncStock(): void
+    {
+        $storeId = $this->store_id ?: \App\Utils\Stock::defaultStoreId();
+        if ($storeId && ! $this->store_id) {
+            $this->forceFill(['store_id' => $storeId])->saveQuietly();
+        }
+        $issue = (int) $this->payment_status === self::FULLPAID || $this->dispensed_at !== null;
+        $wanted = $issue ? $this->saleMedicine()->with('medicine')->get()->filter(fn ($line) => $line->medicine)
+            ->map(fn ($line) => [$line->medicine, (int) $line->sale_quantity])->values()->all() : [];
+        if (! $storeId) {
+            if ($wanted) {
+                throw new \Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException(__('messages.stock.no_store'));
+            }
+
+            return;
+        }
+        \App\Utils\Stock::syncIssue($this, $storeId, $wanted);
+        foreach ($wanted as [$medicine]) {
+            if ($expiry = \App\Utils\Stock::expiryOut($this, $medicine)) {
+                $this->saleMedicine()->where('medicine_id', $medicine->id)->update(['expiry_date' => $expiry]);
+            }
+        }
     }
 }

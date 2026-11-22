@@ -54,6 +54,10 @@ class MasterListItem extends Model
         'mar_status' => ['medication_administrations', 'status'],
         'diagnosis_status' => ['ipd_diagnoses', 'diagnosis_status'],
         'imaging_modality' => ['radiology_tests', 'modality'],
+        'store_type' => ['stores', 'store_type'],
+        'medicine_unit' => ['medicines', 'unit'],
+        'dosage_form' => ['medicines', 'dosage_form'],
+        'medicine_route' => ['medicines', 'route'],
     ];
 
     // Lists whose items carry a number, and what it means (shown on the Master Lists screen).

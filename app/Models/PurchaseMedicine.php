@@ -19,6 +19,8 @@ class PurchaseMedicine extends Model
             'payment_note',
             'note',
             'tenant_id',
+            'store_id',
+            'supplier_id',
         ];
 
     const PURCHASE_MEDICINE_CASH = 0;
@@ -38,5 +40,29 @@ class PurchaseMedicine extends Model
     public function purchasedMedcines(): HasMany
     {
         return $this->hasMany(PurchasedMedicine::class, 'purchase_medicines_id');
+    }
+
+    public function store(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
+
+    public function supplier(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
+    /** Store the goods go into: the one chosen, else the default store (saved on the purchase). */
+    public function receivingStoreId(): int
+    {
+        if (! $this->store_id) {
+            $storeId = \App\Utils\Stock::defaultStoreId();
+            if (! $storeId) {
+                throw new \Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException(__('messages.stock.no_store'));
+            }
+            $this->forceFill(['store_id' => $storeId])->saveQuietly();
+        }
+
+        return (int) $this->store_id;
     }
 }

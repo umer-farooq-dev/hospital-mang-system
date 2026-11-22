@@ -186,10 +186,29 @@ class MedicineBillController extends AppBaseController
 
     public function destroy(MedicineBill $medicineBill)
     {
-        $medicineBill->saleMedicine()->delete();
-        $medicineBill->delete();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($medicineBill) {
+            \App\Utils\Stock::reverse($medicineBill, \App\Utils\Stock::RETURN);
+            $medicineBill->saleMedicine()->delete();
+            $medicineBill->delete();
+        });
 
         return $this->sendSuccess(__('messages.medicine_bills.medicine_bill').' '.__('messages.common.deleted_successfully'));
+    }
+
+    /** Give the medicines without payment here (charged on the admission bill or collected at the cashier). */
+    public function dispense(MedicineBill $medicineBill)
+    {
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($medicineBill) {
+                $medicineBill->update(['dispensed_at' => now(), 'dispensed_by' => getLoggedInUserId()]);
+                $medicineBill->syncStock();
+            });
+            Flash::success(__('messages.stock.dispensed_done', ['store' => $medicineBill->fresh()->store->name ?? '']));
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            Flash::error($e->getMessage());
+        }
+
+        return redirect()->route('medicine-bills.show', $medicineBill->id);
     }
 
     public function storePatient(CreatePatientRequest $request)
@@ -273,14 +292,10 @@ class MedicineBillController extends AppBaseController
                     $saleMedicine = SaleMedicine::where('medicine_bill_id',$medicineBill->id)->first();
                     $saleMedicine->delete();
 
-                    if ($input['payment_status'] == 1) {
-                        $medicine->update([
-                            'available_quantity' => $input['quantity'][$key] + $medicine->available_quantity,
-                        ]);
-                    }
                 }
             }
 
+        \App\Utils\Stock::reverse($medicineBill, \App\Utils\Stock::RETURN);
         $medicineBill->delete();
 
         return $this->sendSuccess(__('messages.payment.payment_failed'));

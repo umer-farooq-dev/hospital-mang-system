@@ -111,7 +111,6 @@ class PurchaseMedicineRepository extends BaseRepository
                 $medicine = Medicine::find($input['medicine'][$key]);
                 $medicineQtyArray = [
                     'quantity' => $input['quantity'][$key] + $medicine->quantity,
-                    'available_quantity' => $input['quantity'][$key] + $medicine->available_quantity,
                 ];
                 $medicine->update($medicineQtyArray);
             }
@@ -283,7 +282,6 @@ class PurchaseMedicineRepository extends BaseRepository
                 $medicine = Medicine::find($input['medicine'][$key]);
                 $medicineQtyArray = [
                     'quantity' => $input['quantity'][$key] + $medicine->quantity,
-                    'available_quantity' => $input['quantity'][$key] + $medicine->available_quantity,
                 ];
                 $medicine->update($medicineQtyArray);
             }
@@ -396,7 +394,6 @@ class PurchaseMedicineRepository extends BaseRepository
                 $medicine = Medicine::find($input['medicine'][$key]);
                 $medicineQtyArray = [
                     'quantity' => $input['quantity'][$key] + $medicine->quantity,
-                    'available_quantity' => $input['quantity'][$key] + $medicine->available_quantity,
                 ];
                 $medicine->update($medicineQtyArray);
             }
@@ -477,7 +474,6 @@ class PurchaseMedicineRepository extends BaseRepository
                         $medicine = Medicine::find($sessionData['medicine'][$key]);
                         $medicineQtyArray = [
                             'quantity' => $sessionData['quantity'][$key] + $medicine->quantity,
-                            'available_quantity' => $sessionData['quantity'][$key] + $medicine->available_quantity,
                         ];
                         $medicine->update($medicineQtyArray);
                     }

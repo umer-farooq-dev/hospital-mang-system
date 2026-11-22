@@ -22,7 +22,7 @@ class UpdateMedicineBillRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'store_id' => ['required', \Illuminate\Validation\Rule::in(array_keys(\App\Models\Store::options()))],
         ];
     }
 

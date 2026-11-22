@@ -64,8 +64,14 @@ class Medicine extends Model
         'salt_composition',
         'currency_symbol',
         'quantity',
-        'available_quantity',
+        'common_name',
+        'barcode',
+        'cis_code',
+        'unit',
+        'dosage_form',
+        'route',
     ];
+    // available_quantity is not fillable: only App\Utils\Stock writes it (total of the batches).
 
     protected $casts = [
         'id' => 'integer',
@@ -91,7 +97,12 @@ class Medicine extends Model
         'side_effects' => 'nullable',
         'salt_composition' => 'required|nullable|string',
         'quantity' => 'required|integer',
-        'available_quantity' => 'required|integer|lte:quantity',
+        'common_name' => 'nullable|string|max:191',
+        'barcode' => 'nullable|string|max:100',
+        'cis_code' => 'nullable|string|max:50',
+        'unit' => 'nullable|integer',
+        'dosage_form' => 'nullable|integer',
+        'route' => 'nullable|integer',
     ];
 
     public function category(): BelongsTo

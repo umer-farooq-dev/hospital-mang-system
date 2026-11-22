@@ -25,6 +25,7 @@
                 </div>
             </div>
                 @include('purchase-medicines.show_fields')
+                @include('stock.document', ['document' => $medicinePurchase])
         </div>
     </div>
 @endsection

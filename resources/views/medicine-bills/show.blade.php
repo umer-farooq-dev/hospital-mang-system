@@ -25,6 +25,8 @@
                     @include('medicine-bills.show_fields')
                 </div>
             </div>
+            @include('flash::message')
+            @include('stock.document', ['document' => $medicineBill])
         </div>
     </div>
 @endsection

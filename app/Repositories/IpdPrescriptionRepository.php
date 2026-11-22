@@ -147,6 +147,7 @@ class IpdPrescriptionRepository extends BaseRepository
             $medicineBill->update([
                 'net_amount' => $amount,
             ]);
+            $medicineBill->refresh()->syncStock();
 
         } catch (Exception $e) {
             throw new UnprocessableEntityHttpException($e->getMessage());

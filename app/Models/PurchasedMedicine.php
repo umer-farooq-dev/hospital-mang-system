@@ -54,4 +54,20 @@ class PurchasedMedicine extends Model
     {
         return $this->belongsTo(Medicine::class, 'medicine_id');
     }
+
+    /** Each purchase line is a goods receipt: its lot goes into the purchase's store at its unit cost. */
+    protected static function booted(): void
+    {
+        static::created(function (self $line) {
+            $purchase = PurchaseMedicine::find($line->purchase_medicines_id);
+            $medicine = Medicine::find($line->medicine_id);
+            if (! $purchase || ! $medicine || (int) $line->quantity <= 0) {
+                return;
+            }
+            \App\Utils\Stock::receive($medicine, $purchase->receivingStoreId(), (int) $line->quantity, [
+                'batch_no' => $line->lot_no, 'expiry_date' => $line->expiry_date,
+                'unit_cost' => (float) $line->amount / (int) $line->quantity, 'supplier_id' => $purchase->supplier_id,
+            ], $purchase);
+        });
+    }
 }

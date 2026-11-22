@@ -135,6 +135,9 @@ return [
         'medicine_brands' => 'pharmacy',
         'purchase_medicines' => 'pharmacy',
         'medicine_bills' => 'pharmacy',
+        'stock' => 'pharmacy',
+        'stores' => 'pharmacy',
+        'suppliers' => 'pharmacy',
 
         // laboratory
         'pathology_categories' => 'laboratory',
@@ -322,6 +325,9 @@ return [
         Controllers\BrandController::class => 'medicine_brands',
         Controllers\PurchaseMedicineController::class => 'purchase_medicines',
         Controllers\MedicineBillController::class => 'medicine_bills',
+        Controllers\StockController::class => 'stock',
+        Controllers\StoreController::class => 'stores',
+        Controllers\SupplierController::class => 'suppliers',
         Controllers\PathologyCategoryController::class => 'pathology_categories',
         Controllers\PathologyTestController::class => 'pathology_tests',
         Controllers\PathologyUnitController::class => 'pathology_units',
