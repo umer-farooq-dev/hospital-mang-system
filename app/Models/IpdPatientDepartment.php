@@ -106,6 +106,9 @@ class IpdPatientDepartment extends Model
         'bed_id',
         'discharge',
         'custom_field',
+        'patient_insurance_id',
+        'price_list_id',
+        'voucher_number',
     ];
 
     protected $casts = [
@@ -154,6 +157,21 @@ class IpdPatientDepartment extends Model
     public function bedAssign(): BelongsTo
     {
         return $this->belongsTo(BedAssign::class, 'bed_id');
+    }
+
+    public function patientInsurance(): BelongsTo
+    {
+        return $this->belongsTo(PatientInsurance::class);
+    }
+
+    public function priceList(): BelongsTo
+    {
+        return $this->belongsTo(PriceList::class);
+    }
+
+    public function examOrders(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ExamOrder::class, 'ipd_patient_department_id');
     }
 
     public function bill()

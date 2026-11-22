@@ -2805,6 +2805,7 @@ return [
             'pathology_test' => 'Pathology tests',
             'radiology_test' => 'Radiology tests',
             'package' => 'Check-ups / packages',
+            'bed' => 'Beds',
         ],
         'seed' => [
             'cash' => 'Cash',
@@ -3048,6 +3049,23 @@ return [
             'patient_shares' => 'Patient shares (tickets modérateurs)',
             'without_insurance' => 'Payments without insurance',
             'by_service' => 'By service',
+        ],
+    ],
+    'ipd_bill_extra' => [
+        'interim_bill' => 'Interim bill',
+        'cover_amount' => 'Payer\'s cover (reduction + share)',
+        'advances' => 'Advances',
+        'bed_basis' => 'Bed charged per',
+        'bed_basis_hint' => 'Used by the IPD bill: days started (24 h), nights spent, or hours. Bed transfers are charged bed by bed.',
+        'bases' => [
+            'day' => 'day(s)',
+            'night' => 'night(s)',
+            'hour' => 'hour(s)',
+        ],
+        'basis_names' => [
+            'day' => 'Day (24 h started)',
+            'night' => 'Night',
+            'hour' => 'Hour',
         ],
     ],
 ];

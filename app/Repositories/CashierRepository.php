@@ -58,7 +58,7 @@ class CashierRepository
         $visits = OpdPatientDepartment::with('doctor.doctorUser', 'doctor.department')
             ->where('patient_id', $patientId)->whereNotNull('patient_amount')->where('patient_amount', '>', 0)->get();
         $exams = ExamOrderItem::with('order.doctor.doctorUser')->where('patient_amount', '>', 0)
-            ->whereHas('order', fn ($q) => $q->where('patient_id', $patientId))->get();
+            ->whereHas('order', fn ($q) => $q->where('patient_id', $patientId)->whereNull('ipd_patient_department_id'))->get();
         $paidVisits = $this->paid('opd_visit', $visits->pluck('id')->all());
         $paidExams = $this->paid('exam_item', $exams->pluck('id')->all());
 

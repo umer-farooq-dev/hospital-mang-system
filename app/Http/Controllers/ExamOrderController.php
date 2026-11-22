@@ -72,6 +72,8 @@ class ExamOrderController extends AppBaseController
         $order = DB::transaction(function () use ($input, $lines) {
             $order = ExamOrder::create([
                 'patient_id' => $input['patient_id'],
+                // Exams of an admitted patient go on the admission's bill, not to the cashier.
+                'ipd_patient_department_id' => \App\Models\IpdPatientDepartment::where('patient_id', $input['patient_id'])->where('discharge', 0)->latest('id')->value('id'),
                 'doctor_id' => $input['doctor_id'] ?? null,
                 // only a policy of this patient counts
                 'patient_insurance_id' => \App\Models\PatientInsurance::where('patient_id', $input['patient_id'])->find($input['patient_insurance_id'] ?? null)?->id,

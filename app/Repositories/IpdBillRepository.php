@@ -89,13 +89,87 @@ class IpdBillRepository extends BaseRepository
         return $bill;
     }
 
+    const BED_BASES = ['day', 'night', 'hour'];
+
+    /** Units of bed charge between two moments: days (24 h started), nights (midnights) or hours; at least 1. */
+    public static function bedUnits(\Illuminate\Support\Carbon $from, \Illuminate\Support\Carbon $to, string $basis): int
+    {
+        if ($to->lt($from)) {
+            $to = $from->copy();
+        }
+
+        return max(1, match ($basis) {
+            'hour' => (int) ceil($from->diffInMinutes($to) / 60),
+            'night' => (int) $from->copy()->startOfDay()->diffInDays($to->copy()->startOfDay()),
+            default => (int) ceil($from->diffInMinutes($to) / 1440),
+        });
+    }
+
+    /** Patient's net payable: everything charged, minus discounts, the payer's cover, payments and advances. */
+    public static function netPayable(array $t): float
+    {
+        $base = $t['charges'] + $t['bed'];
+        $discount = $t['discount_percent'] / 100 * $base;
+        $tax = $t['tax_percent'] / 100 * $base; // tax on the charges only, never on payments
+
+        return round($base + $t['other'] + $tax - $discount - $t['cover'] - $t['payments'] - $t['advances'], 2);
+    }
+
+    /** Bed segments of the stay (one per bed after transfers), each priced from the admission's price list. */
+    public function bedLines($ipd, $list): \Illuminate\Support\Collection
+    {
+        $basis = \App\Models\Setting::where('key', 'bed_charge_basis')->value('value');
+        $basis = in_array($basis, self::BED_BASES) ? $basis : 'day';
+        $end = $ipd->bill?->created_at ?? now();
+        $assigns = BedAssign::with('bed')->where('ipd_patient_department_id', $ipd->id)->orderBy('assign_date')->get();
+        $segments = $assigns->isNotEmpty()
+            ? $assigns->values()->map(fn ($a, $i) => [$a->bed, \Illuminate\Support\Carbon::parse($a->assign_date),
+                $a->discharge_date ? \Illuminate\Support\Carbon::parse($a->discharge_date) : (isset($assigns[$i + 1]) ? \Illuminate\Support\Carbon::parse($assigns[$i + 1]->assign_date) : $end)])
+            : collect([[$ipd->bed, \Illuminate\Support\Carbon::parse($ipd->admission_date), $end]]);
+
+        return $segments->filter(fn ($s) => $s[0])->map(function ($s) use ($basis, $list) {
+            [$bed, $from, $to] = $s;
+            $units = self::bedUnits($from, $to, $basis);
+            $unitPrice = $list ? $list->priceFor($bed, $from) : (float) $bed->charge;
+
+            return ['bed' => $bed, 'from' => $from, 'to' => $to, 'units' => $units, 'basis' => $basis, 'unit_price' => $unitPrice, 'total' => round($units * $unitPrice, 2)];
+        })->values();
+    }
+
     public function getBillList($ipdPatientDepartment)
     {
-        $bed = IpdPatientDepartment::with('bed')->find($ipdPatientDepartment->id);
-        $bedCharges = $bed->bed->charge;
-        $bill['bed_charges'] = $bed->bed->charge;
+        $ipd = IpdPatientDepartment::with('bed', 'doctor', 'patientInsurance.insurance.priceList', 'priceList', 'bill')->find($ipdPatientDepartment->id);
+        $policy = $ipd->patientInsurance;
+        $list = $ipd->priceList ?? $policy?->insurance?->priceList ?? \App\Models\PriceList::defaultList();
+        $bill['bed_lines'] = $this->bedLines($ipd, $list);
+        $bedCharges = $bill['bed_lines']->sum('total');
+        $bill['bed_charges'] = $bedCharges;
         $bill['charges'] = IpdCharge::with(['chargecategory'])
             ->whereIpdPatientDepartmentId($ipdPatientDepartment->id)->get();
+        $bill['exam_items'] = \App\Models\ExamOrderItem::with('order')->whereHas('order', fn ($q) => $q->where('ipd_patient_department_id', $ipd->id))->get();
+        $bill['advances'] = \App\Models\AdvancedPayment::where('patient_id', $ipd->patient_id)
+            ->whereDate('date', '>=', \Illuminate\Support\Carbon::parse($ipd->admission_date)->toDateString())->get();
+        $bill['price_list'] = $list;
+        $bill['policy'] = $policy;
+
+        // Payer's cover (reductions + insurer share) line by line, as on the OPD visits.
+        $departmentId = $ipd->doctor?->doctor_department_id;
+        $options = ['voucher_number' => $ipd->voucher_number];
+        $cover = 0;
+        $split = fn ($amount, $category, $date) => \App\Utils\PriceSplit::compute((float) $amount, $policy, $departmentId, $options + ['charge_category_id' => $category, 'date' => $date]);
+        foreach ($bill['charges'] as $charge) {
+            $s = $split($charge->applied_charge, $charge->charge_category_id, $charge->date);
+            $cover += $s['discount_amount'] + $s['payer_amount'];
+        }
+        foreach ($bill['exam_items'] as $item) {
+            $cover += $item->discount_amount + $item->payer_amount; // split when the exam was requested
+        }
+        foreach ($bill['bed_lines'] as $line) {
+            $s = $split($line['total'], null, $line['from']);
+            $cover += $s['discount_amount'] + $s['payer_amount'];
+        }
+        $bill['cover_amount'] = round($cover, 2);
+        $bill['advances_total'] = (float) $bill['advances']->sum('amount');
         $bill['payments'] = IpdPayment::whereIpdPatientDepartmentId($ipdPatientDepartment->id)->get();
 
         $bill['ipd_patient_department'] = $ipdPatientDepartment;
@@ -110,18 +184,19 @@ class IpdBillRepository extends BaseRepository
         $taxInPercentage = (! is_null($ipdPatientBill)) ? $ipdPatientBill->tax_in_percentage : 0;
         $otherChareges = (! is_null($ipdPatientBill)) ? $ipdPatientBill->other_charges : 0;
 
-        $totalCharges = $bill['charges']->sum('applied_charge');
+        $totalCharges = $bill['charges']->sum('applied_charge') + $bill['exam_items']->sum('total');
         $totalPayment = $bill['payments']->sum('amount');
 
+        $netPayableAmount = self::netPayable([
+            'charges' => $totalCharges, 'bed' => $bedCharges, 'other' => (float) $otherChareges,
+            'discount_percent' => (float) $discountInPercentage, 'tax_percent' => (float) $taxInPercentage,
+            'cover' => $bill['cover_amount'], 'payments' => $totalPayment, 'advances' => $bill['advances_total'],
+        ]);
+
         //patient side payment amount
-        $bill['patient_net_payable_amount'] = ($ipdPatientBill) ? $ipdPatientBill->net_payable_amount : $totalCharges - $totalPayment;
+        $bill['patient_net_payable_amount'] = ($ipdPatientBill) ? $ipdPatientBill->net_payable_amount : $netPayableAmount;
 
-        $totalTaxs = ($taxInPercentage / 100) * ($totalCharges - $totalPayment);
-        $totalDiscount = ($discountInPercentage / 100) * $totalCharges;
-
-        $netPayableAmount = ($totalCharges + $otherChareges + $totalTaxs + $bedCharges) - ($totalPayment + $totalDiscount);
-
-        $grossTotal = $totalCharges - $totalPayment + $bedCharges;
+        $grossTotal = $totalCharges + $bedCharges;
         $bill['total_charges'] = $totalCharges;
         $bill['total_payment'] = $totalPayment;
         $bill['gross_total'] = $grossTotal;

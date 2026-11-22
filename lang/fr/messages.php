@@ -2796,6 +2796,7 @@ return [
             'pathology_test' => 'Examens de laboratoire',
             'radiology_test' => 'Examens de radiologie',
             'package' => 'Check-up / forfaits',
+            'bed' => 'Lits',
         ],
         'seed' => [
             'cash' => 'Comptant',
@@ -3039,6 +3040,23 @@ return [
             'patient_shares' => 'État des tickets modérateurs',
             'without_insurance' => 'Encaissements sans assurance',
             'by_service' => 'État de passage par service',
+        ],
+    ],
+    'ipd_bill_extra' => [
+        'interim_bill' => 'Facture intermédiaire',
+        'cover_amount' => 'Prise en charge (réduction + part assureur)',
+        'advances' => 'Avances',
+        'bed_basis' => 'Lit facturé par',
+        'bed_basis_hint' => 'Utilisé par la facture d\'hospitalisation : jours commencés (24 h), nuits passées ou heures. Les changements de lit sont facturés lit par lit.',
+        'bases' => [
+            'day' => 'jour(s)',
+            'night' => 'nuit(s)',
+            'hour' => 'heure(s)',
+        ],
+        'basis_names' => [
+            'day' => 'Jour (24 h commencées)',
+            'night' => 'Nuit',
+            'hour' => 'Heure',
         ],
     ],
 ];

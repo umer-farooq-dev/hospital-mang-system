@@ -48,8 +48,11 @@ class PriceListRepository
         });
     }
 
-    public function savePeriods(array $rows, ?array $new): void
+    public function savePeriods(array $rows, ?array $new, ?string $bedBasis = null): void
     {
+        if ($bedBasis !== null && in_array($bedBasis, IpdBillRepository::BED_BASES, true)) {
+            \App\Models\Setting::updateOrCreate(['key' => 'bed_charge_basis'], ['value' => $bedBasis]);
+        }
         DB::transaction(function () use ($rows, $new) {
             foreach ($rows as $id => $row) {
                 $period = PricePeriod::findOrFail($id);

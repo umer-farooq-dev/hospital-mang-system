@@ -28,6 +28,15 @@ class IpdBillController extends AppBaseController
         return $this->sendResponse($bill, __('messages.bill.bill').' '.__('messages.common.saved_successfully'));
     }
 
+    /** Interim bill: the bill so far, printable at any time without discharging. */
+    public function interimBill(IpdPatientDepartment $ipdPatientDepartment)
+    {
+        $bill = $this->ipdBillRepository->getBillList($ipdPatientDepartment);
+        $ipdPatientDepartment->load('patient.patientUser', 'doctor.doctorUser');
+
+        return view('ipd_bills.interim', ['bill' => $bill, 'ipd' => $ipdPatientDepartment, 'settings' => getSettingValue()]);
+    }
+
     public function ipdBillConvertToPdf(IpdPatientDepartment $ipdPatientDepartment)
     {
         if(app()->getLocale() == "zh"){

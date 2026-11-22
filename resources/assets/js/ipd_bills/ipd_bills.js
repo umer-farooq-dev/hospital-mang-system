@@ -112,7 +112,10 @@ function calculateIpdBill() {
     let total = totalCharges - (totalPayments - otherCharges)
     totalDiscount = percentage(discountPercent, totalCharges+bedCharge)
     totalTax = percentage(taxPercentage, totalCharges+bedCharge)
-    netPayabelAmount = isNaN((totalCharges + otherCharges + totalTax) - (totalPayments + totalDiscount)) ? 0 : (totalCharges + otherCharges +totalTax) - (totalPayments + totalDiscount)
+    // Same formula as IpdBillRepository::netPayable(): the payer's cover and the advances are deducted too.
+    let cover = parseFloat($('#coverAmount').data('amount')) || 0
+    let advances = parseFloat($('#advancesTotal').data('amount')) || 0
+    netPayabelAmount = isNaN((totalCharges + otherCharges + totalTax) - (totalPayments + totalDiscount + cover + advances)) ? 0 : (totalCharges + otherCharges + totalTax) - (totalPayments + totalDiscount + cover + advances)
     finalNetPayabelAmount = netPayabelAmount + bedCharge
     if (finalNetPayabelAmount > 0)
         $('#billStatus').html('Unpaid');

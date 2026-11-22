@@ -29,7 +29,11 @@ class UpdateIpdPatientDepartmentRequest extends FormRequest
             $rules['case_id'] = 'nullable';
         }
 
-        return $rules;
+        return $rules + [
+            'patient_insurance_id' => 'nullable|integer|exists:patient_insurances,id',
+            'price_list_id' => 'nullable|integer|exists:price_lists,id',
+            'voucher_number' => 'nullable|string|max:50',
+        ];
     }
 
     public function messages(): array

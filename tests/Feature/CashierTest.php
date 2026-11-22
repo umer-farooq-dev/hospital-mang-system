@@ -100,6 +100,7 @@ class CashierTest extends TestCase
         Schema::create('exam_orders', function (Blueprint $t) {
             $t->id();
             $t->unsignedInteger('patient_id');
+            $t->unsignedInteger('ipd_patient_department_id')->nullable();
             $t->unsignedBigInteger('doctor_id')->nullable();
             $t->unsignedBigInteger('patient_insurance_id')->nullable();
             $t->unsignedBigInteger('price_list_id')->nullable();

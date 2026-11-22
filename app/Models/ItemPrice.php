@@ -30,6 +30,7 @@ class ItemPrice extends Model
         'pathology_test' => [PathologyTest::class, 'test_name', 'standard_charge'],
         'radiology_test' => [RadiologyTest::class, 'test_name', 'standard_charge'],
         'package' => [Package::class, 'name', 'total_amount'],
+        'bed' => [Bed::class, 'name', 'charge'],
     ];
 
     public function priceList(): BelongsTo
