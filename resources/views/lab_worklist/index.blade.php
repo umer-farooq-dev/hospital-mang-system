@@ -62,6 +62,25 @@
                 {{ $items->links() }}
             </div>
         </div>
+        @php($importProfiles = \App\Models\LabImportProfile::where('is_active', true)->orderBy('name')->pluck('name', 'id'))
+        @if (canAccessRoute('lab-worklist.import'))
+            <div class="card mb-7">
+                <div class="card-body">
+                    <h3 class="mb-2">{{ __('messages.lab_import.import') }}</h3>
+                    <div class="form-text mb-4">{{ __('messages.lab_import.import_hint') }}
+                        @canroute('lab-import-profiles.index') <a href="{{ route('lab-import-profiles.index') }}">{{ __('messages.lab_import.profiles') }}</a>@endcanroute</div>
+                    @if ($importProfiles->isNotEmpty())
+                        {{ Form::open(['route' => 'lab-worklist.import', 'method' => 'post', 'files' => true, 'class' => 'row g-3 align-items-end']) }}
+                        <div class="col-md-4">{{ Form::select('profile_id', $importProfiles, null, ['class' => 'form-select', 'required']) }}</div>
+                        <div class="col-md-5"><input type="file" name="file" accept=".csv,.txt,.xlsx,.xls" class="form-control" required></div>
+                        <div class="col-md-3">{{ Form::submit(__('messages.lab_import.import_button'), ['class' => 'btn btn-primary w-100']) }}</div>
+                        {{ Form::close() }}
+                    @else
+                        <div class="text-muted">{{ __('messages.lab_import.no_profile') }}</div>
+                    @endif
+                </div>
+            </div>
+        @endif
         @if (canAccessRoute('lab-worklist.settings'))
             @php($labSettings = \App\Models\Setting::whereIn('key', ['lab_sample_prefix', 'lab_auto_release', 'lab_require_payment', 'pacs_viewer_url'])->pluck('value', 'key'))
             <div class="card">

@@ -1201,6 +1201,8 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('settings/vital-types', [SettingController::class, 'updateVitalTypes'])->name('settings.vital-types.update');
         Route::get('certificate-templates', [\App\Http\Controllers\CertificateTemplateController::class, 'index'])->name('certificate-templates.index')->middleware('modules');
         Route::post('certificate-templates', [\App\Http\Controllers\CertificateTemplateController::class, 'update'])->name('certificate-templates.update');
+        Route::get('lab-import-profiles', [\App\Http\Controllers\LabImportProfileController::class, 'index'])->name('lab-import-profiles.index')->middleware('modules');
+        Route::post('lab-import-profiles', [\App\Http\Controllers\LabImportProfileController::class, 'update'])->name('lab-import-profiles.update');
         Route::get('imaging-report-templates', [\App\Http\Controllers\ImagingReportTemplateController::class, 'index'])->name('imaging-report-templates.index')->middleware('modules');
         Route::post('imaging-report-templates', [\App\Http\Controllers\ImagingReportTemplateController::class, 'update'])->name('imaging-report-templates.update');
         Route::get('icd10', [\App\Http\Controllers\Icd10Controller::class, 'index'])->name('icd10.index')->middleware('modules');
@@ -1440,6 +1442,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('ipd-operations/{id}/sheet', [IpdOperationController::class, 'show'])->name('operation.sheet');
         Route::get('lab-worklist', [\App\Http\Controllers\LabWorklistController::class, 'index'])->name('lab-worklist.index')->middleware('modules');
         Route::post('lab-worklist/settings', [\App\Http\Controllers\LabWorklistController::class, 'updateSettings'])->name('lab-worklist.settings');
+        Route::post('lab-worklist/import', [\App\Http\Controllers\LabWorklistController::class, 'importResults'])->name('lab-worklist.import');
         Route::post('lab-worklist/{item}/collect', [\App\Http\Controllers\LabWorklistController::class, 'collect'])->name('lab-worklist.collect');
         Route::get('lab-worklist/{item}/label', [\App\Http\Controllers\LabWorklistController::class, 'label'])->name('lab-worklist.label');
         Route::get('lab-worklist/{item}', [\App\Http\Controllers\LabWorklistController::class, 'show'])->name('lab-worklist.show');

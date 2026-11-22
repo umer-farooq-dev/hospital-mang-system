@@ -72,6 +72,7 @@ return [
         'certificate_templates' => 'settings',
         'lab_worklist' => 'laboratory',
         'imaging_report_templates' => 'radiology',
+        'lab_import_profiles' => 'laboratory',
         'ipd_timelines' => 'ipd',
         'ipd_payments' => 'ipd',
         'ipd_bills' => 'ipd',
@@ -271,6 +272,7 @@ return [
         Controllers\CertificateTemplateController::class => 'certificate_templates',
         Controllers\LabWorklistController::class => 'lab_worklist',
         Controllers\ImagingReportTemplateController::class => 'imaging_report_templates',
+        Controllers\LabImportProfileController::class => 'lab_import_profiles',
         Controllers\IpdTimelineController::class => 'ipd_timelines',
         Controllers\IpdPaymentController::class => 'ipd_payments',
         Controllers\IpdBillController::class => 'ipd_bills',
@@ -397,6 +399,7 @@ return [
         Controllers\LabWorklistController::class.'@updateSettings' => ['lab_worklist', 'edit'],
         Controllers\LabWorklistController::class.'@collect' => ['lab_worklist', 'edit'],
         Controllers\LabWorklistController::class.'@storeFile' => ['lab_worklist', 'edit'],
+        Controllers\LabWorklistController::class.'@importResults' => ['lab_worklist', 'edit'],
         Controllers\LabWorklistController::class.'@destroyFile' => ['lab_worklist', 'edit'],
         // Importing replaces titles in bulk: same right as editing the list.
         Controllers\Icd10Controller::class.'@import' => ['icd10', 'edit'],
