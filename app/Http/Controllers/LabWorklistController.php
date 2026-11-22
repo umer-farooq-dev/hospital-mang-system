@@ -173,6 +173,54 @@ class LabWorklistController extends AppBaseController
         ]);
     }
 
+    /** Writes analyser values onto collected exams found by sample number; they still need validation. */
+    public function importResults(Request $request)
+    {
+        $request->validate(['profile_id' => 'required|integer|exists:lab_import_profiles,id', 'file' => 'required|file|mimes:csv,txt,xlsx,xls|max:20480']);
+        $profile = \App\Models\LabImportProfile::findOrFail($request->integer('profile_id'));
+        $plan = $profile->plan(\App\Models\LabImportProfile::readRows($request->file('file'), $profile->header_row));
+        $stats = ['samples' => 0, 'values' => 0, 'unknown' => [], 'locked' => []];
+        DB::transaction(function () use ($plan, &$stats) {
+            foreach ($plan as $sample => $values) {
+                $item = ExamOrderItem::where('sample_number', $sample)->where('testable_type', 'pathology_test')->first();
+                if (! $item) {
+                    $stats['unknown'][] = $sample;
+
+                    continue;
+                }
+                if (in_array($item->status, ['validated', 'released'], true)) {
+                    $stats['locked'][] = $sample;
+
+                    continue;
+                }
+                $parameters = collect(ExamOrderItem::parametersOf($item->testable()))->keyBy('pathology_parameter_id');
+                $written = 0;
+                foreach ($values as $parameterId => $value) {
+                    $parameter = $parameters->get($parameterId);
+                    if (! $parameter) {
+                        continue;
+                    }
+                    ExamResult::updateOrCreate(['exam_order_item_id' => $item->id, 'pathology_parameter_id' => $parameterId], [
+                        'label' => $parameter['label'], 'value' => mb_substr($value, 0, 100), 'unit' => $parameter['unit'],
+                        'reference_range' => $parameter['reference_range'], 'is_abnormal' => (bool) ExamResult::isOutside($value, $parameter['reference_range']),
+                        'sort_order' => array_search($parameterId, $parameters->keys()->all(), true),
+                    ]);
+                    $written++;
+                }
+                if ($written) {
+                    $item->update(['status' => 'in_progress', 'result_entered_at' => now(), 'result_entered_by' => auth()->id()]);
+                    $stats['samples']++;
+                    $stats['values'] += $written;
+                }
+            }
+        });
+        Flash::success(__('messages.lab_import.done', ['samples' => $stats['samples'], 'values' => $stats['values']])
+            . ($stats['unknown'] ? ' ' . __('messages.lab_import.unknown', ['list' => implode(', ', array_slice($stats['unknown'], 0, 20))]) : '')
+            . ($stats['locked'] ? ' ' . __('messages.lab_import.locked', ['list' => implode(', ', array_slice($stats['locked'], 0, 20))]) : ''));
+
+        return redirect()->route('lab-worklist.index', ['status' => 'in_progress']);
+    }
+
     public function updateSettings(Request $request)
     {
         $request->validate(['lab_sample_prefix' => ['required', 'string', 'max:6', 'regex:/^[A-Za-z0-9]+$/'], 'pacs_viewer_url' => 'nullable|url|max:500']);
