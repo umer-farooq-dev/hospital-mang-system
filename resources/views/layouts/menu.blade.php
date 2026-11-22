@@ -187,6 +187,18 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Lab worklist --}}
+    @module('Lab Worklist', $modules)
+        @canroute('lab-worklist.index')
+        <li class="nav-item {{ Request::is('lab-worklist*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('lab-worklist.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-vials"></i></span>
+                <span class="aside-menu-title">{{ __('messages.lab.worklist') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
 
 
@@ -798,6 +810,18 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Lab worklist --}}
+    @module('Lab Worklist', $modules)
+        @canroute('lab-worklist.index')
+        <li class="nav-item {{ Request::is('lab-worklist*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('lab-worklist.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-vials"></i></span>
+                <span class="aside-menu-title">{{ __('messages.lab.worklist') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
 
 
@@ -1228,6 +1252,18 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Lab worklist --}}
+    @module('Lab Worklist', $modules)
+        @canroute('lab-worklist.index')
+        <li class="nav-item {{ Request::is('lab-worklist*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('lab-worklist.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-vials"></i></span>
+                <span class="aside-menu-title">{{ __('messages.lab.worklist') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
 
 
@@ -1539,6 +1575,18 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Lab worklist --}}
+    @module('Lab Worklist', $modules)
+        @canroute('lab-worklist.index')
+        <li class="nav-item {{ Request::is('lab-worklist*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('lab-worklist.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-vials"></i></span>
+                <span class="aside-menu-title">{{ __('messages.lab.worklist') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
 
 
@@ -1753,6 +1801,18 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Lab worklist --}}
+    @module('Lab Worklist', $modules)
+        @canroute('lab-worklist.index')
+        <li class="nav-item {{ Request::is('lab-worklist*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('lab-worklist.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-vials"></i></span>
+                <span class="aside-menu-title">{{ __('messages.lab.worklist') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
+
 
 
 

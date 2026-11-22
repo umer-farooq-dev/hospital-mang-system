@@ -110,6 +110,7 @@ class RouteAccess
             preg_match(self::PAYMENT_CALLBACK, $m) === 1, str_starts_with($m, 'get') => 'support',
             $m === 'index' => 'list',
             str_contains($m, 'export') => 'export',
+            str_starts_with($m, 'approve'), str_starts_with($m, 'validate'), str_starts_with($m, 'release') => 'approve',
             str_starts_with($m, 'download') => 'download',
             str_starts_with($m, 'create'), str_starts_with($m, 'store'),
             str_ends_with($m, 'create'), str_ends_with($m, 'store') => 'create',

@@ -750,6 +750,7 @@ mix.js(
         "resources/assets/js/ipd_nursing/nursing.js",
         "resources/assets/js/icd10/icd10.js",
         "resources/assets/js/certificates/certificates.js",
+        "resources/assets/js/lab_worklist/lab_worklist.js",
         "resources/assets/js/ipd_patients/payer.js",
         "resources/assets/js/opd_patients/visits.js",
         "resources/assets/js/opd_diagnosis/opd_diagnosis.js",
