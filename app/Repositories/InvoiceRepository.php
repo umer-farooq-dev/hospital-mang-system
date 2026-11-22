@@ -76,7 +76,9 @@ class InvoiceRepository extends BaseRepository
             return false;
         }
 
-        $invoice = $this->create(Arr::only($input, ['patient_id', 'invoice_date', 'discount', 'status', 'invoice_id', 'currency_symbol']));
+        $input['type'] = ($input['type'] ?? '') === Invoice::PROFORMA ? Invoice::PROFORMA : Invoice::INVOICE;
+        $input['valid_until'] = $input['type'] === Invoice::PROFORMA ? Invoice::validUntil($input['valid_until'] ?? null, $input['invoice_date'] ?? null) : null;
+        $invoice = $this->create(Arr::only($input, ['patient_id', 'invoice_date', 'discount', 'status', 'invoice_id', 'currency_symbol', 'type', 'valid_until', 'insurance_id', 'price_list_id']));
         $totalAmount = 0;
 
         $invoiceItemInput = $this->prepareInputForInvoiceItem($invoiceItemInputArray);
@@ -120,7 +122,13 @@ class InvoiceRepository extends BaseRepository
     {
         $invoiceItemInputArr = Arr::only($input, ['account_id', 'description', 'quantity', 'price', 'id']);
 
-        $invoice = $this->update(Arr::only($input, ['patient_id', 'invoice_date', 'discount', 'status', 'currency_symbol']), $invoiceId);
+        $current = Invoice::findOrFail($invoiceId);
+        if ($current->isProforma()) { // a quote stays a quote; only its validity, payer and price list change
+            $input['valid_until'] = Invoice::validUntil($input['valid_until'] ?? null, $input['invoice_date'] ?? null);
+        }
+        $invoice = $this->update(Arr::only($input, $current->isProforma()
+            ? ['patient_id', 'invoice_date', 'discount', 'status', 'currency_symbol', 'valid_until', 'insurance_id', 'price_list_id']
+            : ['patient_id', 'invoice_date', 'discount', 'status', 'currency_symbol', 'insurance_id', 'price_list_id']), $invoiceId);
         $totalAmount = 0;
 
         $invoiceItemInput = $this->prepareInputForInvoiceItem($invoiceItemInputArr);

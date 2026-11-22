@@ -92,6 +92,10 @@
                         {{ Form::label('claim_invoice_digits', __('messages.claims.digits') . ':', ['class' => 'form-label']) }}
                         {{ Form::number('claim_invoice_digits', $settings['claim_invoice_digits'] ?? 4, ['class' => 'form-control', 'min' => 1, 'max' => 8, 'required']) }}
                     </div>
+                    <div class="col-md-2">
+                        {{ Form::label('proforma_validity_days', __('messages.proforma.validity_days') . ':', ['class' => 'form-label']) }}
+                        {{ Form::number('proforma_validity_days', $settings['proforma_validity_days'] ?? 30, ['class' => 'form-control', 'min' => 0, 'max' => 3650, 'required']) }}
+                    </div>
                     <div class="col-md-2"><button class="btn btn-primary w-100">{{ __('messages.common.save') }}</button></div>
                     <div class="col-12 form-text">{{ __('messages.claims.format_hint') }}</div>
                     {{ Form::close() }}

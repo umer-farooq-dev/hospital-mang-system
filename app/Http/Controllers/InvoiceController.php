@@ -100,4 +100,19 @@ class InvoiceController extends AppBaseController
 
         return $pdf->stream('invoice.pdf');
     }
+
+    /** Turn a pro-forma invoice (quote) into an invoice. */
+    public function storeFromProforma(Invoice $invoice)
+    {
+        try {
+            $new = $invoice->convertToInvoice();
+            \Laracasts\Flash\Flash::success(__('messages.proforma.converted', ['number' => $new->invoice_id]));
+
+            return redirect()->route('invoices.show', $new->id);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            \Laracasts\Flash\Flash::error($e->getMessage());
+
+            return redirect()->route('invoices.show', $invoice->id);
+        }
+    }
 }
