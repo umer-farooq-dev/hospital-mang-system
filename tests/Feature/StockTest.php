@@ -100,6 +100,48 @@ class StockTest extends TestCase
             $t->string('purchase_no')->nullable();
             $t->unsignedBigInteger('store_id')->nullable();
             $t->unsignedBigInteger('supplier_id')->nullable();
+            $t->unsignedBigInteger('purchase_order_id')->nullable();
+            $t->float('total')->default(0);
+            $t->float('discount')->default(0);
+            $t->float('tax')->default(0);
+            $t->float('net_amount')->default(0);
+            $t->integer('payment_type')->default(0);
+            $t->boolean('payment_status')->default(1);
+            $t->string('note')->nullable();
+            $t->timestamps();
+        });
+        Schema::create('stock_levels', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('store_id');
+            $t->string('stockable_type');
+            $t->unsignedBigInteger('stockable_id');
+            $t->integer('reorder_level')->default(0);
+            $t->integer('reorder_quantity')->default(0);
+            $t->timestamps();
+        });
+        Schema::create('purchase_orders', function (Blueprint $t) {
+            $t->id();
+            $t->string('number');
+            $t->unsignedBigInteger('supplier_id');
+            $t->unsignedBigInteger('store_id');
+            $t->string('status');
+            $t->date('expected_date')->nullable();
+            $t->string('note')->nullable();
+            $t->unsignedBigInteger('created_by')->nullable();
+            foreach (['closed', 'cancelled'] as $step) {
+                $t->unsignedBigInteger($step.'_by')->nullable();
+                $t->dateTime($step.'_at')->nullable();
+            }
+            $t->timestamps();
+        });
+        Schema::create('purchase_order_items', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('purchase_order_id');
+            $t->string('stockable_type');
+            $t->unsignedBigInteger('stockable_id');
+            $t->integer('quantity');
+            $t->decimal('unit_cost', 14, 2)->default(0);
+            $t->integer('received_quantity')->default(0);
             $t->timestamps();
         });
         Schema::create('purchased_medicines', function (Blueprint $t) {
@@ -406,5 +448,45 @@ class StockTest extends TestCase
             $this->fail('cannot approve twice');
         } catch (UnprocessableEntityHttpException $e) {
         }
+    }
+
+    public function test_reorder_suggestion(): void
+    {
+        $this->assertSame(0, \App\Models\StockLevel::suggested(20, 50, 25, 0), 'above the level');
+        $this->assertSame(50, \App\Models\StockLevel::suggested(20, 50, 5, 0), 'at least the reorder quantity');
+        $this->assertSame(70, \App\Models\StockLevel::suggested(100, 50, 30, 0), 'enough to reach the level');
+        $this->assertSame(0, \App\Models\StockLevel::suggested(20, 50, 5, 40), 'already on order');
+    }
+
+    public function test_a_purchase_order_is_received_in_deliveries_into_its_store(): void
+    {
+        $m = $this->medicine();
+        $order = \App\Models\PurchaseOrder::open(3, $this->ward, [[$m, 100, 80]], null, null, 1);
+        $line = $order->items()->first();
+        $this->assertSame(['App\Models\Medicine:'.$m->id => 100], \App\Models\PurchaseOrder::onOrder($this->ward));
+
+        $receipt = $order->receive([[$line, 60, 'L1', '2028-02-29', 85]], 0, false, 'BL-77');
+        $this->assertSame('partial', $order->fresh()->status);
+        $this->assertSame($order->id, (int) $receipt->purchase_order_id);
+        $this->assertSame(0, (int) $receipt->payment_status, 'delivered on credit');
+        $this->assertEquals(5100, $receipt->net_amount);
+        $this->assertSame(60, Stock::onHand($m, $this->ward));
+        $this->assertEquals(85.0, StockBatch::where('batch_no', 'L1')->value('unit_cost'));
+        $this->assertSame(['App\Models\Medicine:'.$m->id => 40], \App\Models\PurchaseOrder::onOrder($this->ward));
+
+        $order->fresh()->receive([[$line, 40, 'L2', null, 80]], 1, true, null);
+        $this->assertSame('received', $order->fresh()->status);
+        $this->assertSame(100, (int) $m->fresh()->available_quantity);
+        $this->assertSame([], \App\Models\PurchaseOrder::onOrder($this->ward));
+
+        try {
+            $order->fresh()->receive([[$line, 1, 'L3', null, 80]], 0, false, null);
+            $this->fail('a received order takes no more deliveries');
+        } catch (UnprocessableEntityHttpException $e) {
+        }
+        $other = \App\Models\PurchaseOrder::open(3, $this->ward, [[$m, 10, 80]], null, null, 1);
+        $other->receive([[$other->items()->first(), 4, 'L4', null, 80]], 0, false, null);
+        $other->fresh()->close(1);
+        $this->assertSame('closed', $other->fresh()->status);
     }
 }

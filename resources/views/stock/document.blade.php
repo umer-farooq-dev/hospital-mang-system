@@ -9,6 +9,9 @@
         <div class="d-md-flex justify-content-between align-items-center mb-4">
             <h5 class="mb-0">{{ __('messages.stock.stock') }} · {{ $document->store->name ?? '—' }}
                 @if (! $isBill && $document->supplier) · {{ $document->supplier->name }}@endif
+                @if (! $isBill && $document->purchaseOrder)
+                    · @canroute('purchase-orders.show')<a href="{{ route('purchase-orders.show', $document->purchase_order_id) }}">{{ $document->purchaseOrder->number }}</a>@else{{ $document->purchaseOrder->number }}@endcanroute
+                @endif
                 @if ($isBill)
                     <span class="badge {{ $issued ? 'bg-light-success text-success' : 'bg-light-warning text-warning' }} ms-2">{{ $issued ? __('messages.stock.dispensed') : __('messages.stock.not_dispensed') }}</span>
                 @endif
