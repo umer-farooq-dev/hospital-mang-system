@@ -752,6 +752,8 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('stock', [\App\Http\Controllers\StockController::class, 'index'])->name('stock.index')->middleware('modules');
         Route::get('stock/{medicine}/movements', [\App\Http\Controllers\StockController::class, 'movements'])->name('stock.movements');
         Route::get('stock/items/{item}/movements', [\App\Http\Controllers\StockController::class, 'itemMovements'])->name('stock.items.movements');
+        Route::get('stock-reports', [\App\Http\Controllers\StockReportController::class, 'index'])->name('stock-reports.index')->middleware('modules');
+        Route::get('stock-reports/export', [\App\Http\Controllers\StockReportController::class, 'exportReport'])->name('stock-reports.export');
         Route::get('stock-orders', [\App\Http\Controllers\PurchaseOrderController::class, 'index'])->name('purchase-orders.index')->middleware('modules');
         Route::get('stock-orders/create', [\App\Http\Controllers\PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
         Route::post('stock-orders', [\App\Http\Controllers\PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
