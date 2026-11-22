@@ -10,7 +10,7 @@
             {{ Form::hidden('currency_symbol', getCurrentCurrency(), ['class' => 'currencySymbol']) }}
             <div class="modal-body">
                 @if ($ipdPatientDepartment->bill)
-                    <div class="alert alert-warning">
+                    <div class="alert alert-warning alert-important">
                         <span>{{ __('messages.bill.note_Bill') }}</span>
                     </div>
                 @endif

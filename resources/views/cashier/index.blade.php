@@ -24,14 +24,14 @@
             @include('layouts.errors')
 
             @if (request('closed'))
-                <div class="alert alert-info d-flex justify-content-between align-items-center">
+                <div class="alert alert-info alert-important d-flex justify-content-between align-items-center">
                     <span>{{ __('messages.cashier.session_closed_hint') }}</span>
                     <a href="{{ route('cash-sessions.print', request('closed')) }}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-print me-1"></i>{{ __('messages.cashier.print_close') }}</a>
                 </div>
             @endif
 
             @if (! $user->cash_counter_id)
-                <div class="alert alert-warning">{{ __('messages.cashier.no_counter') }}</div>
+                <div class="alert alert-warning alert-important">{{ __('messages.cashier.no_counter') }}</div>
             @elseif (! $session)
                 <div class="card">
                     <div class="card-body">

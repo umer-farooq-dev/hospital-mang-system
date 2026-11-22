@@ -10,7 +10,7 @@
 @if ($reception['duplicate_check'] !== 'off' && canAccessRoute('patients.duplicates'))
     <div class="col-12 d-none patient-duplicate-box" data-url="{{ route('patients.duplicates') }}"
         data-patient-id="{{ $editing ? $patient->id : '' }}">
-        <div class="alert {{ $reception['duplicate_check'] === 'block' ? 'alert-danger' : 'alert-warning' }} mb-5">
+        <div class="alert {{ $reception['duplicate_check'] === 'block' ? 'alert-danger' : 'alert-warning' }} alert-important mb-5">
             <div class="fw-bold mb-2">{{ __('messages.reception.possible_duplicates') }}</div>
             <ul class="mb-0 patient-duplicate-list"></ul>
         </div>

@@ -19,7 +19,7 @@
 </div>
 
 @if ($isLocked)
-    <div class="alert alert-warning mb-5">{{ __('messages.access.admin_locked') }}</div>
+    <div class="alert alert-warning alert-important mb-5">{{ __('messages.access.admin_locked') }}</div>
 @endif
 
 <div class="d-md-flex align-items-center justify-content-between mb-5">
