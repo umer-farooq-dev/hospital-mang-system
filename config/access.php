@@ -137,6 +137,7 @@ return [
         'medicine_bills' => 'pharmacy',
         'stock' => 'pharmacy',
         'stock_transfers' => 'pharmacy',
+        'stock_counts' => 'pharmacy',
         'stores' => 'pharmacy',
         'suppliers' => 'pharmacy',
 
@@ -328,6 +329,7 @@ return [
         Controllers\MedicineBillController::class => 'medicine_bills',
         Controllers\StockController::class => 'stock',
         Controllers\StockTransferController::class => 'stock_transfers',
+        Controllers\StockCountController::class => 'stock_counts',
         Controllers\StoreController::class => 'stores',
         Controllers\SupplierController::class => 'suppliers',
         Controllers\PathologyCategoryController::class => 'pathology_categories',

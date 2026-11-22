@@ -35,7 +35,9 @@ class Stock
 
     const SUPPLIER_RETURN = 'supplier_return';
 
-    const TYPES = [self::OPENING, self::RECEIPT, self::SALE, self::RETURN, self::REVERSAL, self::TRANSFER_OUT, self::TRANSFER_IN, self::SUPPLIER_RETURN];
+    const ADJUSTMENT = 'adjustment';  // stock count difference
+
+    const TYPES = [self::OPENING, self::RECEIPT, self::SALE, self::RETURN, self::REVERSAL, self::TRANSFER_OUT, self::TRANSFER_IN, self::SUPPLIER_RETURN, self::ADJUSTMENT];
 
     // Item class => table whose available_quantity caches the total.
     const TOTALS = [Medicine::class => 'medicines'];
@@ -148,6 +150,18 @@ class Stock
         }
 
         return $moves;
+    }
+
+    /** Correct one batch by a counted difference (may go below zero: the count is the truth). */
+    public static function adjust(StockBatch $batch, int $delta, Model $document, ?string $note = null): ?StockMovement
+    {
+        if ($delta === 0) {
+            return null;
+        }
+        $batch = StockBatch::lockForUpdate()->find($batch->id);
+        $batch->increment('quantity', $delta);
+
+        return self::log($batch, $delta, self::ADJUSTMENT, $document, $note);
     }
 
     /** Net quantity per item and store that a document moved (negative = taken out). */

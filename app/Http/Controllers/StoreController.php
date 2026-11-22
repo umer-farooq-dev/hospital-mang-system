@@ -15,7 +15,7 @@ use Laracasts\Flash\Flash;
 class StoreController extends AppBaseController
 {
     const SETTINGS = ['stock_fefo', 'stock_allow_negative', 'stock_sell_expired', 'stock_expiry_alert_days', 'pharmacy_default_store',
-        'stock_transfer_approval', 'stock_transfer_prefix'];
+        'stock_transfer_approval', 'stock_transfer_prefix', 'stock_count_blind', 'stock_count_prefix'];
 
     public function index()
     {
@@ -57,12 +57,14 @@ class StoreController extends AppBaseController
             'stock_expiry_alert_days' => 'required|integer|min:0|max:3650',
             'pharmacy_default_store' => ['required', Rule::exists('stores', 'id')->where('is_active', true)],
             'stock_transfer_prefix' => ['required', 'string', 'max:10', 'regex:/^[A-Za-z0-9]+$/'],
+            'stock_count_prefix' => ['required', 'string', 'max:10', 'regex:/^[A-Za-z0-9]+$/'],
         ]);
         $values = $data + [
             'stock_fefo' => $request->boolean('stock_fefo') ? '1' : '0',
             'stock_allow_negative' => $request->boolean('stock_allow_negative') ? '1' : '0',
             'stock_sell_expired' => $request->boolean('stock_sell_expired') ? '1' : '0',
             'stock_transfer_approval' => $request->boolean('stock_transfer_approval') ? '1' : '0',
+            'stock_count_blind' => $request->boolean('stock_count_blind') ? '1' : '0',
         ];
         foreach ($values as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => (string) $value]);

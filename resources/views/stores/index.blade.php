@@ -98,6 +98,15 @@
                         {{ Form::label('stock_transfer_prefix', __('messages.stock_transfer.prefix') . ':', ['class' => 'form-label']) }}
                         {{ Form::text('stock_transfer_prefix', $settings['stock_transfer_prefix'] ?? 'TR', ['class' => 'form-control', 'maxlength' => 10, 'required'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
                     </div>
+                    <div class="col-md-3 mb-5">
+                        {{ Form::label('stock_count_prefix', __('messages.stock_count.prefix') . ':', ['class' => 'form-label']) }}
+                        {{ Form::text('stock_count_prefix', $settings['stock_count_prefix'] ?? 'SC', ['class' => 'form-control', 'maxlength' => 10, 'required'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                    </div>
+                    <div class="col-md-6 mb-5">
+                        <label class="form-check form-switch"><input type="checkbox" class="form-check-input" name="stock_count_blind" value="1" {{ ($settings['stock_count_blind'] ?? '0') === '1' ? 'checked' : '' }} {{ $canEdit ? '' : 'disabled' }}>
+                            <span class="form-check-label">{{ __('messages.stock_count.blind_default') }}</span></label>
+                        <div class="form-text">{{ __('messages.stock_count.blind_hint') }}</div>
+                    </div>
                 </div>
                 @if ($canEdit)
                     <div class="d-flex justify-content-end">{{ Form::submit(__('messages.common.save'), ['class' => 'btn btn-primary']) }}</div>
