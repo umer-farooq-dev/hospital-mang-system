@@ -142,6 +142,7 @@ return [
         'stock_reports' => 'pharmacy',
         'claims' => 'billing',
         'doctor_fees' => 'billing',
+        'referrer_commissions' => 'billing',
         'stores' => 'pharmacy',
         'suppliers' => 'pharmacy',
 
@@ -340,6 +341,7 @@ return [
         Controllers\ClaimController::class => 'claims',
         Controllers\ClaimSettlementController::class => 'claims',
         Controllers\DoctorFeeController::class => 'doctor_fees',
+        Controllers\ReferrerCommissionController::class => 'referrer_commissions',
         Controllers\StoreController::class => 'stores',
         Controllers\SupplierController::class => 'suppliers',
         Controllers\PathologyCategoryController::class => 'pathology_categories',
