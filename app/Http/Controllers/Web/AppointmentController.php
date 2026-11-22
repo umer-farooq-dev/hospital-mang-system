@@ -284,7 +284,7 @@ class AppointmentController extends AppBaseController
 
     public function getPatientDetails($email)
     {
-        $patient = Patient::with('patientUser')->get()->where('patientUser.status', '=', 1)->where('patientUser.email', $email)->first();
+        $patient = Patient::with('patientUser')->whereHas('patientUser', fn ($q) => $q->where('status', 1)->where('email', $email))->first();
         $data = null;
         if ($patient != null) {
             $data = [

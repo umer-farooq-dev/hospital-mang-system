@@ -21,7 +21,7 @@ class UpdateAccountantRequest extends FormRequest
     public function rules(): array
     {
         $rules = Accountant::$rules;
-        $rules['password'] = 'same:password_confirmation|min:6';
+        $rules['password'] = 'same:password_confirmation|min:8';
         $rules['email'] = 'required|email:filter|unique:users,email,'.$this->route('accountant')->user->id;
         $rules['image'] = 'mimes:jpeg,jpg,png,gif';
 

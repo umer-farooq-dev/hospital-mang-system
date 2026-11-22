@@ -235,7 +235,7 @@ return [
         'email_verified_successfully' => 'Courriel vérifié avec succès.',
         'invalid_password' => 'Le mot de passe actuel est invalide.',
         'validate_confirm_password' => 'Le mot de passe et le mot de passe de confirmation doivent correspondre.',
-        'validate_min_character_password' => 'Le mot de passe doit contenir au moins 6 caractères.',
+        'validate_min_character_password' => 'Le mot de passe doit contenir au moins 8 caractères.',
         'validate_image_type' => 'La imagen debe ser un archivo de tipo: jpg, jpeg o png.',
         'validate_image_size' => 'El documento debe tener menos de 10 MB de tamaño.',
         'validate_facebook_url' => 'Por favor, ingrese una URL de Facebook válida.',

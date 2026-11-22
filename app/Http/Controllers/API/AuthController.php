@@ -120,7 +120,7 @@ class AuthController extends AppBaseController
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:8|confirmed',
         ]);
 
         $tokenData = DB::table('password_reset_tokens')
@@ -170,7 +170,7 @@ class AuthController extends AppBaseController
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:8|confirmed',
         ]);
 
         $user = User::where('email', $request->email)->first();

@@ -236,7 +236,7 @@ return [
         'email_verified_successfully' => 'E-Mail erfolgreich verifiziert.',
         'invalid_password' => 'Aktuelles Passwort ist ungültig.',
         'validate_confirm_password' => 'Das Passwort und das Bestätigungspasswort müssen übereinstimmen.',
-        'validate_min_character_password' => 'Das Passwort muss mindestens 6 Zeichen enthalten.',
+        'validate_min_character_password' => 'Das Passwort muss mindestens 8 Zeichen enthalten.',
         'validate_image_type' => 'Das Bild muss eine Datei vom Typ: jpg, jpeg oder png sein.',
         'validate_image_size' => 'Das Dokument muss kleiner als 10 MB sein.',
         'validate_facebook_url' => 'Bitte geben Sie eine gültige Facebook-URL ein.',

@@ -21,7 +21,7 @@ class UpdateReceptionistRequest extends FormRequest
     public function rules(): array
     {
         $rules = Receptionist::$rules;
-        $rules['password'] = 'same:password_confirmation|min:6';
+        $rules['password'] = 'same:password_confirmation|min:8';
         $rules['email'] = 'required|email:filter|unique:users,email,'.$this->route('receptionist')->user->id;
         $rules['image'] = 'image|mimes:jpeg,jpg,png,gif';
 

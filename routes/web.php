@@ -145,9 +145,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/users/creates', function () {
-    return view('users.new_create');
-});
 
 // Routes for Landing Page starts
 Route::middleware('setLanguage')->group(function () {
@@ -178,7 +175,7 @@ Route::get('/modules-of-hms', [Web\WebController::class, 'modulesOfHms'])->name(
 // Routes for Landing Page ends
 
 // Routes for Appointment
-Route::get('appointments/{email}/patient-detail', [Web\AppointmentController::class, 'getPatientDetails'])->name('appointment.patient.details');
+Route::get('appointments/{email}/patient-detail', [Web\AppointmentController::class, 'getPatientDetails'])->middleware('throttle:20,1')->name('appointment.patient.details');
 Route::get('appointment-doctors-list', [Web\AppointmentController::class, 'getDoctors'])->name('appointment.doctor.list');
 Route::get('appointment-doctor-list', [Web\AppointmentController::class, 'getDoctorList'])->name('appointment.doctors.list');
 Route::get('appointment-booking-slot', [Web\AppointmentController::class, 'getBookingSlot'])->name('appointment.get.booking.slot');
@@ -1700,7 +1697,6 @@ Route::get('qr-scan', function () {
 
 Route::get('/set-language', [Web\WebController::class, 'setLanguage'])->name('set-language');
 
-require __DIR__ . '/upgrade.php';
 
 Route::get('zoom/connect', [LiveConsultationController::class, 'zoomConnect'])->name('zoom.connect');
 Route::any('zoom/callback', [LiveConsultationController::class, 'zoomCallback']);

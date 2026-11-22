@@ -236,7 +236,7 @@ return [
         'email_verified_successfully' => 'تم التحقق من البريد الإلكتروني بنجاح.',
         'invalid_password' => 'كلمة المرور الحالية غير صحيحة.',
         'validate_confirm_password' => 'يجب أن تتطابق كلمة المرور مع تأكيد كلمة المرور.',
-        'validate_min_character_password' => 'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل.',
+        'validate_min_character_password' => 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل.',
         'validate_image_type' => 'يجب أن تكون الصورة من نوع: jpg، jpeg، png.',
         'validate_image_size' => 'يجب أن يكون حجم الملف أقل من 10 ميجابايت.',
         'validate_facebook_url' => 'الرجاء إدخال عنوان Facebook صحيح',

@@ -47,7 +47,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // app(UrlGenerator::class)->forceScheme('https');
+        if (config('app.force_https')) {
+            app(UrlGenerator::class)->forceScheme('https');
+        }
+        // Logs can hold patient data.
+        \Opcodes\LogViewer\Facades\LogViewer::auth(fn ($request) => (bool) $request->user()?->hasRole('Admin'));
         Paginator::useBootstrap();
         Module::observe(ModuleObserver::class);
         Setting::observe(SettingObserver::class);

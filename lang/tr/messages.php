@@ -237,7 +237,7 @@ return [
         'email_verified_successfully' => 'E-posta Başarıyla Doğrulandı.',
         'invalid_password' => 'Mevcut şifre geçersiz.',
         'validate_confirm_password' => 'Parola ve onay parolası eşleşmelidir.',
-        'validate_min_character_password' => 'Şifre en az 6 karakter içermelidir.',
+        'validate_min_character_password' => 'Şifre en az 8 karakter içermelidir.',
         'user_list' => 'Kullanıcı Listesi',
         'validate_image_type' => 'Resim dosyası şu türlerden biri olmalıdır: jpg, jpeg, png.',
         'validate_image_size' => 'Doküman 10 MB\'dan küçük olmalıdır.',

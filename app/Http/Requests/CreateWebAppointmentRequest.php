@@ -27,7 +27,7 @@ class CreateWebAppointmentRequest extends FormRequest
             'email' => 'required|email:filter',
         ];
         if (request()->get('patient_type') == 1) {
-            $validationFields['password'] = 'required|same:password_confirmation|min:6';
+            $validationFields['password'] = 'required|same:password_confirmation|min:8';
         }
         if (request()->get('patient_type') == 2) {
             $validationFields['patient_id'] = 'required';

@@ -21,7 +21,7 @@ class UpdateDoctorRequest extends FormRequest
     public function rules(): array
     {
         $rules = Doctor::$rules;
-        $rules['password'] = 'same:password_confirmation|min:6';
+        $rules['password'] = 'same:password_confirmation|min:8';
         $rules['email'] = 'required|email:filter|unique:users,email,'.$this->route('doctor')->doctorUser->id;
         $rules['image'] = 'mimes:jpeg,jpg,png,gif';
 

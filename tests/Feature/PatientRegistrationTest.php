@@ -86,7 +86,8 @@ class PatientRegistrationTest extends TestCase
         $this->assertSame([], $this->fails([]));
         // A password is only asked together with an e-mail, for portal login.
         $this->assertSame(['password'], $this->fails(['email' => 'awa@example.com']));
-        $this->assertSame([], $this->fails(['email' => 'awa@example.com', 'password' => 'secret1', 'password_confirmation' => 'secret1']));
+        $this->assertSame([], $this->fails(['email' => 'awa@example.com', 'password' => 'secret12', 'password_confirmation' => 'secret12']));
+        $this->assertSame(['password'], $this->fails(['email' => 'awa@example.com', 'password' => 'secret1', 'password_confirmation' => 'secret1']), 'at least 8 characters');
         // The phone stays required by default.
         $this->assertSame(['phone'], $this->fails(['phone' => '']));
     }
