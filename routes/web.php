@@ -1017,6 +1017,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
             ->middleware('modules');
         Route::post('invoices/{invoice}', [InvoiceController::class, 'update']);
         Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'convertToPdf'])->name('invoices.pdf');
+        Route::post('invoices/{invoice}/convert', [InvoiceController::class, 'storeFromProforma'])->name('invoices.convert');
 
         Route::resource('payments', PaymentController::class);
         Route::get('payments-show-modal/{payment}', [PaymentController::class, 'showModal'])->name('payments.show.modal');

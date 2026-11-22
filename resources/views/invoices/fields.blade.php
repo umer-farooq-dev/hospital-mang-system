@@ -56,6 +56,29 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-lg-3 col-sm-6 mb-5">
+                {{ Form::label('type', __('messages.proforma.document') . ':', ['class' => 'form-label']) }}
+                @if (isset($invoice))
+                    <div class="form-control-plaintext fw-bold">{{ __('messages.proforma.types.' . ($invoice->type ?: 'invoice')) }}</div>
+                @else
+                    {{ Form::select('type', ['invoice' => __('messages.proforma.types.invoice'), 'proforma' => __('messages.proforma.types.proforma')], request('type', 'invoice'), ['class' => 'form-select']) }}
+                @endif
+            </div>
+            <div class="col-lg-3 col-sm-6 mb-5">
+                {{ Form::label('valid_until', __('messages.proforma.valid_until') . ':', ['class' => 'form-label']) }}
+                {{ Form::date('valid_until', isset($invoice) && $invoice->valid_until ? \Illuminate\Support\Carbon::parse($invoice->valid_until)->toDateString() : null, ['class' => 'form-control']) }}
+                <div class="form-text">{{ __('messages.proforma.valid_hint') }}</div>
+            </div>
+            <div class="col-lg-3 col-sm-6 mb-5">
+                {{ Form::label('insurance_id', __('messages.claims.payer') . ':', ['class' => 'form-label']) }}
+                {{ Form::select('insurance_id', \App\Models\Insurance::orderBy('name')->pluck('name', 'id'), $invoice->insurance_id ?? null, ['class' => 'form-select', 'placeholder' => __('messages.proforma.patient_pays')]) }}
+            </div>
+            <div class="col-lg-3 col-sm-6 mb-5">
+                {{ Form::label('price_list_id', __('messages.proforma.price_list') . ':', ['class' => 'form-label']) }}
+                {{ Form::select('price_list_id', \App\Models\PriceList::options($invoice->price_list_id ?? null), $invoice->price_list_id ?? null, ['class' => 'form-select', 'placeholder' => __('messages.common.choose')]) }}
+            </div>
+        </div>
         <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-end">
             <button type="button" class="btn btn-primary text-star addInvoiceItem" id="addInvoiceItem">
                 {{ __('messages.invoice.add') }}</button>

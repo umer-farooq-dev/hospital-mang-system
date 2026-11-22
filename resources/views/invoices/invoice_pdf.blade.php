@@ -23,9 +23,15 @@
         <table width="100%">
             <tr>
                 <td class="header-left">
-                    <div class="main-heading">{{ __('messages.invoice.invoice') }}</div>
+                    <div class="main-heading">{{ $invoice->isProforma() ? __('messages.proforma.types.proforma') : __('messages.invoice.invoice') }}</div>
                     <div class="invoice-number font-color-gray">{{ __('messages.invoice.invoice_id') }}
                         #{{ $invoice->invoice_id }}</div>
+                    @if ($invoice->isProforma())
+                        <div class="invoice-number font-color-gray">{{ __('messages.proforma.valid_until') }} {{ $invoice->valid_until ? \Illuminate\Support\Carbon::parse($invoice->valid_until)->format('d/m/Y') : '' }}</div>
+                    @endif
+                    @if ($invoice->insurance)
+                        <div class="invoice-number font-color-gray">{{ __('messages.claims.payer') }}: {{ $invoice->insurance->name }}</div>
+                    @endif
                 </td>
                 <td class="header-right">
                     <div class="logo"><img width="100px" src="{{ $setting['app_logo'] }}" alt=""></div>

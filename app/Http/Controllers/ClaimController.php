@@ -24,7 +24,7 @@ class ClaimController extends AppBaseController
 
         return view('claims.index', [
             'invoices' => $invoices, 'insurances' => $insurances, 'status' => $status,
-            'settings' => Setting::whereIn('key', ['claim_invoice_format', 'claim_invoice_digits'])->pluck('value', 'key'),
+            'settings' => Setting::whereIn('key', ['claim_invoice_format', 'claim_invoice_digits', 'proforma_validity_days'])->pluck('value', 'key'),
         ]);
     }
 
@@ -81,7 +81,8 @@ class ClaimController extends AppBaseController
 
     public function updateSettings(Request $request)
     {
-        $data = $request->validate(['claim_invoice_format' => ['required', 'string', 'max:60', 'regex:/\{seq\}/'], 'claim_invoice_digits' => 'required|integer|min:1|max:8']);
+        $data = $request->validate(['claim_invoice_format' => ['required', 'string', 'max:60', 'regex:/\{seq\}/'], 'claim_invoice_digits' => 'required|integer|min:1|max:8',
+            'proforma_validity_days' => 'required|integer|min:0|max:3650']);
         foreach ($data as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => (string) $value]);
         }

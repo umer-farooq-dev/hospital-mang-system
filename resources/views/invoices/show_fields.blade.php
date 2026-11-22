@@ -6,7 +6,7 @@
                     <div class="image image-circle image-small">
                         <img alt="Logo" src="{{ getLogoUrl() }}" height="100px" width="100px">
                     </div>
-                    <h3 class="{{getCurrentLoginUserLanguageName()=='ar' ? 'pe-7' : 'ps-7'}}">{{ __('messages.invoice.invoice') }} #{{ $invoice->invoice_id }}</h3>
+                    <h3 class="{{getCurrentLoginUserLanguageName()=='ar' ? 'pe-7' : 'ps-7'}}">{{ $invoice->isProforma() ? __('messages.proforma.types.proforma') : __('messages.invoice.invoice') }} #{{ $invoice->invoice_id }}</h3>
                 </div>
             </div>
             <div class="col-lg-4 col-md-3 col-6">

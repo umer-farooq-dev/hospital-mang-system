@@ -79,6 +79,10 @@ class Invoice extends Model
         'patient_id' => 'required',
         'invoice_date' => 'required|date',
         'discount' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+        'type' => 'nullable|in:invoice,proforma',
+        'valid_until' => 'nullable|date',
+        'insurance_id' => 'nullable|integer|exists:insurances,id',
+        'price_list_id' => 'nullable|integer|exists:price_lists,id',
     ];
 
     public $table = 'invoices';
@@ -93,6 +97,11 @@ class Invoice extends Model
         'discount',
         'status',
         'currency_symbol',
+        'type',
+        'valid_until',
+        'insurance_id',
+        'price_list_id',
+        'converted_invoice_id',
     ];
 
     protected $casts = [
@@ -190,5 +199,63 @@ class Invoice extends Model
         $url = Storage::disk(config('app.media_disc'))->url('invoices/Invoice-'.$invoice->invoice_id.'.pdf');
 
         return $url ?? __('messages.common.n/a');
+    }
+
+    const INVOICE = 'invoice';
+
+    const PROFORMA = 'proforma';
+
+    public function isProforma(): bool
+    {
+        return $this->type === self::PROFORMA;
+    }
+
+    public function isExpired(): bool
+    {
+        return $this->isProforma() && $this->valid_until && \Illuminate\Support\Carbon::parse($this->valid_until)->endOfDay()->isPast();
+    }
+
+    public function insurance(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Insurance::class);
+    }
+
+    public function priceList(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(PriceList::class);
+    }
+
+    /** Validity of a new quote: the date given, else the quote date plus the days set by the admin. */
+    public static function validUntil(?string $given, $date): ?string
+    {
+        if ($given) {
+            return \Illuminate\Support\Carbon::parse($given)->toDateString();
+        }
+        $days = (int) (Setting::where('key', 'proforma_validity_days')->value('value') ?? 30);
+
+        return \Illuminate\Support\Carbon::parse($date ?: now())->addDays(max(0, $days))->toDateString();
+    }
+
+    /** Turn a valid quote into an invoice (new number, same lines); the quote keeps a link to it. */
+    public function convertToInvoice(): self
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () {
+            $quote = self::lockForUpdate()->findOrFail($this->id);
+            if (! $quote->isProforma() || $quote->converted_invoice_id) {
+                throw new \Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException(__('messages.proforma.already_converted'));
+            }
+            if ($quote->isExpired()) {
+                throw new \Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException(__('messages.proforma.expired'));
+            }
+            $invoice = self::create(['patient_id' => $quote->patient_id, 'invoice_date' => now()->toDateString(), 'invoice_id' => self::generateUniqueInvoiceId(),
+                'amount' => $quote->amount, 'discount' => $quote->discount, 'status' => self::PENDING, 'currency_symbol' => $quote->currency_symbol,
+                'type' => self::INVOICE, 'insurance_id' => $quote->insurance_id, 'price_list_id' => $quote->price_list_id]);
+            foreach ($quote->invoiceItems as $item) {
+                $invoice->invoiceItems()->create($item->only(['account_id', 'description', 'quantity', 'price', 'total']));
+            }
+            $quote->update(['converted_invoice_id' => $invoice->id]);
+
+            return $invoice;
+        });
     }
 }

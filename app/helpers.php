@@ -548,7 +548,7 @@ function checkRecordAccess($id)
 function totalAmount()
 {
     $totalSum = 0;
-    $amount = Invoice::get();
+    $amount = Invoice::where('type', '!=', Invoice::PROFORMA)->get(); // quotes are not income
 
     foreach ($amount as $amounts) {
         $total = 0;
