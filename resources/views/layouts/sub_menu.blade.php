@@ -28,6 +28,13 @@
     </li>
     @endcanroute
 @endmodule
+@module('Doctor Fees', $modules)
+    @canroute('doctor-fees.index')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('third-party*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('third-party/doctor-fees*') ? 'active' : '' }}" href="{{ route('doctor-fees.index') }}">{{ __('messages.doctor_fees.title') }}</a>
+    </li>
+    @endcanroute
+@endmodule
 @if (Auth::user()->hasRole('Admin') || hasCustomRole())
     @canroute('dashboard')
     <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('dashboard*') ? 'd-none' : '' }}">

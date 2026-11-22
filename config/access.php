@@ -141,6 +141,7 @@ return [
         'purchase_orders' => 'pharmacy',
         'stock_reports' => 'pharmacy',
         'claims' => 'billing',
+        'doctor_fees' => 'billing',
         'stores' => 'pharmacy',
         'suppliers' => 'pharmacy',
 
@@ -338,6 +339,7 @@ return [
         Controllers\StockReportController::class => 'stock_reports',
         Controllers\ClaimController::class => 'claims',
         Controllers\ClaimSettlementController::class => 'claims',
+        Controllers\DoctorFeeController::class => 'doctor_fees',
         Controllers\StoreController::class => 'stores',
         Controllers\SupplierController::class => 'suppliers',
         Controllers\PathologyCategoryController::class => 'pathology_categories',
