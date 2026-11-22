@@ -78,4 +78,35 @@ class MedicationAdministration extends Model
     {
         return $this->belongsTo(User::class, 'recorded_by');
     }
+
+    /**
+     * With the setting on, a dose marked with the "given" status takes one unit from the store of the patient's ward
+     * (the store linked to the bed type); any other status gives it back.
+     * ponytail: one unit per dose; read the dosage when doses are counted in fractions of a unit.
+     *
+     * @return string|null why the stock was not taken (the dose itself is always recorded)
+     */
+    public function syncStock(): ?string
+    {
+        if (\App\Utils\Stock::setting('mar_auto_issue', '0') !== '1') {
+            return null;
+        }
+        $medicine = $this->item?->medicine;
+        if (! $medicine) {
+            return null;
+        }
+        $given = (int) $this->status === (int) \App\Utils\Stock::setting('mar_given_status', 1);
+        $bedType = IpdPatientDepartment::whereKey($this->ipd_patient_department_id)->value('bed_type_id');
+        $storeId = $bedType ? Store::where('is_active', true)->where('bed_type_id', $bedType)->orderBy('sort_order')->value('id') : null;
+        if (! $storeId) {
+            return $given ? __('messages.mar_stock.no_ward_store') : null;
+        }
+        try {
+            \App\Utils\Stock::syncIssue($this, (int) $storeId, $given ? [[$medicine, 1]] : [], \App\Utils\Stock::ISSUE);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            return $e->getMessage();
+        }
+
+        return null;
+    }
 }

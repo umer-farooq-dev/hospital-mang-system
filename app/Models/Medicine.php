@@ -129,4 +129,104 @@ class Medicine extends Model
     {
         return $this->belongsTo(PurchasedMedicine::class);
     }
+
+    // Column title in the file (lower case, spaces as _) => medicine field. French and English titles.
+    const IMPORT_COLUMNS = ['name' => 'name', 'nom' => 'name', 'medicament' => 'name', 'dci' => 'common_name', 'common_name' => 'common_name',
+        'inn' => 'common_name', 'cis' => 'cis_code', 'cis_code' => 'cis_code', 'code_cis' => 'cis_code', 'barcode' => 'barcode',
+        'code_barre' => 'barcode', 'form' => 'dosage_form', 'forme' => 'dosage_form', 'route' => 'route', 'voie' => 'route', 'unit' => 'unit',
+        'unite' => 'unit', 'category' => 'category', 'categorie' => 'category', 'brand' => 'brand', 'laboratoire' => 'brand',
+        'selling_price' => 'selling_price', 'prix_vente' => 'selling_price', 'buying_price' => 'buying_price', 'prix_achat' => 'buying_price'];
+
+    // Fields whose text is matched to a master list label.
+    const IMPORT_LISTS = ['dosage_form' => 'dosage_form', 'route' => 'medicine_route', 'unit' => 'medicine_unit'];
+
+    /**
+     * Create or update medicines from file rows (matched by CIS code, then by name).
+     * Texts not found in the master lists are left empty and reported, never invented.
+     *
+     * @return array{created: int, updated: int, skipped: int, unknown: array<string, string[]>, errors: string[]}
+     */
+    public static function importRows(array $rows, int $categoryId, int $brandId): array
+    {
+        $summary = ['created' => 0, 'updated' => 0, 'skipped' => 0, 'unknown' => [], 'errors' => []];
+        $key = fn ($text) => mb_strtolower(trim((string) $text));
+        $lists = [];
+        foreach (self::IMPORT_LISTS as $field => $type) {
+            // A file may be in any installed language: match the stored name and every translation of the item.
+            $locales = array_diff(array_map('basename', glob(lang_path('*'), GLOB_ONLYDIR) ?: []), ['vendor']);
+            $lists[$field] = [];
+            foreach (MasterListItem::where('type', $type)->get() as $item) {
+                $names = [$item->name];
+                foreach ($item->lang_key ? $locales : [] as $locale) {
+                    $names[] = __($item->lang_key, [], $locale);
+                }
+                foreach ($names as $name) {
+                    $lists[$field][$key($name)] ??= $item->code;
+                }
+            }
+        }
+        $categories = Category::pluck('id', 'name')->mapWithKeys(fn ($id, $name) => [$key($name) => $id])->all();
+        $brands = Brand::pluck('id', 'name')->mapWithKeys(fn ($id, $name) => [$key($name) => $id])->all();
+
+        foreach ($rows as $i => $row) {
+            $data = [];
+            foreach ($row as $title => $value) {
+                $field = self::IMPORT_COLUMNS[str_replace([' ', '-'], '_', \Illuminate\Support\Str::ascii($key($title)))] ?? null;
+                if ($field && trim((string) $value) !== '') {
+                    $data[$field] = trim((string) $value);
+                }
+            }
+            if (empty($data['name'])) {
+                $summary['skipped']++;
+
+                continue;
+            }
+            foreach (self::IMPORT_LISTS as $field => $type) {
+                if (isset($data[$field])) {
+                    $code = $lists[$field][$key($data[$field])] ?? null;
+                    if ($code === null) {
+                        $summary['unknown'][$type][$data[$field]] = $data[$field];
+                        unset($data[$field]);
+                    } else {
+                        $data[$field] = $code;
+                    }
+                }
+            }
+            foreach (['category' => [$categories, 'category_id'], 'brand' => [$brands, 'brand_id']] as $field => [$known, $column]) {
+                if (isset($data[$field])) {
+                    if (isset($known[$key($data[$field])])) {
+                        $data[$column] = $known[$key($data[$field])];
+                    }
+                    unset($data[$field]);
+                }
+            }
+            foreach (['selling_price', 'buying_price'] as $field) {
+                if (isset($data[$field])) {
+                    $number = str_replace([' ', ','], ['', '.'], $data[$field]);
+                    if (is_numeric($number)) {
+                        $data[$field] = (float) $number;
+                    } else {
+                        $summary['errors'][] = __('messages.medicine_import.bad_price', ['line' => $i + 2]);
+                        unset($data[$field]);
+                    }
+                }
+            }
+            try {
+                $medicine = (! empty($data['cis_code']) ? self::where('cis_code', $data['cis_code'])->first() : null) ?? self::where('name', $data['name'])->first();
+                if ($medicine) {
+                    $medicine->update($data);
+                    $summary['updated']++;
+                } else {
+                    self::create($data + ['category_id' => $categoryId, 'brand_id' => $brandId, 'selling_price' => 0, 'buying_price' => 0,
+                        'salt_composition' => $data['common_name'] ?? $data['name'], 'quantity' => 0]);
+                    $summary['created']++;
+                }
+            } catch (\Throwable $e) {
+                $summary['errors'][] = __('messages.medicine_import.line_error', ['line' => $i + 2, 'name' => $data['name']]);
+            }
+        }
+        $summary['unknown'] = array_map('array_values', $summary['unknown']);
+
+        return $summary;
+    }
 }

@@ -30,6 +30,7 @@
                                 <th>{{ __('messages.stock.store') }}</th>
                                 <th>{{ __('messages.stock.code') }}</th>
                                 <th>{{ __('messages.stock.type') }}</th>
+                                <th>{{ __('messages.mar_stock.ward') }}</th>
                                 <th class="min-w-250px">{{ __('messages.stock.users') }}</th>
                                 <th>{{ __('messages.stock.sort') }}</th>
                                 <th>{{ __('messages.stock.can_sell') }}</th>
@@ -46,6 +47,7 @@
                                 <td>{{ Form::text($f . '[name]', $store?->name, ['class' => 'form-control form-control-sm', 'maxlength' => 150, 'placeholder' => $store ? '' : __('messages.stock.new_store')] + ($store ? ['required' => 'required'] : []) + $off) }}</td>
                                 <td>{{ Form::text($f . '[code]', $store?->code, ['class' => 'form-control form-control-sm', 'maxlength' => 30] + $off) }}</td>
                                 <td>{{ Form::select($f . '[store_type]', \App\Models\MasterListItem::options('store_type', $store?->store_type), $store?->store_type, ['class' => 'form-select form-select-sm', 'placeholder' => __('messages.common.choose')] + $off) }}</td>
+                                <td>{{ Form::select($f . '[bed_type_id]', $bedTypes, $store?->bed_type_id, ['class' => 'form-select form-select-sm', 'placeholder' => '—'] + $off) }}</td>
                                 <td>{{ Form::select($f . '[users][]', $users, $store ? $store->users->pluck('id')->all() : [], ['class' => 'form-select form-select-sm', 'multiple' => 'multiple', 'data-control' => 'select2'] + $off) }}</td>
                                 <td>{{ Form::number($f . '[sort_order]', $store?->sort_order ?? 0, ['class' => 'form-control form-control-sm w-80px', 'min' => 0] + $off) }}</td>
                                 <td><input type="checkbox" class="form-check-input" name="{{ $f }}[can_sell]" value="1" {{ $store?->can_sell ? 'checked' : '' }} {{ $canEdit ? '' : 'disabled' }}></td>
@@ -115,6 +117,15 @@
                     <div class="col-md-3 mb-5">
                         {{ Form::label('purchase_order_prefix', __('messages.purchase_order.prefix') . ':', ['class' => 'form-label']) }}
                         {{ Form::text('purchase_order_prefix', $settings['purchase_order_prefix'] ?? 'PO', ['class' => 'form-control', 'maxlength' => 10, 'required'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                    </div>
+                    <div class="col-md-6 mb-5">
+                        <label class="form-check form-switch"><input type="checkbox" class="form-check-input" name="mar_auto_issue" value="1" {{ ($settings['mar_auto_issue'] ?? '0') === '1' ? 'checked' : '' }} {{ $canEdit ? '' : 'disabled' }}>
+                            <span class="form-check-label">{{ __('messages.mar_stock.setting') }}</span></label>
+                        <div class="form-text">{{ __('messages.mar_stock.setting_hint') }}</div>
+                    </div>
+                    <div class="col-md-3 mb-5">
+                        {{ Form::label('mar_given_status', __('messages.mar_stock.given_status') . ':', ['class' => 'form-label']) }}
+                        {{ Form::select('mar_given_status', $marStatuses, $settings['mar_given_status'] ?? 1, ['class' => 'form-select', 'required'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
                     </div>
                     <div class="col-md-6 mb-5">
                         <label class="form-check form-switch"><input type="checkbox" class="form-check-input" name="stock_count_blind" value="1" {{ ($settings['stock_count_blind'] ?? '0') === '1' ? 'checked' : '' }} {{ $canEdit ? '' : 'disabled' }}>
