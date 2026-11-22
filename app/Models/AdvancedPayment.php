@@ -41,6 +41,7 @@ class AdvancedPayment extends Model
 
     public $fillable = [
         'patient_id',
+        'ipd_patient_department_id',
         'receipt_no',
         'amount',
         'date',
