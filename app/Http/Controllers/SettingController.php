@@ -71,6 +71,23 @@ class SettingController extends AppBaseController
         return redirect(route('settings.edit', ['section' => 'reception']));
     }
 
+    /** Settings > Inpatient: discharge rules and the discharge summary template. */
+    public function updateInpatient(Request $request)
+    {
+        $input = $request->validate(['discharge_summary_template' => 'nullable|string|max:20000']);
+        $values = [
+            'discharge_block_unpaid' => $request->boolean('discharge_block_unpaid') ? '1' : '0',
+            'discharge_require_checklist' => $request->boolean('discharge_require_checklist') ? '1' : '0',
+            'discharge_summary_template' => (string) ($input['discharge_summary_template'] ?? ''),
+        ];
+        foreach ($values as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        }
+        Flash::success(__('messages.settings').' '.__('messages.common.updated_successfully'));
+
+        return redirect(route('settings.edit', ['section' => 'inpatient']));
+    }
+
     public function getModule(Request $request)
     {
         if ($request->ajax()) {
