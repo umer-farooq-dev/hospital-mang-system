@@ -66,6 +66,16 @@ class ExamOrderItem extends Model implements HasMedia
             '{patient_id}' => rawurlencode((string) $this->order?->patient?->patient_unique_id)]);
     }
 
+    /** Lab and imaging exams of a patient or of an admission, newest first. */
+    public static function workFor(?int $patientId = null, ?int $ipdId = null)
+    {
+        return self::with('order.doctor.doctorUser', 'results')
+            ->whereIn('testable_type', self::WORK_TYPES)
+            ->whereHas('order', fn ($q) => $q->when($patientId, fn ($q) => $q->where('patient_id', $patientId))
+                ->when($ipdId, fn ($q) => $q->where('ipd_patient_department_id', $ipdId)))
+            ->orderByDesc('id')->get();
+    }
+
     public function getIsLabAttribute(): bool
     {
         return $this->testable_type === 'pathology_test';

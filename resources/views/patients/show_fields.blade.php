@@ -78,6 +78,9 @@
                 <a class="nav-link p-0" data-bs-toggle="tab" href="#showPatientInsurances">{{ __('messages.patient_insurance.tab') }}</a>
             </li>
             <li class="nav-item position-relative {{getCurrentLoginUserLanguageName()=='ar' ? 'ms-7' : 'me-7'}} mb-3">
+                <a class="nav-link p-0" data-bs-toggle="tab" href="#showPatientResults">{{ __('messages.exam_results.tab') }}</a>
+            </li>
+            <li class="nav-item position-relative {{getCurrentLoginUserLanguageName()=='ar' ? 'ms-7' : 'me-7'}} mb-3">
                 <a class="nav-link p-0" data-bs-toggle="tab"
                     href="#showPatientAdmissions">{{ __('messages.patient_admissions') }}</a>
             </li>
@@ -226,6 +229,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="tab-pane fade" id="showPatientResults" role="tabpanel">
+        @include('exam_results.list', ['examItems' => \App\Models\ExamOrderItem::workFor($data->id), 'requestUrl' => route('exam-orders.create', ['patient_id' => $data->id])])
     </div>
     <div class="tab-pane fade" id="showPatientInsurances" role="tabpanel">
         <div class="card">

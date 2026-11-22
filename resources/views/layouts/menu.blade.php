@@ -2017,6 +2017,16 @@
         @endrole
 
         @role('Patient')
+            @if (\App\Models\Setting::where('key', 'portal_show_results')->value('value') === '1')
+            @canroute('my-results.index')
+            <li class="nav-item {{ Request::is('my-results*') ? 'active' : '' }}">
+                <a class="nav-link  d-flex align-items-center py-3" href="{{ route('my-results.index') }}">
+                    <span class="aside-menu-icon me-3"><i class="fas fa-vials"></i></span>
+                    <span class="aside-menu-title">{{ __('messages.exam_results.my_results') }}</span>
+                </a>
+            </li>
+            @endcanroute
+            @endif
 
             @canroute('patient.dashboard')
             <li class="nav-item {{ Request::is('patient-dashboard*') ? 'active' : '' }}">

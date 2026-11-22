@@ -2500,6 +2500,7 @@ return [
             'lab_worklist' => 'Paillasse labo et imagerie',
             'imaging_report_templates' => 'Modèles de comptes rendus d\'imagerie',
             'lab_import_profiles' => 'Profils d\'import des automates',
+            'patient_results' => 'Résultats (portail patient)',
             'ipd_timelines' => 'Chronologie IPD',
             'ipd_payments' => 'Paiements IPD',
             'ipd_bills' => 'Factures IPD',
@@ -3460,6 +3461,15 @@ return [
         'done' => ':values valeur(s) écrite(s) sur :samples examen(s).',
         'unknown' => 'Prélèvements introuvables : :list.',
         'locked' => 'Déjà validés, non modifiés : :list.',
+    ],
+    'exam_results' => [
+        'tab' => 'Résultats',
+        'investigations' => 'Examens',
+        'request' => 'Demander des examens',
+        'pending' => 'Pas encore diffusé',
+        'empty' => 'Aucun examen de laboratoire ou d\'imagerie.',
+        'my_results' => 'Mes résultats',
+        'portal_setting' => 'Les patients voient leurs résultats diffusés dans le portail patient',
     ],
     'ipd_bill_extra' => [
         'pharmacy' => 'Pharmacie',
