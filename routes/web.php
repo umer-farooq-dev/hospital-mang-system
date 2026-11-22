@@ -787,6 +787,11 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('third-party/claims', [\App\Http\Controllers\ClaimController::class, 'store'])->name('claims.store');
         Route::post('third-party/claims/settings', [\App\Http\Controllers\ClaimController::class, 'updateSettings'])->name('claims.settings');
         Route::get('third-party/claims/{claimInvoice}', [\App\Http\Controllers\ClaimController::class, 'show'])->name('claims.show');
+        Route::get('third-party/ageing', [\App\Http\Controllers\ClaimSettlementController::class, 'ageing'])->name('claims.ageing');
+        Route::post('third-party/ageing', [\App\Http\Controllers\ClaimSettlementController::class, 'updateAgeing'])->name('claims.ageing.update');
+        Route::get('third-party/statement', [\App\Http\Controllers\ClaimSettlementController::class, 'statement'])->name('claims.statement');
+        Route::post('third-party/claims/{claimInvoice}/settle', [\App\Http\Controllers\ClaimSettlementController::class, 'storeSettlement'])->name('claims.settle');
+        Route::post('third-party/claim-lines/{claimLine}/{action}', [\App\Http\Controllers\ClaimSettlementController::class, 'updateLine'])->name('claims.lines.update');
         Route::post('third-party/claims/{claimInvoice}/cancel', [\App\Http\Controllers\ClaimController::class, 'cancel'])->name('claims.cancel');
     });
     Route::middleware('access:Admin|Pharmacist')->group(function () {

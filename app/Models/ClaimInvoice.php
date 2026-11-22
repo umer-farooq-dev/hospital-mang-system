@@ -44,6 +44,11 @@ class ClaimInvoice extends Model
         return $this->belongsTo(Insurance::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(ClaimPayment::class);
+    }
+
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -146,7 +151,15 @@ class ClaimInvoice extends Model
                 'payer_amount' => (float) $bill->payer_amount, 'group' => 'admission:'.$ipd->id]);
         }
 
-        return $lines->sortBy('service_date')->values();
+        // A rejected line sent back for resubmission claims only what the payer has not paid yet.
+        $paidBefore = ClaimLine::where('status', ClaimLine::RESUBMIT)->where('paid_amount', '>', 0)->get()
+            ->groupBy(fn ($l) => $l->source_type.':'.$l->source_id)->map(fn ($l) => (float) $l->sum('paid_amount'));
+
+        return $lines->map(function ($line) use ($paidBefore) {
+            $line['payer_amount'] = round($line['payer_amount'] - ($paidBefore[$line['source_type'].':'.$line['source_id']] ?? 0), 2);
+
+            return $line;
+        })->filter(fn ($line) => $line['payer_amount'] > 0)->sortBy('service_date')->values();
     }
 
     /** Make the claim invoices of a period for one insurer; returns them (none when nothing is due). */
@@ -200,5 +213,75 @@ class ClaimInvoice extends Model
             }
             $this->update(['status' => self::CANCELLED, 'cancelled_by' => $userId, 'cancelled_at' => now()]);
         });
+    }
+
+    /**
+     * Record what the payer paid and rejected on this invoice.
+     *
+     * @param  array  $lines  line id => ['paid' => amount, 'reason' => rejection reason code or empty]
+     */
+    public function settle(array $lines, array $payment, int $userId): ?ClaimPayment
+    {
+        return DB::transaction(function () use ($lines, $payment, $userId) {
+            $fresh = self::lockForUpdate()->findOrFail($this->id);
+            if (! in_array($fresh->status, [self::ISSUED, self::PARTIAL], true)) {
+                throw new UnprocessableEntityHttpException(__('messages.claim_settlement.wrong_status'));
+            }
+            $date = Carbon::parse($payment['paid_on'] ?? now())->toDateString();
+            $total = 0.0;
+            $rejections = 0;
+            foreach ($this->lines()->get() as $line) {
+                $row = $lines[$line->id] ?? null;
+                if (! $row || $line->outstanding() <= 0) {
+                    continue;
+                }
+                $paid = round(min(max(0, (float) ($row['paid'] ?? 0)), $line->outstanding()), 2);
+                $line->paid_amount = round($line->paid_amount + $paid, 2);
+                $total += $paid;
+                if (! empty($row['reason']) && $line->paid_amount < $line->payer_amount - 0.004) {
+                    $line->fill(['status' => ClaimLine::REJECTED, 'rejection_reason' => (int) $row['reason'], 'settled_on' => $date]);
+                    $rejections++;
+                } elseif ($line->paid_amount >= $line->payer_amount - 0.004) {
+                    $line->fill(['status' => ClaimLine::PAID, 'settled_on' => $date]);
+                } elseif ($line->paid_amount > 0) {
+                    $line->status = ClaimLine::PARTIAL;
+                }
+                $line->save();
+            }
+            if ($total <= 0 && ! $rejections) {
+                throw new UnprocessableEntityHttpException(__('messages.claim_settlement.nothing_entered'));
+            }
+            $record = $total > 0 ? $this->payments()->create(['paid_on' => $date, 'amount' => round($total, 2), 'payment_method' => $payment['payment_method'] ?? null,
+                'reference' => $payment['reference'] ?? null, 'note' => $payment['note'] ?? null, 'created_by' => $userId]) : null;
+            $this->refreshStatus();
+
+            return $record;
+        });
+    }
+
+    /**
+     * Movements of a payer's account: invoices (+), payments (-), amounts no longer owed (-), oldest first.
+     *
+     * @return Collection<int, array{date: Carbon, label: string, number: string, invoice_id: int, amount: float}>
+     */
+    public static function statementEntries(int $insuranceId): Collection
+    {
+        $entries = collect();
+        $invoices = self::with('lines', 'payments')->where('insurance_id', $insuranceId)->where('status', '!=', self::CANCELLED)->get();
+        foreach ($invoices as $invoice) {
+            $entries->push(['date' => $invoice->issued_on->copy(), 'label' => __('messages.claims.invoice'), 'number' => $invoice->number, 'invoice_id' => $invoice->id, 'amount' => $invoice->total_claimed]);
+            foreach ($invoice->payments as $payment) {
+                $entries->push(['date' => $payment->paid_on->copy(), 'label' => __('messages.claim_settlement.payment').($payment->reference ? ' · '.$payment->reference : ''),
+                    'number' => $invoice->number, 'invoice_id' => $invoice->id, 'amount' => -$payment->amount]);
+            }
+            foreach ($invoice->lines->whereIn('status', ClaimLine::NOT_OWED) as $line) {
+                if ($line->rejectedAmount() > 0) {
+                    $entries->push(['date' => ($line->settled_on ?? $invoice->issued_on)->copy(), 'label' => __('messages.claims.statuses.'.$line->status).' · '.$line->description,
+                        'number' => $invoice->number, 'invoice_id' => $invoice->id, 'amount' => -$line->rejectedAmount()]);
+                }
+            }
+        }
+
+        return $entries->sortBy(fn ($e) => $e['date']->format('Ymd').($e['amount'] > 0 ? '0' : '1'))->values();
     }
 }

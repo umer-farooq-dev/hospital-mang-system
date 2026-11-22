@@ -58,6 +58,7 @@ class MasterListItem extends Model
         'medicine_unit' => ['medicines', 'unit'],
         'dosage_form' => ['medicines', 'dosage_form'],
         'medicine_route' => ['medicines', 'route'],
+        'claim_rejection_reason' => ['claim_lines', 'rejection_reason'],
     ];
 
     // Lists whose items carry a number, and what it means (shown on the Master Lists screen).

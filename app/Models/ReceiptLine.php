@@ -29,6 +29,7 @@ class ReceiptLine extends Model
         'ipd_payment' => IpdPayment::class,
         'advance_payment' => AdvancedPayment::class,
         'medicine_bill' => MedicineBill::class,
+        'claim_line' => ClaimLine::class,
     ];
 
     public function receipt(): BelongsTo

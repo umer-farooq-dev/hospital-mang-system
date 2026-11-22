@@ -125,8 +125,24 @@ class ClaimTest extends TestCase
             $t->decimal('payer_amount', 15, 2)->default(0);
             $t->decimal('paid_amount', 15, 2)->default(0);
             $t->string('status')->default('pending');
+            $t->date('settled_on')->nullable();
             $t->unsignedInteger('rejection_reason')->nullable();
             $t->string('note')->nullable();
+            $t->timestamps();
+        });
+    }
+
+    private function settlementTables(): void
+    {
+        Schema::create('claim_payments', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('claim_invoice_id');
+            $t->date('paid_on');
+            $t->decimal('amount', 15, 2);
+            $t->unsignedInteger('payment_method')->nullable();
+            $t->string('reference')->nullable();
+            $t->string('note')->nullable();
+            $t->unsignedBigInteger('created_by')->nullable();
             $t->timestamps();
         });
     }
@@ -193,5 +209,49 @@ class ClaimTest extends TestCase
 
         DB::table('insurances')->where('id', 1)->update(['billing_option' => 'per_visit']);
         $this->assertCount(1, ClaimInvoice::generate(1, Carbon::parse('2026-12-01'), Carbon::parse('2026-12-31'), 1));
+    }
+
+    public function test_a_partial_payment_is_recorded_and_the_rejected_line_moves_to_the_patient(): void
+    {
+        $this->seedActs();
+        $this->settlementTables();
+        $invoice = ClaimInvoice::generate(1, Carbon::parse('2026-11-01'), Carbon::parse('2026-11-30'), 1)->first();
+        $lines = $invoice->lines()->get()->keyBy('source_type');
+        $input = [];
+        foreach ($invoice->lines as $line) {
+            $input[$line->id] = ['paid' => $line->payer_amount];
+        }
+        $input[$lines['exam_item']->id] = ['paid' => 0, 'reason' => 2];                // NFS refused
+        $input[$lines['ipd_bill']->id] = ['paid' => 30000];                            // 6 000 still due on the admission
+
+        $payment = $invoice->settle($input, ['paid_on' => '2026-11-25', 'reference' => 'VIR-1'], 1);
+        $this->assertEquals(4800 + 4800 + 1600 + 30000, $payment->amount);
+        $this->assertSame('partial', $invoice->fresh()->status);
+        $this->assertEquals(6000, $invoice->fresh()->outstanding(), 'the rejected line is not owed any more');
+        $exam = $lines['exam_item']->fresh();
+        $this->assertSame(['rejected', 2], [$exam->status, $exam->rejection_reason]);
+
+        $exam->settleRejected('to_patient');
+        $this->assertSame('to_patient', $exam->fresh()->status);
+
+        $invoice->fresh()->settle([$lines['ipd_bill']->id => ['paid' => 6000]], ['paid_on' => '2026-11-28'], 1);
+        $this->assertSame('closed', $invoice->fresh()->status, 'nothing due, not all paid (one line refused)');
+
+        $entries = ClaimInvoice::statementEntries(1);
+        $this->assertEquals(0, round($entries->sum('amount'), 2), 'statement balance = what is still owed');
+        $this->assertCount(4, $entries, 'invoice, two payments, the refused line');
+    }
+
+    public function test_a_resubmitted_line_claims_only_what_was_not_paid(): void
+    {
+        $this->seedActs();
+        $this->settlementTables();
+        $invoice = ClaimInvoice::generate(1, Carbon::parse('2026-11-01'), Carbon::parse('2026-11-30'), 1)->first();
+        $visit = $invoice->lines()->where('source_type', 'opd_visit')->first();
+        $invoice->settle([$visit->id => ['paid' => 1800, 'reason' => 4]], ['paid_on' => '2026-11-25'], 1);
+        $visit->fresh()->settleRejected('resubmit');
+
+        $again = ClaimInvoice::eligible(1, Carbon::parse('2026-11-01'), Carbon::parse('2026-11-30'));
+        $this->assertSame([3000.0], $again->where('source_id', $visit->source_id)->where('source_type', 'opd_visit')->pluck('payer_amount')->all());
     }
 }
