@@ -797,6 +797,10 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('third-party/doctor-fees/{doctorStatement}/validate', [\App\Http\Controllers\DoctorFeeController::class, 'approveStatement'])->name('doctor-fees.approve');
         Route::post('third-party/doctor-fees/{doctorStatement}/pay', [\App\Http\Controllers\DoctorFeeController::class, 'storePayment'])->name('doctor-fees.pay');
         Route::post('third-party/doctor-fees/{doctorStatement}/cancel', [\App\Http\Controllers\DoctorFeeController::class, 'cancel'])->name('doctor-fees.cancel');
+        Route::get('third-party/referrers', [\App\Http\Controllers\ReferrerCommissionController::class, 'index'])->name('referrer-commissions.index')->middleware('modules');
+        Route::get('third-party/referrers/export', [\App\Http\Controllers\ReferrerCommissionController::class, 'exportReport'])->name('referrer-commissions.export');
+        Route::post('third-party/referrers/rates', [\App\Http\Controllers\ReferrerCommissionController::class, 'updateRates'])->name('referrer-commissions.rates');
+        Route::post('third-party/referrers/pay', [\App\Http\Controllers\ReferrerCommissionController::class, 'storePayout'])->name('referrer-commissions.pay');
         Route::get('third-party/ageing', [\App\Http\Controllers\ClaimSettlementController::class, 'ageing'])->name('claims.ageing');
         Route::post('third-party/ageing', [\App\Http\Controllers\ClaimSettlementController::class, 'updateAgeing'])->name('claims.ageing.update');
         Route::get('third-party/statement', [\App\Http\Controllers\ClaimSettlementController::class, 'statement'])->name('claims.statement');
