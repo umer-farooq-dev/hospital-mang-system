@@ -543,4 +543,28 @@ class StockTest extends TestCase
             $this->assertSame(10, Stock::onHand($item, $this->ward));
         }
     }
+
+    public function test_reports_net_goods_given_back_and_find_slow_moving_stock(): void
+    {
+        $sold = $this->medicine();
+        $idle = $this->medicine('Idle');
+        $purchase = PurchaseMedicine::create(['purchase_no' => 'P-9']);
+        Stock::receive($sold, $this->pharmacy, 20, ['batch_no' => 'S', 'unit_cost' => 10], $purchase);
+        Stock::receive($idle, $this->pharmacy, 5, ['batch_no' => 'I', 'unit_cost' => 10], $purchase);
+        $bill = $this->bill(MedicineBill::FULLPAID);
+        SaleMedicine::create(['medicine_bill_id' => $bill->id, 'medicine_id' => $sold->id, 'sale_quantity' => 6, 'sale_price' => 1, 'tax' => 0]);
+        $bill->syncStock();
+        SaleMedicine::where('medicine_bill_id', $bill->id)->update(['sale_quantity' => 4]);
+        $bill->syncStock(); // 2 given back
+
+        $build = fn (array $query) => (new \ReflectionMethod(\App\Http\Controllers\StockReportController::class, 'build'))
+            ->invoke(new \App\Http\Controllers\StockReportController(), new \Illuminate\Http\Request($query));
+        $issued = $build(['report' => 'issued']);
+        $this->assertSame([['Paracetamol', 4, 40.0]], $issued['rows'], 'net of the 2 given back');
+        $this->assertEquals(40.0, $issued['total'][2]);
+
+        $slow = $build(['report' => 'slow', 'days' => 30]);
+        $this->assertSame(['Idle'], array_column($slow['rows'], 0), 'only what nothing was taken out of');
+        $this->assertSame([16 + 5], [array_sum(array_column($build(['report' => 'valuation'])['rows'], 1))]);
+    }
 }
