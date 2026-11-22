@@ -24,7 +24,7 @@ use App\Http\Controllers;
 return [
 
     // Columns on the Roles screen, in this order.
-    'actions' => ['list', 'view', 'create', 'edit', 'delete', 'export', 'download'],
+    'actions' => ['list', 'view', 'create', 'edit', 'delete', 'export', 'download', 'approve'],
 
     // Groups on the Roles screen, in this order.
     'groups' => ['dashboard', 'patients', 'appointments', 'opd', 'ipd', 'doctors', 'staff', 'billing', 'finance', 'charges', 'services', 'pharmacy', 'laboratory', 'radiology', 'diagnosis', 'beds', 'blood_bank', 'inventory', 'reports', 'documents', 'front_office', 'communication', 'live_consultation', 'vaccination', 'front_cms', 'self_service', 'patient_portal', 'settings'],
@@ -70,6 +70,7 @@ return [
         'icd10' => 'settings',
         'certificates' => 'patients',
         'certificate_templates' => 'settings',
+        'lab_worklist' => 'laboratory',
         'ipd_timelines' => 'ipd',
         'ipd_payments' => 'ipd',
         'ipd_bills' => 'ipd',
@@ -267,6 +268,7 @@ return [
         Controllers\Icd10Controller::class => 'icd10',
         Controllers\CertificateController::class => 'certificates',
         Controllers\CertificateTemplateController::class => 'certificate_templates',
+        Controllers\LabWorklistController::class => 'lab_worklist',
         Controllers\IpdTimelineController::class => 'ipd_timelines',
         Controllers\IpdPaymentController::class => 'ipd_payments',
         Controllers\IpdBillController::class => 'ipd_bills',
@@ -389,6 +391,9 @@ return [
     //            and for any role that may create, edit or delete in the module.
     // "fixed":   allowed for the route's default roles only; not shown on the Roles screen.
     'methods' => [
+        // Lab settings sit on the worklist; changing them is editing the module.
+        Controllers\LabWorklistController::class.'@updateSettings' => ['lab_worklist', 'edit'],
+        Controllers\LabWorklistController::class.'@collect' => ['lab_worklist', 'edit'],
         // Importing replaces titles in bulk: same right as editing the list.
         Controllers\Icd10Controller::class.'@import' => ['icd10', 'edit'],
         // Post-op notes are written on the operation sheet.

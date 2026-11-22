@@ -1436,6 +1436,15 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('ipd-operations/{id}/edit', [IpdOperationController::class, 'edit'])->name('operation.edit');
         Route::post('ipd-operations/{id}', [IpdOperationController::class, 'update'])->name('operation.update');
         Route::get('ipd-operations/{id}/sheet', [IpdOperationController::class, 'show'])->name('operation.sheet');
+        Route::get('lab-worklist', [\App\Http\Controllers\LabWorklistController::class, 'index'])->name('lab-worklist.index')->middleware('modules');
+        Route::post('lab-worklist/settings', [\App\Http\Controllers\LabWorklistController::class, 'updateSettings'])->name('lab-worklist.settings');
+        Route::post('lab-worklist/{item}/collect', [\App\Http\Controllers\LabWorklistController::class, 'collect'])->name('lab-worklist.collect');
+        Route::get('lab-worklist/{item}/label', [\App\Http\Controllers\LabWorklistController::class, 'label'])->name('lab-worklist.label');
+        Route::get('lab-worklist/{item}', [\App\Http\Controllers\LabWorklistController::class, 'show'])->name('lab-worklist.show');
+        Route::post('lab-worklist/{item}', [\App\Http\Controllers\LabWorklistController::class, 'update'])->name('lab-worklist.update');
+        Route::post('lab-worklist/{item}/validate', [\App\Http\Controllers\LabWorklistController::class, 'validateResults'])->name('lab-worklist.validate');
+        Route::post('lab-worklist/{item}/release', [\App\Http\Controllers\LabWorklistController::class, 'releaseResults'])->name('lab-worklist.release');
+        Route::get('exam-orders/{order}/report', [\App\Http\Controllers\LabWorklistController::class, 'report'])->name('exam-orders.report');
         Route::get('icd10-search', [\App\Http\Controllers\Icd10Controller::class, 'getSearch'])->name('icd10.search');
         Route::get('ipds/{ipdPatientDepartment}/nursing', [\App\Http\Controllers\NursingChartController::class, 'show'])->name('ipd.nursing.show')->middleware('modules');
         Route::post('ipds/{ipdPatientDepartment}/nursing/vitals', [\App\Http\Controllers\NursingChartController::class, 'storeVitals'])->name('ipd.nursing.vitals');

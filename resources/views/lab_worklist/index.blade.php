@@ -1,0 +1,82 @@
+@extends('layouts.app')
+@section('title')
+    {{ __('messages.lab.worklist') }}
+@endsection
+@section('header_toolbar')
+    <div class="container-fluid">
+        <div class="d-md-flex align-items-center justify-content-between mb-7">
+            <h1 class="mb-0">@yield('title')</h1>
+        </div>
+    </div>
+@endsection
+@section('content')
+    @php($canEdit = canAccessRoute('lab-worklist.collect'))
+    <div class="container-fluid" id="labWorklist" data-label-url="{{ request('label') ? route('lab-worklist.label', request('label')) : '' }}">
+        @include('flash::message')
+        @include('layouts.errors')
+        <div class="card mb-7">
+            <div class="card-body">
+                {{ Form::open(['route' => 'lab-worklist.index', 'method' => 'get', 'class' => 'row g-3 align-items-end mb-5']) }}
+                <div class="col-md-2">{{ Form::label('type', __('messages.lab.type') . ':', ['class' => 'form-label']) }}
+                    {{ Form::select('type', ['all' => __('messages.filter.All'), 'pathology_test' => __('messages.lab.lab'), 'radiology_test' => __('messages.lab.imaging')], $type, ['class' => 'form-select']) }}</div>
+                <div class="col-md-2">{{ Form::label('status', __('messages.ot.status') . ':', ['class' => 'form-label']) }}
+                    {{ Form::select('status', ['open' => __('messages.lab.open'), 'all' => __('messages.filter.All')] + collect(\App\Models\ExamOrderItem::STATUSES)->mapWithKeys(fn ($s) => [$s => __('messages.lab.statuses.' . $s)])->all(), $status, ['class' => 'form-select']) }}</div>
+                <div class="col-md-2">{{ Form::label('from', __('messages.certificate.start_date') . ':', ['class' => 'form-label']) }}<input type="date" name="from" value="{{ $from->format('Y-m-d') }}" class="form-control"></div>
+                <div class="col-md-2">{{ Form::label('to', __('messages.certificate.end_date') . ':', ['class' => 'form-label']) }}<input type="date" name="to" value="{{ $to->format('Y-m-d') }}" class="form-control"></div>
+                <div class="col-md-3"><input type="search" name="search" value="{{ $search }}" class="form-control" placeholder="{{ __('messages.lab.search') }}"></div>
+                <div class="col-md-1"><button class="btn btn-primary w-100"><i class="fas fa-search"></i></button></div>
+                {{ Form::close() }}
+                <div class="table-responsive">
+                    <table class="table table-row-dashed align-middle">
+                        <thead><tr class="text-muted fw-bolder fs-7 text-uppercase"><th>{{ __('messages.cashier.date') }}</th><th>{{ __('messages.lab.sample') }}</th><th>{{ __('messages.cashier.patient') }}</th><th>{{ __('messages.exam_orders.exam') }}</th><th>{{ __('messages.ot.status') }}</th><th class="text-end"></th></tr></thead>
+                        <tbody>
+                            @forelse ($items as $item)
+                                <tr>
+                                    <td class="text-nowrap">{{ $item->order?->ordered_at?->format('d/m/Y H:i') }}@if ($item->order?->ipd_patient_department_id)<div><span class="badge bg-light-info">IPD</span></div>@endif</td>
+                                    <td class="fw-bold">{{ $item->sample_number }}</td>
+                                    <td>{{ $item->order?->patient?->patientUser?->full_name }}<div class="text-muted fs-7">{{ $item->order?->doctor?->doctorUser?->full_name }}</div></td>
+                                    <td>{{ $item->description }}<div class="text-muted fs-7">{{ $item->is_lab ? __('messages.lab.lab') : __('messages.lab.imaging') }}</div></td>
+                                    <td>@include('lab_worklist.status', ['status' => $item->status])
+                                        @if ($requirePayment && $item->status === 'ordered' && ! $item->isPaid())<div class="text-danger fs-7">{{ __('messages.lab.unpaid') }}</div>@endif</td>
+                                    <td class="text-end text-nowrap">
+                                        @if ($item->status === 'ordered' && $canEdit)
+                                            {{ Form::open(['route' => ['lab-worklist.collect', $item->id], 'method' => 'post', 'class' => 'd-inline']) }}
+                                            <button class="btn btn-sm btn-light-info">{{ $item->is_lab ? __('messages.lab.collect') : __('messages.lab.start') }}</button>
+                                            {{ Form::close() }}
+                                        @endif
+                                        @if ($item->sample_number)
+                                            <a href="{{ route('lab-worklist.label', $item->id) }}" target="_blank" class="btn btn-sm btn-light" title="{{ __('messages.lab.label') }}"><i class="fas fa-tag"></i></a>
+                                        @endif
+                                        <a href="{{ route('lab-worklist.show', $item->id) }}" class="btn btn-sm btn-light-primary">{{ __('messages.lab.results') }}</a>
+                                        @if (in_array($item->status, ['validated', 'released'], true))
+                                            <a href="{{ route('exam-orders.report', $item->exam_order_id) }}" target="_blank" class="btn btn-sm btn-light-success" title="{{ __('messages.lab.report') }}"><i class="fas fa-print"></i></a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="6" class="text-center text-muted">{{ __('messages.lab.empty') }}</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                {{ $items->links() }}
+            </div>
+        </div>
+        @if (canAccessRoute('lab-worklist.settings'))
+            @php($labSettings = \App\Models\Setting::whereIn('key', ['lab_sample_prefix', 'lab_auto_release', 'lab_require_payment'])->pluck('value', 'key'))
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="mb-5">{{ __('messages.lab.settings') }}</h3>
+                    {{ Form::open(['route' => 'lab-worklist.settings', 'method' => 'post', 'class' => 'row g-4 align-items-end']) }}
+                    <div class="col-md-3">{{ Form::label('lab_sample_prefix', __('messages.lab.sample_prefix') . ':', ['class' => 'form-label']) }}
+                        {{ Form::text('lab_sample_prefix', $labSettings['lab_sample_prefix'] ?? 'S', ['class' => 'form-control', 'maxlength' => 6, 'required']) }}</div>
+                    <div class="col-md-4"><label class="form-check form-switch"><input type="checkbox" class="form-check-input" name="lab_require_payment" value="1" {{ ($labSettings['lab_require_payment'] ?? '1') === '1' ? 'checked' : '' }}><span class="form-check-label">{{ __('messages.lab.require_payment') }}</span></label></div>
+                    <div class="col-md-3"><label class="form-check form-switch"><input type="checkbox" class="form-check-input" name="lab_auto_release" value="1" {{ ($labSettings['lab_auto_release'] ?? '0') === '1' ? 'checked' : '' }}><span class="form-check-label">{{ __('messages.lab.auto_release') }}</span></label></div>
+                    <div class="col-md-2">{{ Form::submit(__('messages.common.save'), ['class' => 'btn btn-primary w-100']) }}</div>
+                    <div class="col-12 form-text">{{ __('messages.lab.settings_hint') }}</div>
+                    {{ Form::close() }}
+                </div>
+            </div>
+        @endif
+    </div>
+@endsection
