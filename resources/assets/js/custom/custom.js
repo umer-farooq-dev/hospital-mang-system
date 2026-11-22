@@ -80,7 +80,7 @@ function refreshCsrfToken() {
 }
 
 function alertInitialize() {
-    $(".alert").delay(5000).slideUp(300);
+    $(".alert").not(".alert-important").delay(5000).slideUp(300);
 }
 
 const modalInputFocus = () => {
