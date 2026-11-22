@@ -61,7 +61,7 @@ class IpdDiagnosis extends Model implements HasMedia
         'id' => 'integer',
         'ipd_patient_department_id' => 'integer',
         'report_type' => 'string',
-        'report_date' => 'datetime',
+        'report_date' => 'datetime:Y-m-d H:i:s', // no UTC suffix: the edit form shows the time as entered
         'description' => 'string',
     ];
 
