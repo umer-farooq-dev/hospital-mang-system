@@ -1445,6 +1445,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('lab-worklist', [\App\Http\Controllers\LabWorklistController::class, 'index'])->name('lab-worklist.index')->middleware('modules');
         Route::post('lab-worklist/settings', [\App\Http\Controllers\LabWorklistController::class, 'updateSettings'])->name('lab-worklist.settings');
         Route::post('lab-worklist/import', [\App\Http\Controllers\LabWorklistController::class, 'importResults'])->name('lab-worklist.import');
+        Route::post('lab-worklist/catalogue', [\App\Http\Controllers\LabWorklistController::class, 'storeCatalogue'])->name('lab-worklist.catalogue');
         Route::post('lab-worklist/{item}/collect', [\App\Http\Controllers\LabWorklistController::class, 'collect'])->name('lab-worklist.collect');
         Route::get('lab-worklist/{item}/label', [\App\Http\Controllers\LabWorklistController::class, 'label'])->name('lab-worklist.label');
         Route::get('lab-worklist/{item}', [\App\Http\Controllers\LabWorklistController::class, 'show'])->name('lab-worklist.show');

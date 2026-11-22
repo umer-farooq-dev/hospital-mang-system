@@ -3350,6 +3350,14 @@ return [
                 'name' => 'Fitness certificate',
                 'body' => "I, the undersigned, {doctor}, certify that I have examined {patient_name}, {age}, on {date}, and found no clinical sign contraindicating {notes}.",
             ],
+            'birth' => [
+                'name' => 'Birth certificate',
+                'body' => "I, the undersigned, {doctor}, certify that {patient_name}, {age}, gave birth on {start_date} at {hospital}.\n\nChild: {notes}\n\nThis certificate is issued for the declaration of birth to the civil registry.",
+            ],
+            'death' => [
+                'name' => 'Death certificate',
+                'body' => "I, the undersigned, {doctor}, certify that I have observed the death of {patient_name}, {age}, {gender}, on {start_date} at {hospital}.\n\n{notes}\n\nThis certificate is issued for the declaration of death to the civil registry.",
+            ],
             'hospital_stay' => [
                 'name' => 'Hospitalisation certificate',
                 'body' => "I, the undersigned, {doctor}, certify that {patient_name}, {age}, was hospitalised in our facility from {admission_date} to {discharge_date} (file no. {ipd_number}).\n\n{notes}",
@@ -3397,6 +3405,9 @@ return [
         'require_payment' => 'Collect only paid exams (IPD exams are billed on the admission)',
         'auto_release' => 'Release as soon as validated',
         'settings_saved' => 'Lab settings saved.',
+        'catalogue_button' => 'Add the proposed test catalogue',
+        'catalogue_hint' => 'Adds about 20 common lab tests (with units and usual adult reference values) and 8 imaging exams in your language, at price 0. Existing tests are not changed; the lab must check the reference values.',
+        'catalogue_added' => ':lab lab test(s) and :imaging imaging exam(s) added. Set their prices in Price lists.',
         'settings_hint' => 'Who may validate and release is set on the Roles screen (Lab worklist > Approve).',
         'statuses' => [
             'ordered' => 'Ordered',

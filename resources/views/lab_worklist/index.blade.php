@@ -101,6 +101,13 @@
                         @canroute('master-lists.index') · <a href="{{ route('master-lists.index', ['type' => 'imaging_modality']) }}">{{ __('messages.master_list.types.imaging_modality') }}</a>@endcanroute
                     </div>
                     {{ Form::close() }}
+                    <hr class="my-6">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div class="form-text m-0">{{ __('messages.lab.catalogue_hint') }}</div>
+                        {{ Form::open(['route' => 'lab-worklist.catalogue', 'method' => 'post']) }}
+                        <button class="btn btn-light-primary">{{ __('messages.lab.catalogue_button') }}</button>
+                        {{ Form::close() }}
+                    </div>
                 </div>
             </div>
         @endif

@@ -221,6 +221,15 @@ class LabWorklistController extends AppBaseController
         return redirect()->route('lab-worklist.index', ['status' => 'in_progress']);
     }
 
+    /** The client asked us to propose the test list: add the standard catalogue in the admin's language. */
+    public function storeCatalogue()
+    {
+        $counts = \App\Utils\LabCatalogue::install(app()->getLocale());
+        Flash::success(__('messages.lab.catalogue_added', ['lab' => $counts['lab'], 'imaging' => $counts['imaging']]));
+
+        return redirect()->route('lab-worklist.index');
+    }
+
     public function updateSettings(Request $request)
     {
         $request->validate(['lab_sample_prefix' => ['required', 'string', 'max:6', 'regex:/^[A-Za-z0-9]+$/'], 'pacs_viewer_url' => 'nullable|url|max:500']);
