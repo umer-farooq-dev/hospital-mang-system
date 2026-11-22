@@ -67,6 +67,7 @@ return [
         'ipd_operations' => 'ipd',
         'ot_calendar' => 'ipd',
         'ipd_nursing' => 'ipd',
+        'icd10' => 'settings',
         'ipd_timelines' => 'ipd',
         'ipd_payments' => 'ipd',
         'ipd_bills' => 'ipd',
@@ -261,6 +262,7 @@ return [
         Controllers\IpdDischargeController::class => 'ipd_patients',
         Controllers\OtCalendarController::class => 'ot_calendar',
         Controllers\NursingChartController::class => 'ipd_nursing',
+        Controllers\Icd10Controller::class => 'icd10',
         Controllers\IpdTimelineController::class => 'ipd_timelines',
         Controllers\IpdPaymentController::class => 'ipd_payments',
         Controllers\IpdBillController::class => 'ipd_bills',
@@ -383,6 +385,8 @@ return [
     //            and for any role that may create, edit or delete in the module.
     // "fixed":   allowed for the route's default roles only; not shown on the Roles screen.
     'methods' => [
+        // Importing replaces titles in bulk: same right as editing the list.
+        Controllers\Icd10Controller::class.'@import' => ['icd10', 'edit'],
         // Post-op notes are written on the operation sheet.
         Controllers\IpdOperationController::class.'@storeFollowup' => ['ipd_operations', 'edit'],
         // Searching is what the desk is for: anyone who can open it can search.

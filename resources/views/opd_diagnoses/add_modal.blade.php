@@ -16,6 +16,7 @@
                         <span class="required"></span>
                         {{ Form::text('report_type', null, ['class' => 'form-control','required','placeholder' => __('messages.ipd_patient_diagnosis.report_type')]) }}
                     </div>
+                    @include('icd10.diagnosis_fields')
                     <div class="form-group col-md-12 mb-5">
                         <div class="form-group">
                             {{ Form::label('report_date', __('messages.ipd_patient_diagnosis.report_date').':',['class' => 'form-label']) }}
