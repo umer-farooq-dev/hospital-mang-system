@@ -787,6 +787,16 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('third-party/claims', [\App\Http\Controllers\ClaimController::class, 'store'])->name('claims.store');
         Route::post('third-party/claims/settings', [\App\Http\Controllers\ClaimController::class, 'updateSettings'])->name('claims.settings');
         Route::get('third-party/claims/{claimInvoice}', [\App\Http\Controllers\ClaimController::class, 'show'])->name('claims.show');
+        Route::get('third-party/doctor-fees', [\App\Http\Controllers\DoctorFeeController::class, 'index'])->name('doctor-fees.index')->middleware('modules');
+        Route::post('third-party/doctor-fees', [\App\Http\Controllers\DoctorFeeController::class, 'store'])->name('doctor-fees.store');
+        Route::get('third-party/doctor-fees/plans', [\App\Http\Controllers\DoctorFeeController::class, 'plans'])->name('doctor-fees.plans');
+        Route::post('third-party/doctor-fees/plans', [\App\Http\Controllers\DoctorFeeController::class, 'updatePlans'])->name('doctor-fees.plans.update');
+        Route::get('third-party/doctor-fees/{doctorStatement}', [\App\Http\Controllers\DoctorFeeController::class, 'show'])->name('doctor-fees.show');
+        Route::get('third-party/doctor-fees/{doctorStatement}/export', [\App\Http\Controllers\DoctorFeeController::class, 'exportStatement'])->name('doctor-fees.export');
+        Route::post('third-party/doctor-fees/{doctorStatement}/recompute', [\App\Http\Controllers\DoctorFeeController::class, 'updateStatement'])->name('doctor-fees.update');
+        Route::post('third-party/doctor-fees/{doctorStatement}/validate', [\App\Http\Controllers\DoctorFeeController::class, 'approveStatement'])->name('doctor-fees.approve');
+        Route::post('third-party/doctor-fees/{doctorStatement}/pay', [\App\Http\Controllers\DoctorFeeController::class, 'storePayment'])->name('doctor-fees.pay');
+        Route::post('third-party/doctor-fees/{doctorStatement}/cancel', [\App\Http\Controllers\DoctorFeeController::class, 'cancel'])->name('doctor-fees.cancel');
         Route::get('third-party/ageing', [\App\Http\Controllers\ClaimSettlementController::class, 'ageing'])->name('claims.ageing');
         Route::post('third-party/ageing', [\App\Http\Controllers\ClaimSettlementController::class, 'updateAgeing'])->name('claims.ageing.update');
         Route::get('third-party/statement', [\App\Http\Controllers\ClaimSettlementController::class, 'statement'])->name('claims.statement');
