@@ -861,6 +861,14 @@
     @endmodule
 @endif
 @if (Auth::user()->hasRole('Admin|Pharmacist') || hasCustomRole())
+    @module('Purchase Orders', $modules)
+        @canroute('purchase-orders.index')
+        <li
+            class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('categories*', 'brands*', 'medicines*', 'medicine-purchase*', 'used-medicine*', 'medicine-bills*', 'stock*', 'stores*', 'suppliers*') ? 'd-none' : '' }}">
+            <a class="nav-link p-0 {{ Request::is('stock-orders*') ? 'active' : '' }}" href="{{ route('purchase-orders.index') }}">{{ __('messages.purchase_order.orders') }}</a>
+        </li>
+        @endcanroute
+    @endmodule
     @module('Suppliers', $modules)
         @canroute('suppliers.index')
         <li

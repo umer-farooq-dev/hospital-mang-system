@@ -21,6 +21,7 @@ class PurchaseMedicine extends Model
             'tenant_id',
             'store_id',
             'supplier_id',
+            'purchase_order_id',
         ];
 
     const PURCHASE_MEDICINE_CASH = 0;
@@ -45,6 +46,11 @@ class PurchaseMedicine extends Model
     public function store(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function purchaseOrder(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(PurchaseOrder::class);
     }
 
     public function supplier(): \Illuminate\Database\Eloquent\Relations\BelongsTo

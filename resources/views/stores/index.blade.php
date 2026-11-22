@@ -102,6 +102,10 @@
                         {{ Form::label('stock_count_prefix', __('messages.stock_count.prefix') . ':', ['class' => 'form-label']) }}
                         {{ Form::text('stock_count_prefix', $settings['stock_count_prefix'] ?? 'SC', ['class' => 'form-control', 'maxlength' => 10, 'required'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
                     </div>
+                    <div class="col-md-3 mb-5">
+                        {{ Form::label('purchase_order_prefix', __('messages.purchase_order.prefix') . ':', ['class' => 'form-label']) }}
+                        {{ Form::text('purchase_order_prefix', $settings['purchase_order_prefix'] ?? 'PO', ['class' => 'form-control', 'maxlength' => 10, 'required'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                    </div>
                     <div class="col-md-6 mb-5">
                         <label class="form-check form-switch"><input type="checkbox" class="form-check-input" name="stock_count_blind" value="1" {{ ($settings['stock_count_blind'] ?? '0') === '1' ? 'checked' : '' }} {{ $canEdit ? '' : 'disabled' }}>
                             <span class="form-check-label">{{ __('messages.stock_count.blind_default') }}</span></label>

@@ -751,6 +751,16 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('medicine-bills/{medicineBill}/dispense', [MedicineBillController::class, 'dispense'])->name('medicine-bills.dispense');
         Route::get('stock', [\App\Http\Controllers\StockController::class, 'index'])->name('stock.index')->middleware('modules');
         Route::get('stock/{medicine}/movements', [\App\Http\Controllers\StockController::class, 'movements'])->name('stock.movements');
+        Route::get('stock-orders', [\App\Http\Controllers\PurchaseOrderController::class, 'index'])->name('purchase-orders.index')->middleware('modules');
+        Route::get('stock-orders/create', [\App\Http\Controllers\PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
+        Route::post('stock-orders', [\App\Http\Controllers\PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
+        Route::get('stock-orders/reorder', [\App\Http\Controllers\PurchaseOrderController::class, 'reorder'])->name('purchase-orders.reorder');
+        Route::get('stock-orders/levels', [\App\Http\Controllers\PurchaseOrderController::class, 'levels'])->name('purchase-orders.levels');
+        Route::post('stock-orders/levels', [\App\Http\Controllers\PurchaseOrderController::class, 'updateLevels'])->name('purchase-orders.levels.update');
+        Route::get('stock-orders/{purchaseOrder}', [\App\Http\Controllers\PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
+        Route::post('stock-orders/{purchaseOrder}/receive', [\App\Http\Controllers\PurchaseOrderController::class, 'storeReceipt'])->name('purchase-orders.receive');
+        Route::post('stock-orders/{purchaseOrder}/close', [\App\Http\Controllers\PurchaseOrderController::class, 'close'])->name('purchase-orders.close');
+        Route::post('stock-orders/{purchaseOrder}/cancel', [\App\Http\Controllers\PurchaseOrderController::class, 'cancel'])->name('purchase-orders.cancel');
         Route::get('stock-counts', [\App\Http\Controllers\StockCountController::class, 'index'])->name('stock-counts.index')->middleware('modules');
         Route::post('stock-counts', [\App\Http\Controllers\StockCountController::class, 'store'])->name('stock-counts.store');
         Route::get('stock-counts/{stockCount}', [\App\Http\Controllers\StockCountController::class, 'show'])->name('stock-counts.show');
