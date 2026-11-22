@@ -25,6 +25,7 @@ listenClick('.editMasterListItemBtn', function (event) {
                 $('#masterListItemId').val(result.data.id);
                 $('#editMasterListItemName').val(result.data.name);
                 $('#editMasterListItemSort').val(result.data.sort_order);
+                $('#editMasterListItemQuantity').val(result.data.quantity === null ? '' : parseFloat(result.data.quantity));
                 $('#editMasterListItemActive').prop('checked', result.data.is_active);
                 $('#edit_master_list_item_modal').modal('show');
                 ajaxCallCompleted();

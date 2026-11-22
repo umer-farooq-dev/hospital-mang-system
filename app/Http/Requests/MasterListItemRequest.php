@@ -31,6 +31,7 @@ class MasterListItemRequest extends FormRequest
                 Rule::unique('master_list_items', 'name')->where('type', $type)->ignore($item?->id),
             ],
             'sort_order' => 'nullable|integer|min:0|max:9999',
+            'quantity' => 'nullable|numeric|min:0|max:1000',
             'is_active' => 'nullable',
         ];
     }

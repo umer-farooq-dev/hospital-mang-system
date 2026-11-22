@@ -15,6 +15,12 @@
                         <span class="required"></span>
                         {{ Form::text('name', null, ['class' => 'form-control', 'required', 'maxlength' => 191, 'placeholder' => __('messages.master_list.name')]) }}
                     </div>
+                    @if (isset(\App\Models\MasterListItem::QUANTITY_TYPES[$type]))
+                        <div class="form-group col-sm-12 mb-5">
+                            {{ Form::label('quantity', __('messages.master_list.quantity.' . \App\Models\MasterListItem::QUANTITY_TYPES[$type]) . ':', ['class' => 'form-label']) }}
+                            {{ Form::number('quantity', null, ['class' => 'form-control', 'min' => 0, 'max' => 1000, 'step' => 'any', 'id' => 'addMasterListItemQuantity']) }}
+                        </div>
+                    @endif
                     <div class="form-group col-sm-6 mb-5">
                         {{ Form::label('sort_order', __('messages.master_list.sort_order').':', ['class' => 'form-label']) }}
                         {{ Form::number('sort_order', 0, ['class' => 'form-control', 'min' => 0, 'max' => 9999]) }}

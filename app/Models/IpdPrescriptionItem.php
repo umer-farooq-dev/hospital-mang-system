@@ -77,4 +77,9 @@ class IpdPrescriptionItem extends Model
     {
         return $this->belongsTo(Medicine::class, 'medicine_id');
     }
+
+    public function ipdPrescription(): BelongsTo
+    {
+        return $this->belongsTo(IpdPrescription::class, 'ipd_prescription_id');
+    }
 }

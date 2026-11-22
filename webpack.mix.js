@@ -747,6 +747,7 @@ mix.js(
         "resources/assets/js/cashier/cashier.js",
         "resources/assets/js/exam_orders/exam_orders.js",
         "resources/assets/js/ot_calendar/ot_calendar.js",
+        "resources/assets/js/ipd_nursing/nursing.js",
         "resources/assets/js/ipd_patients/payer.js",
         "resources/assets/js/opd_patients/visits.js",
         "resources/assets/js/opd_diagnosis/opd_diagnosis.js",
