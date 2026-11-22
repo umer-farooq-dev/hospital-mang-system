@@ -48,7 +48,14 @@ class MasterListItem extends Model
         'preop_check' => ['ipd_operation', 'preop_checks'],
         'discharge_check' => ['ipd_patient_departments', 'discharge_checks'],
         'discharge_outcome' => ['ipd_patient_departments', 'discharge_outcome'],
+        'nursing_shift' => ['nursing_notes', 'shift'],
+        'intake_type' => ['intake_outputs', 'intake_type'],
+        'output_type' => ['intake_outputs', 'output_type'],
+        'mar_status' => ['medication_administrations', 'status'],
     ];
+
+    // Lists whose items carry a number, and what it means (shown on the Master Lists screen).
+    const QUANTITY_TYPES = ['dose_interval' => 'doses_per_day', 'dose_duration' => 'days'];
 
     // Other tables that also store codes of a list.
     const ALSO_USED_IN = [
@@ -64,6 +71,7 @@ class MasterListItem extends Model
         'type',
         'code',
         'name',
+        'quantity',
         'lang_key',
         'sort_order',
         'is_active',
@@ -121,6 +129,14 @@ class MasterListItem extends Model
     public static function filterOptions(string $type): array
     {
         return [0 => __('messages.filter.All')] + self::options($type);
+    }
+
+    /** Number behind an item (doses per day, days...), or null. */
+    public static function quantity(string $type, $code): ?float
+    {
+        $value = self::items($type)->firstWhere('code', (int) $code)?->quantity;
+
+        return $value === null ? null : (float) $value;
     }
 
     /** Label for a stored code, also for items that were deactivated later. */

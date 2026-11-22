@@ -1198,6 +1198,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
         Route::post('settings/reception', [SettingController::class, 'updateReception'])->name('settings.reception.update');
         Route::post('settings/inpatient', [SettingController::class, 'updateInpatient'])->name('settings.inpatient.update');
+        Route::post('settings/vital-types', [SettingController::class, 'updateVitalTypes'])->name('settings.vital-types.update');
         Route::get('modules', [SettingController::class, 'getModule'])->name('module.index');
         Route::post('modules/{module}/active-deactive', [SettingController::class, 'activeDeactiveStatus'])->name('module.activeDeactiveStatus');
         Route::get('queue-theme-configuration', [SettingController::class, 'patientQueueThemeView'])->name('queue-theme-view');
@@ -1424,6 +1425,11 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('ipd-operations/{id}/edit', [IpdOperationController::class, 'edit'])->name('operation.edit');
         Route::post('ipd-operations/{id}', [IpdOperationController::class, 'update'])->name('operation.update');
         Route::get('ipd-operations/{id}/sheet', [IpdOperationController::class, 'show'])->name('operation.sheet');
+        Route::get('ipds/{ipdPatientDepartment}/nursing', [\App\Http\Controllers\NursingChartController::class, 'show'])->name('ipd.nursing.show')->middleware('modules');
+        Route::post('ipds/{ipdPatientDepartment}/nursing/vitals', [\App\Http\Controllers\NursingChartController::class, 'storeVitals'])->name('ipd.nursing.vitals');
+        Route::post('ipds/{ipdPatientDepartment}/nursing/notes', [\App\Http\Controllers\NursingChartController::class, 'storeNote'])->name('ipd.nursing.notes');
+        Route::post('ipds/{ipdPatientDepartment}/nursing/flows', [\App\Http\Controllers\NursingChartController::class, 'storeIntakeOutput'])->name('ipd.nursing.flows');
+        Route::post('medication-administrations/{dose}', [\App\Http\Controllers\NursingChartController::class, 'storeAdministration'])->name('ipd.nursing.dose');
         Route::get('ipd-operations/{id}/print', [IpdOperationController::class, 'print'])->name('operation.print');
         Route::post('ipd-operations/{id}/followups', [IpdOperationController::class, 'storeFollowup'])->name('operation.followups.store');
         Route::get('ot-calendar', [\App\Http\Controllers\OtCalendarController::class, 'index'])->name('ot-calendar.index')->middleware('modules');

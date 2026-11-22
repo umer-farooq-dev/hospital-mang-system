@@ -74,14 +74,44 @@ class SettingController extends AppBaseController
     /** Settings > Inpatient: discharge rules and the discharge summary template. */
     public function updateInpatient(Request $request)
     {
-        $input = $request->validate(['discharge_summary_template' => 'nullable|string|max:20000']);
+        $input = $request->validate([
+            'discharge_summary_template' => 'nullable|string|max:20000',
+            'mar_dose_times' => 'nullable|array',
+            'mar_dose_times.*' => ['nullable', 'string', 'max:100', 'regex:/^\s*([01]\d|2[0-3]):[0-5]\d(\s*,\s*([01]\d|2[0-3]):[0-5]\d)*\s*$/'],
+        ]);
+        $doseTimes = collect($input['mar_dose_times'] ?? [])->map(fn ($t) => preg_replace('/\s+/', '', (string) $t))->filter()->all();
         $values = [
+            'mar_dose_times' => json_encode((object) $doseTimes),
             'discharge_block_unpaid' => $request->boolean('discharge_block_unpaid') ? '1' : '0',
             'discharge_require_checklist' => $request->boolean('discharge_require_checklist') ? '1' : '0',
             'discharge_summary_template' => (string) ($input['discharge_summary_template'] ?? ''),
         ];
         foreach ($values as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        }
+        Flash::success(__('messages.settings').' '.__('messages.common.updated_successfully'));
+
+        return redirect(route('settings.edit', ['section' => 'inpatient']));
+    }
+
+    /** Vital signs measured by nurses: name, unit and normal range; a type in use is deactivated, never deleted. */
+    public function updateVitalTypes(Request $request)
+    {
+        $rules = ['name' => 'required|string|max:100', 'unit' => 'nullable|string|max:30', 'normal_min' => 'nullable|numeric',
+            'normal_max' => 'nullable|numeric', 'sort_order' => 'nullable|integer|min:0|max:9999'];
+        foreach ((array) $request->input('types', []) as $id => $row) {
+            $type = \App\Models\VitalType::findOrFail($id);
+            $data = \Illuminate\Support\Facades\Validator::make($row, $rules)->validate();
+            if ($data['name'] === $type->label) {
+                unset($data['name']);
+            } else {
+                $data['lang_key'] = null;
+            }
+            $type->update($data + ['is_active' => ! empty($row['is_active'])]);
+        }
+        $new = (array) $request->input('new', []);
+        if (! empty($new['name'])) {
+            \App\Models\VitalType::create(\Illuminate\Support\Facades\Validator::make($new, $rules)->validate() + ['is_active' => true]);
         }
         Flash::success(__('messages.settings').' '.__('messages.common.updated_successfully'));
 

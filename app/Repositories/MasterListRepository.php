@@ -32,7 +32,8 @@ class MasterListRepository extends BaseRepository
                 ? $input['sort_order']
                 : (int) MasterListItem::where('type', $input['type'])->max('sort_order') + 1,
             'is_active' => ! empty($input['is_active']),
-        ]);
+        ] + (isset(MasterListItem::QUANTITY_TYPES[$input['type']])
+            ? ['quantity' => ($input['quantity'] ?? '') !== '' ? $input['quantity'] : null] : []));
     }
 
     public function updateItem(MasterListItem $item, array $input): MasterListItem
@@ -42,6 +43,9 @@ class MasterListRepository extends BaseRepository
             'sort_order' => $input['sort_order'] ?? 0,
             'is_active' => ! empty($input['is_active']),
         ];
+        if (isset(MasterListItem::QUANTITY_TYPES[$item->type])) {
+            $data['quantity'] = ($input['quantity'] ?? '') !== '' ? $input['quantity'] : null;
+        }
         // A renamed seeded item shows the new name instead of its original translation.
         if ($input['name'] !== $item->name) {
             $data['lang_key'] = null;

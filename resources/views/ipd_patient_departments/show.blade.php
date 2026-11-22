@@ -18,6 +18,12 @@
                     <a href="{{ route('ipd.patient.edit',['ipdPatientDepartment' => $ipdPatientDepartment->id]) }}"
                     class="btn btn-primary {{getCurrentLoginUserLanguageName() == 'ar' ? 'ms-2' : 'me-2'}}">{{ __('messages.common.edit') }}</a>
                 @endrole
+                @module('Nursing Chart', \App\Models\Module::cacheFor(now()->addDays())->toBase()->get())
+                @canroute('ipd.nursing.show')
+                    <a href="{{ route('ipd.nursing.show', $ipdPatientDepartment->id) }}"
+                       class="btn btn-success {{getCurrentLoginUserLanguageName() == 'ar' ? 'ms-2' : 'me-2'}}"><i class="fas fa-heartbeat me-1"></i>{{ __('messages.nursing.chart') }}</a>
+                @endcanroute
+                @endmodule
                 @canroute('ipd.discharge.show')
                     <a href="{{ route('ipd.discharge.show', $ipdPatientDepartment->id) }}"
                        class="btn btn-info {{getCurrentLoginUserLanguageName() == 'ar' ? 'ms-2' : 'me-2'}}"><i class="fas fa-door-open me-1"></i>{{ __('messages.discharge.discharge') }}</a>
