@@ -100,6 +100,7 @@ class Kernel extends HttpKernel
         'xss' => XSS::class,
         'checkUserStatus' => CheckUserStatus::class,
         'modules' => CheckModule::class,
+        'xlsx' => \App\Http\Middleware\ExportTables::class,
         'setLanguage' => SetLanguage::class,
         '2fa' => \PragmaRX\Google2FALaravel\Middleware::class,
     ];

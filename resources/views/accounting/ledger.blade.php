@@ -6,6 +6,7 @@
     <div class="container-fluid">
         <div class="d-md-flex align-items-center justify-content-between mb-7">
             <h1 class="mb-0">@yield('title')</h1>
+            @include('layouts.export_button')
             <button type="button" class="btn btn-outline-primary d-print-none" onclick="window.print()">{{ __('messages.stock_transfer.print') }}</button>
         </div>
     </div>

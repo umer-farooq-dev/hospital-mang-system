@@ -29,7 +29,7 @@ class JournalEntryController extends AppBaseController
             ->when($request->integer('journal_id'), fn ($q, $id) => $q->where('journal_id', $id))
             ->when(trim((string) $request->input('search')) !== '', fn ($q) => $q->where(fn ($q) => $q->where('number', 'like', '%'.$request->input('search').'%')
                 ->orWhere('reference', 'like', '%'.$request->input('search').'%')->orWhere('label', 'like', '%'.$request->input('search').'%')))
-            ->orderByDesc('entry_date')->orderByDesc('id')->paginate(50)->withQueryString();
+            ->orderByDesc('entry_date')->orderByDesc('id')->paginate(request()->attributes->get('exporting') ? 100000 : 50)->withQueryString();
 
         return view('accounting.entries', ['entries' => $entries, 'journals' => Journal::orderBy('code')->pluck('name', 'id')->all(), 'from' => $from, 'to' => $to]);
     }

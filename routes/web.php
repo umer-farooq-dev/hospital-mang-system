@@ -490,10 +490,10 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
 
     // Receipts log and cash journal: cashiers read them, supervisors correct receipts.
     Route::middleware('access:Admin|Receptionist|Accountant')->group(function () {
-        Route::get('receipts', [ReceiptController::class, 'index'])->name('receipts.index')->middleware('modules');
-        Route::get('cash-journal', [CashJournalController::class, 'index'])->name('cash-journal.index')->middleware('modules');
+        Route::get('receipts', [ReceiptController::class, 'index'])->name('receipts.index')->middleware('xlsx')->middleware('modules');
+        Route::get('cash-journal', [CashJournalController::class, 'index'])->name('cash-journal.index')->middleware('xlsx')->middleware('modules');
         Route::get('cash-journal/print', [CashJournalController::class, 'print'])->name('cash-journal.print');
-        Route::get('patient-flow', [PatientFlowController::class, 'index'])->name('patient-flow.index')->middleware('modules');
+        Route::get('patient-flow', [PatientFlowController::class, 'index'])->name('patient-flow.index')->middleware('xlsx')->middleware('modules');
         Route::get('patient-flow/print', [PatientFlowController::class, 'print'])->name('patient-flow.print');
     });
     Route::middleware('access:Admin|Accountant')->group(function () {
@@ -757,7 +757,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('stock', [\App\Http\Controllers\StockController::class, 'index'])->name('stock.index')->middleware('modules');
         Route::get('stock/{medicine}/movements', [\App\Http\Controllers\StockController::class, 'movements'])->name('stock.movements');
         Route::get('stock/items/{item}/movements', [\App\Http\Controllers\StockController::class, 'itemMovements'])->name('stock.items.movements');
-        Route::get('stock-reports', [\App\Http\Controllers\StockReportController::class, 'index'])->name('stock-reports.index')->middleware('modules');
+        Route::get('stock-reports', [\App\Http\Controllers\StockReportController::class, 'index'])->name('stock-reports.index')->middleware('xlsx')->middleware('modules');
         Route::get('stock-reports/export', [\App\Http\Controllers\StockReportController::class, 'exportReport'])->name('stock-reports.export');
         Route::get('stock-orders', [\App\Http\Controllers\PurchaseOrderController::class, 'index'])->name('purchase-orders.index')->middleware('modules');
         Route::get('stock-orders/create', [\App\Http\Controllers\PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
@@ -785,7 +785,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('stock-transfers/{stockTransfer}/cancel', [\App\Http\Controllers\StockTransferController::class, 'cancel'])->name('stock-transfers.cancel');
     });
     Route::middleware('access:Admin|Accountant')->group(function () {
-        Route::get('accounting/entries', [\App\Http\Controllers\JournalEntryController::class, 'index'])->name('accounting.entries.index')->middleware('modules');
+        Route::get('accounting/entries', [\App\Http\Controllers\JournalEntryController::class, 'index'])->name('accounting.entries.index')->middleware('xlsx')->middleware('modules');
         Route::get('accounting/entries/create', [\App\Http\Controllers\JournalEntryController::class, 'create'])->name('accounting.entries.create');
         Route::post('accounting/entries', [\App\Http\Controllers\JournalEntryController::class, 'store'])->name('accounting.entries.store');
         Route::get('accounting/entries/{journalEntry}', [\App\Http\Controllers\JournalEntryController::class, 'show'])->name('accounting.entries.show');
@@ -797,21 +797,21 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('accounting/accounts', [\App\Http\Controllers\AccountingSetupController::class, 'updateAccounts'])->name('accounting.accounts.update');
         Route::post('accounting/years', [\App\Http\Controllers\AccountingSetupController::class, 'updateYears'])->name('accounting.years.update');
         Route::post('accounting/journals', [\App\Http\Controllers\AccountingSetupController::class, 'updateJournals'])->name('accounting.journals.update');
-        Route::get('accounting/ledger', [\App\Http\Controllers\AccountingReportController::class, 'ledger'])->name('accounting.ledger');
-        Route::get('accounting/profit-loss', [\App\Http\Controllers\AccountingReportController::class, 'profitLoss'])->name('accounting.profit-loss');
-        Route::get('accounting/balance-sheet', [\App\Http\Controllers\AccountingReportController::class, 'balanceSheet'])->name('accounting.balance-sheet');
-        Route::get('accounting/cash-book', [\App\Http\Controllers\AccountingReportController::class, 'cashBook'])->name('accounting.cash-book');
-        Route::get('accounting/turnover', [\App\Http\Controllers\AccountingReportController::class, 'turnover'])->name('accounting.turnover');
+        Route::get('accounting/ledger', [\App\Http\Controllers\AccountingReportController::class, 'ledger'])->name('accounting.ledger')->middleware('xlsx');
+        Route::get('accounting/profit-loss', [\App\Http\Controllers\AccountingReportController::class, 'profitLoss'])->name('accounting.profit-loss')->middleware('xlsx');
+        Route::get('accounting/balance-sheet', [\App\Http\Controllers\AccountingReportController::class, 'balanceSheet'])->name('accounting.balance-sheet')->middleware('xlsx');
+        Route::get('accounting/cash-book', [\App\Http\Controllers\AccountingReportController::class, 'cashBook'])->name('accounting.cash-book')->middleware('xlsx');
+        Route::get('accounting/turnover', [\App\Http\Controllers\AccountingReportController::class, 'turnover'])->name('accounting.turnover')->middleware('xlsx');
         Route::get('accounting/export', [\App\Http\Controllers\AccountingExportController::class, 'index'])->name('accounting.export');
         Route::get('accounting/export/download', [\App\Http\Controllers\AccountingExportController::class, 'exportEntries'])->name('accounting.export.download');
         Route::post('accounting/export/settings', [\App\Http\Controllers\AccountingExportController::class, 'updateSettings'])->name('accounting.export.settings');
-        Route::get('accounting/trial-balance', [\App\Http\Controllers\AccountingReportController::class, 'trialBalance'])->name('accounting.trial-balance');
-        Route::get('third-party/claims', [\App\Http\Controllers\ClaimController::class, 'index'])->name('claims.index')->middleware('modules');
+        Route::get('accounting/trial-balance', [\App\Http\Controllers\AccountingReportController::class, 'trialBalance'])->name('accounting.trial-balance')->middleware('xlsx');
+        Route::get('third-party/claims', [\App\Http\Controllers\ClaimController::class, 'index'])->name('claims.index')->middleware('xlsx')->middleware('modules');
         Route::get('third-party/claims/create', [\App\Http\Controllers\ClaimController::class, 'create'])->name('claims.create');
         Route::post('third-party/claims', [\App\Http\Controllers\ClaimController::class, 'store'])->name('claims.store');
         Route::post('third-party/claims/settings', [\App\Http\Controllers\ClaimController::class, 'updateSettings'])->name('claims.settings');
         Route::get('third-party/claims/{claimInvoice}', [\App\Http\Controllers\ClaimController::class, 'show'])->name('claims.show');
-        Route::get('third-party/doctor-fees', [\App\Http\Controllers\DoctorFeeController::class, 'index'])->name('doctor-fees.index')->middleware('modules');
+        Route::get('third-party/doctor-fees', [\App\Http\Controllers\DoctorFeeController::class, 'index'])->name('doctor-fees.index')->middleware('xlsx')->middleware('modules');
         Route::post('third-party/doctor-fees', [\App\Http\Controllers\DoctorFeeController::class, 'store'])->name('doctor-fees.store');
         Route::get('third-party/doctor-fees/plans', [\App\Http\Controllers\DoctorFeeController::class, 'plans'])->name('doctor-fees.plans');
         Route::post('third-party/doctor-fees/plans', [\App\Http\Controllers\DoctorFeeController::class, 'updatePlans'])->name('doctor-fees.plans.update');
@@ -825,9 +825,9 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('third-party/referrers/export', [\App\Http\Controllers\ReferrerCommissionController::class, 'exportReport'])->name('referrer-commissions.export');
         Route::post('third-party/referrers/rates', [\App\Http\Controllers\ReferrerCommissionController::class, 'updateRates'])->name('referrer-commissions.rates');
         Route::post('third-party/referrers/pay', [\App\Http\Controllers\ReferrerCommissionController::class, 'storePayout'])->name('referrer-commissions.pay');
-        Route::get('third-party/ageing', [\App\Http\Controllers\ClaimSettlementController::class, 'ageing'])->name('claims.ageing');
+        Route::get('third-party/ageing', [\App\Http\Controllers\ClaimSettlementController::class, 'ageing'])->name('claims.ageing')->middleware('xlsx');
         Route::post('third-party/ageing', [\App\Http\Controllers\ClaimSettlementController::class, 'updateAgeing'])->name('claims.ageing.update');
-        Route::get('third-party/statement', [\App\Http\Controllers\ClaimSettlementController::class, 'statement'])->name('claims.statement');
+        Route::get('third-party/statement', [\App\Http\Controllers\ClaimSettlementController::class, 'statement'])->name('claims.statement')->middleware('xlsx');
         Route::post('third-party/claims/{claimInvoice}/settle', [\App\Http\Controllers\ClaimSettlementController::class, 'storeSettlement'])->name('claims.settle');
         Route::post('third-party/claim-lines/{claimLine}/{action}', [\App\Http\Controllers\ClaimSettlementController::class, 'updateLine'])->name('claims.lines.update');
         Route::post('third-party/claims/{claimInvoice}/cancel', [\App\Http\Controllers\ClaimController::class, 'cancel'])->name('claims.cancel');

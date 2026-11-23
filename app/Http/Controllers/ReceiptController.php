@@ -37,7 +37,7 @@ class ReceiptController extends AppBaseController
             ->when(! $number && $request->filled('to'), fn ($q) => $q->whereDate('created_at', '<=', $request->get('to')))
             ->when($request->integer('counter'), fn ($q, $c) => $q->where('cash_counter_id', $c))
             ->when($request->integer('method'), fn ($q, $m) => $q->where('payment_method', $m))
-            ->latest('id')->paginate(self::PER_PAGE)->withQueryString();
+            ->latest('id')->paginate(request()->attributes->get('exporting') ? 100000 : self::PER_PAGE)->withQueryString();
 
         return view('receipts.index', [
             'receipts' => $receipts,

@@ -6,6 +6,7 @@
     <div class="container-fluid">
         <div class="d-md-flex align-items-center justify-content-between mb-7">
             <h1 class="mb-0">@yield('title')</h1>
+            @include('layouts.export_button')
             @canroute('accounting.entries.create')<a href="{{ route('accounting.entries.create') }}" class="btn btn-primary">{{ __('messages.accounting.new_entry') }}</a>@endcanroute
         </div>
     </div>

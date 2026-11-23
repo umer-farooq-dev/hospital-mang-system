@@ -32,7 +32,7 @@ class StockReportController extends AppBaseController
 
         return view('stock_reports.index', $report + [
             'stores' => Store::options(),
-            'shown' => array_slice($report['rows'], 0, self::SCREEN_ROWS),
+            'shown' => $request->attributes->get('exporting') ? $report['rows'] : array_slice($report['rows'], 0, self::SCREEN_ROWS),
         ]);
     }
 
