@@ -49,8 +49,14 @@ function loadOpdPayers () {
         result.data.forEach(function (policy) {
             select.append($('<option>', { value: policy.id, text: policy.label }).attr('data-price-list', policy.price_list_id || ''));
         });
-        select.val(result.data.some((p) => String(p.id) === current) ? current : '').trigger('change.select2');
-        refreshOpdQuote(false);
+        let preferred = result.data.find((p) => p.default);
+        if (result.data.some((p) => String(p.id) === current)) {
+            select.val(current).trigger('change.select2');
+            refreshOpdQuote(false);
+        } else {
+            // Settings > Reception may choose the patient's main policy first; its change brings the price list.
+            select.val(preferred ? String(preferred.id) : '').trigger('change');
+        }
     });
 }
 

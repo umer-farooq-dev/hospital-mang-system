@@ -11,11 +11,45 @@ use Illuminate\Support\Carbon;
 
 /**
  * Splits an amount between the payer and the patient, as on the old receipt:
- * total, reduction (payer discount and department discount, one on top of the other),
- * then the payer's share of the rest within the coverage rule and the policy limits.
+ * total, reduction (payer discount and department discount), then the payer's share
+ * within the coverage rule and the policy limits. The admin sets (cash counters page) whether the
+ * reduction comes before the payer's share or only lowers the patient's part, whether discounts
+ * compound or add up, and the rounding of the patient's share.
  */
 class PriceSplit
 {
+    const ORDERS = ['discount_first', 'payer_first'];
+
+    const COMBINE = ['compound', 'add'];
+
+    const ROUNDING_MODES = ['nearest', 'up', 'down'];
+
+    public static function rules(): array
+    {
+        $v = \App\Models\Setting::whereIn('key', ['split_order', 'split_discount_combine', 'split_rounding', 'split_rounding_mode'])->pluck('value', 'key');
+
+        return [
+            'order' => in_array($v['split_order'] ?? '', self::ORDERS, true) ? $v['split_order'] : 'discount_first',
+            'combine' => in_array($v['split_discount_combine'] ?? '', self::COMBINE, true) ? $v['split_discount_combine'] : 'compound',
+            'step' => max(0, (float) ($v['split_rounding'] ?? 0)),
+            'mode' => in_array($v['split_rounding_mode'] ?? '', self::ROUNDING_MODES, true) ? $v['split_rounding_mode'] : 'nearest',
+        ];
+    }
+
+    public static function roundTo(float $amount, float $step, string $mode): float
+    {
+        if ($step <= 0) {
+            return $amount;
+        }
+        $units = $amount / $step;
+        $units = match ($mode) {
+            'up' => ceil(round($units, 6)),
+            'down' => floor(round($units, 6)),
+            default => round($units),
+        };
+
+        return $units * $step;
+    }
     /**
      * @return array{gross: float, discount_percent: float, discount_amount: float, net: float,
      *               coverage_percent: float, payer_amount: float, patient_amount: float, warnings: string[]}
@@ -29,17 +63,18 @@ class PriceSplit
             $policy = null;
         }
 
-        // Reduction: discounts compound (each applies to what is left), like "réduction sur réduction".
+        $rules = self::rules();
+        // Reduction: compound ("réduction sur réduction", each applies to what is left) or added up.
         $discounts = array_filter([
             $policy?->insurance->discount,
             $departmentId ? DoctorDepartment::whereKey($departmentId)->value('discount_percent') : null,
         ]);
-        $kept = array_reduce($discounts, fn ($left, $d) => $left * (1 - min(100, (float) $d) / 100), 1.0);
-        $discountPercent = round((1 - $kept) * 100, 2);
-        $net = self::money($gross * $kept);
-
-        // ponytail: discounts always apply before the payer's share, as on the old receipt;
-        // make the order a setting if the client's answer (question 5) says otherwise.
+        $kept = $rules['combine'] === 'add'
+            ? max(0, 1 - min(100, array_sum(array_map('floatval', $discounts))) / 100)
+            : array_reduce($discounts, fn ($left, $d) => $left * (1 - min(100, (float) $d) / 100), 1.0);
+        // Discount first (old receipt): the payer's share is taken on the reduced amount.
+        // Payer first: the payer's share is taken on the full amount and the reduction only lowers the patient's part.
+        $base = $rules['order'] === 'payer_first' ? $gross : $gross * $kept;
         $coverage = 0.0;
         $payer = 0.0;
         if ($policy) {
@@ -50,7 +85,7 @@ class PriceSplit
                 $warnings[] = 'approval_needed';
             } else {
                 $coverage = (float) ($rule?->coverage_percent ?? $policy->effective_coverage ?? 0);
-                $payer = $net * $coverage / 100;
+                $payer = $base * $coverage / 100;
                 $caps = array_filter([$rule?->max_amount, $policy->visit_limit, self::annualLeft($policy, $date, $options['ignore_visit_id'] ?? null)],
                     fn ($cap) => $cap !== null);
                 if ($caps && $payer > min($caps)) {
@@ -60,15 +95,23 @@ class PriceSplit
             }
         }
         $payer = self::money($payer);
+        $patient = $rules['order'] === 'payer_first' ? ($gross - $payer) * $kept : $base - $payer;
+        // Rounding applies to what the patient pays; the payer's share takes the difference (never below zero).
+        $rounded = self::money(self::roundTo($patient, $rules['step'], $rules['mode']));
+        if ($payer > 0) {
+            $payer = self::money(max(0, $payer - ($rounded - $patient)));
+        }
+        $patient = $rounded;
+        $net = self::money($payer + $patient);
 
         return [
             'gross' => self::money($gross),
-            'discount_percent' => $discountPercent,
+            'discount_percent' => $gross > 0 ? round(($gross - $net) / $gross * 100, 2) : 0.0,
             'discount_amount' => self::money($gross - $net),
             'net' => $net,
             'coverage_percent' => $coverage,
             'payer_amount' => $payer,
-            'patient_amount' => self::money($net - $payer),
+            'patient_amount' => $patient,
             'warnings' => $warnings,
         ];
     }

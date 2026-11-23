@@ -18,7 +18,8 @@ class CashCounterController extends AppBaseController
 {
     const SETTINGS = ['receipt_start_number', 'receipt_followup_days', 'receipt_paper', 'cash_payment_method', 'receipt_footer_text',
         'followup_mode', 'followup_percent', 'policy_expired_mode', 'cashier_session_required',
-        'session_close_approval', 'cash_difference_allowed', 'void_approval'];
+        'session_close_approval', 'cash_difference_allowed', 'void_approval',
+        'split_order', 'split_discount_combine', 'split_rounding', 'split_rounding_mode'];
 
     const FOLLOWUP_MODES = ['off', 'free', 'percent'];
 
@@ -82,6 +83,10 @@ class CashCounterController extends AppBaseController
                 'session_close_approval' => ['required', Rule::in(\App\Models\CashSession::APPROVAL_MODES)],
                 'cash_difference_allowed' => 'nullable|numeric|min:0',
                 'void_approval' => 'nullable|in:0,1',
+                'split_order' => ['required', Rule::in(\App\Utils\PriceSplit::ORDERS)],
+                'split_discount_combine' => ['required', Rule::in(\App\Utils\PriceSplit::COMBINE)],
+                'split_rounding' => 'nullable|numeric|min:0|max:100000',
+                'split_rounding_mode' => ['required', Rule::in(\App\Utils\PriceSplit::ROUNDING_MODES)],
             ])->validate();
             foreach (self::SETTINGS as $key) {
                 $value = $settings[$key] ?? null;

@@ -53,6 +53,7 @@ class SettingController extends AppBaseController
             'queue_card_count' => 'required|integer|min:0|max:9999',
             'id_scan_document_type' => ['nullable', 'integer', Rule::in(array_keys(\App\Models\MasterListItem::labels('id_document_type')))],
             'id_scan_save_as' => 'nullable|integer|exists:document_types,id',
+            'default_payer' => 'nullable|in:self,policy',
         ]);
 
         $values = [
@@ -65,6 +66,7 @@ class SettingController extends AppBaseController
             'reception_id_scan' => $request->boolean('reception_id_scan') ? '1' : '0',
             'id_scan_document_type' => (string) ($input['id_scan_document_type'] ?? ''),
             'id_scan_save_as' => (string) ($input['id_scan_save_as'] ?? ''),
+            'default_payer' => $input['default_payer'] ?? 'self',
         ];
         foreach ($values as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);

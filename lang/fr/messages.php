@@ -2674,6 +2674,8 @@ return [
     ],
 
     'reception' => [
+        'default_payer' => 'Payeur proposé en premier (consultations, examens, admissions)',
+        'default_payers' => ['self' => 'Paiement direct', 'policy' => 'Le contrat principal valide du patient'],
         'id_scan' => "Lecteur de carte (carte d'identité)",
         'id_scan_hint' => "Un bouton sur la fiche patient lit avec la webcam les trois lignes du bas, au dos de la carte d'identité, et remplit nom, prénoms, sexe, date de naissance et numéro de pièce. Nécessite la webcam.",
         'id_scan_document_type' => 'Type de pièce indiqué par le lecteur',
@@ -2867,6 +2869,15 @@ return [
         ],
     ],
     'split' => [
+        'rules' => 'Partage assureur / patient',
+        'order' => 'Réduction',
+        'orders' => ['discount_first' => 'Avant la part du payeur (ancien reçu)', 'payer_first' => 'Seulement sur la part patient'],
+        'combine' => 'Plusieurs réductions',
+        'combines' => ['compound' => "L'une sur l'autre", 'add' => 'Additionnées'],
+        'rounding' => 'Arrondir la part patient à (0 = pas d’arrondi)',
+        'rounding_mode' => 'Arrondi',
+        'rounding_modes' => ['nearest' => 'Au plus proche', 'up' => 'Au-dessus', 'down' => 'En dessous'],
+        'rules_hint' => "Exemple : 10 000, réduction payeur 10 %, assureur 80 %. Avant : l'assureur paie 80 % de 9 000 = 7 200, le patient 1 800. Seulement sur la part patient : l'assureur paie 8 000, le patient 2 000 - 10 % = 1 800. L'arrondi reporte la différence sur la part du payeur.",
         'payer' => 'Payeur',
         'price_list' => 'Grille tarifaire',
         'voucher_number' => 'N° de bon',

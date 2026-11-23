@@ -6,6 +6,7 @@
         ? \App\Models\PatientInsurance::with('insurance')->where('patient_id', $admissionPatient)->get()
             ->filter(fn ($p) => $p->isValidOn() || $p->id === ($admission->patient_insurance_id ?? null))
         : collect();
+    $chosenPolicy = $admission ? $admission->patient_insurance_id : \App\Models\PatientInsurance::defaultFor($admissionPolicies)?->id;
 @endphp
 <div class="col-md-4">
     <div class="mb-5">
@@ -13,7 +14,7 @@
         <select name="patient_insurance_id" id="ipdPolicyId" class="form-select" data-control="select2" data-url="{{ route('opd.payer.options') }}">
             <option value="">{{ __('messages.patient_insurance.self_pay') }}</option>
             @foreach ($admissionPolicies as $policy)
-                <option value="{{ $policy->id }}" data-price-list="{{ $policy->insurance->price_list_id }}" {{ (int) ($admission->patient_insurance_id ?? 0) === $policy->id ? 'selected' : '' }}>{{ $policy->option_label }}</option>
+                <option value="{{ $policy->id }}" data-price-list="{{ $policy->insurance->price_list_id }}" {{ (int) $chosenPolicy === $policy->id ? 'selected' : '' }}>{{ $policy->option_label }}</option>
             @endforeach
         </select>
     </div>

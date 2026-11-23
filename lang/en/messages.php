@@ -2683,6 +2683,8 @@ return [
     ],
 
     'reception' => [
+        'default_payer' => 'Payer chosen first on visits, exams and admissions',
+        'default_payers' => ['self' => 'Self-pay', 'policy' => "The patient's main valid policy"],
         'id_scan' => 'Card reader (ID card)',
         'id_scan_hint' => 'A button on the patient form reads the three lines at the bottom of the back of the ID card with the webcam and fills name, first names, sex, birth date and ID number. Needs the webcam.',
         'id_scan_document_type' => 'ID document type set by the reader',
@@ -2876,6 +2878,15 @@ return [
         ],
     ],
     'split' => [
+        'rules' => 'Insurance split',
+        'order' => 'Reduction',
+        'orders' => ['discount_first' => 'Before the payer share (old receipt)', 'payer_first' => 'Only on the patient part'],
+        'combine' => 'Several discounts',
+        'combines' => ['compound' => 'One on top of the other', 'add' => 'Added up'],
+        'rounding' => 'Round the patient share to (0 = no rounding)',
+        'rounding_mode' => 'Rounding',
+        'rounding_modes' => ['nearest' => 'Nearest', 'up' => 'Up', 'down' => 'Down'],
+        'rules_hint' => 'Example: 10 000, payer discount 10%, insurer 80%. Before: the insurer pays 80% of 9 000 = 7 200, the patient 1 800. Only on the patient part: the insurer pays 8 000, the patient 2 000 - 10% = 1 800. Rounding moves the difference to the payer share.',
         'payer' => 'Payer',
         'price_list' => 'Price list',
         'voucher_number' => 'Voucher no.',
