@@ -250,6 +250,7 @@ return [
 
     //common keys
     'common' => [
+        'export_excel' => 'Excel',
         'field_required' => 'Champ requis.',
         'change' => 'Changement',
         'change_profile' => 'Changer l\'image',

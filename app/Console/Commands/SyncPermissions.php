@@ -41,6 +41,10 @@ class SyncPermissions extends Command
 
             $name = $module.'.'.$action;
             $defaults[$name] = array_unique(array_merge($defaults[$name] ?? [], $roles));
+            // A report screen with the Excel export (xlsx middleware) also has the module's export permission.
+            if (in_array('xlsx', $route->middleware(), true)) {
+                $defaults[$module.'.export'] = array_unique(array_merge($defaults[$module.'.export'] ?? [], $roles));
+            }
         }
 
         // Only permissions that do not exist yet get their defaults: the admin's later

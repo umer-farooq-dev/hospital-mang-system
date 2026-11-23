@@ -26,7 +26,7 @@ class DoctorFeeController extends AppBaseController
         $status = in_array($request->input('status'), DoctorStatement::STATUSES, true) ? $request->input('status') : null;
         $statements = DoctorStatement::with('doctor.doctorUser')
             ->when($request->integer('doctor_id'), fn ($q, $id) => $q->where('doctor_id', $id))
-            ->when($status, fn ($q) => $q->where('status', $status))->orderByDesc('id')->paginate(30)->withQueryString();
+            ->when($status, fn ($q) => $q->where('status', $status))->orderByDesc('id')->paginate(request()->attributes->get('exporting') ? 100000 : 30)->withQueryString();
 
         return view('doctor_fees.index', ['statements' => $statements, 'doctors' => $this->doctors(), 'status' => $status]);
     }

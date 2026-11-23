@@ -6,6 +6,7 @@
     <div class="container-fluid">
         <div class="d-md-flex align-items-center justify-content-between mb-7">
             <h1 class="mb-0">@yield('title')</h1>
+            @include('layouts.export_button')
             @canroute('stock-reports.export')
                 <a href="{{ route('stock-reports.export', request()->query() + ['report' => $report]) }}" class="btn btn-outline-primary">{{ __('messages.stock_report.export') }}</a>
             @endcanroute

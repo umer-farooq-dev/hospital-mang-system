@@ -20,7 +20,7 @@ class ClaimController extends AppBaseController
         $invoices = ClaimInvoice::with('insurance', 'lines')
             ->when($request->integer('insurance_id'), fn ($q, $id) => $q->where('insurance_id', $id))
             ->when($status, fn ($q) => $q->where('status', $status))
-            ->orderByDesc('id')->paginate(30)->withQueryString();
+            ->orderByDesc('id')->paginate(request()->attributes->get('exporting') ? 100000 : 30)->withQueryString();
 
         return view('claims.index', [
             'invoices' => $invoices, 'insurances' => $insurances, 'status' => $status,
