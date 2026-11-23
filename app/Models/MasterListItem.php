@@ -112,6 +112,24 @@ class MasterListItem extends Model
         return $this->name;
     }
 
+    /** Lower-case label in every installed language (and the stored name) => code, for file imports. */
+    public static function codesByLabel(string $type): array
+    {
+        $locales = array_diff(array_map('basename', glob(lang_path('*'), GLOB_ONLYDIR) ?: []), ['vendor']);
+        $codes = [];
+        foreach (self::where('type', $type)->get() as $item) {
+            $names = [$item->name];
+            foreach ($item->lang_key ? $locales : [] as $locale) {
+                $names[] = __($item->lang_key, [], $locale);
+            }
+            foreach ($names as $name) {
+                $codes[mb_strtolower(trim((string) $name))] ??= $item->code;
+            }
+        }
+
+        return $codes;
+    }
+
     private static function items(string $type)
     {
         return self::$loaded[$type] ??= self::where('type', $type)->orderBy('sort_order')->orderBy('code')->get();

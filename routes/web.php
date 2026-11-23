@@ -1773,6 +1773,13 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('audit-logs/{auditLog}', [AuditLogController::class, 'show'])
             ->name('audit-logs.show');
 
+        // Go-live data import
+        Route::get('data-import', [\App\Http\Controllers\DataImportController::class, 'index'])->name('data-import.index');
+        Route::post('data-import/preview', [\App\Http\Controllers\DataImportController::class, 'storePreview'])->name('data-import.preview');
+        Route::post('data-import', [\App\Http\Controllers\DataImportController::class, 'store'])->name('data-import.store');
+        Route::get('data-import/template/{kind}', [\App\Http\Controllers\DataImportController::class, 'template'])->name('data-import.template');
+        Route::get('data-import/{run}/errors', [\App\Http\Controllers\DataImportController::class, 'exportErrors'])->name('data-import.errors');
+
         // Roles and Permissions
         Route::get('roles', [RoleController::class, 'index'])
             ->name('roles.index')
