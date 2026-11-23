@@ -24,7 +24,7 @@ class DataImportController extends AppBaseController
 
         return view('data_import.index', [
             'kind' => $kind,
-            'fields' => array_keys(DataImport::COLUMNS[$kind]),
+            'fields' => DataImport::fields($kind),
             'required' => DataImport::REQUIRED[$kind],
             'stores' => Store::where('is_active', true)->orderBy('sort_order')->orderBy('name')->pluck('name', 'id')->all(),
             'journals' => Journal::where('is_active', true)->orderBy('code')->get()->mapWithKeys(fn ($j) => [$j->code => $j->code.' '.$j->name])->all(),
@@ -67,7 +67,7 @@ class DataImportController extends AppBaseController
         $run = DataImportRun::create(['kind' => $pending['kind'], 'file_name' => mb_substr($pending['name'], 0, 255), 'user_id' => auth()->id(), 'options' => $pending['options']]);
         $run = (new DataImport($pending['kind'], $pending['options']))->run(self::rows($pending['path'], $pending['name']), $run);
         $this->forgetFile();
-        $message = __('messages.data_import.done', ['created' => $run->created, 'existing' => $run->existing, 'failed' => $run->failed]);
+        $message = __('messages.data_import.done', ['created' => $run->created, 'updated' => $run->updated, 'existing' => $run->existing, 'failed' => $run->failed]);
         $run->failed ? Flash::warning($message) : Flash::success($message);
 
         return redirect()->route('data-import.index', ['kind' => $run->kind]);
@@ -82,6 +82,30 @@ class DataImportController extends AppBaseController
 
         return response("\xEF\xBB\xBF".$line."\r\n", 200, ['Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="'.$kind.'.csv"']);
+    }
+
+    /** Every template in one ZIP, with a guide (order of the files, accepted values), in the current language. */
+    public function templatePack()
+    {
+        $zipPath = tempnam(sys_get_temp_dir(), 'tpl');
+        $zip = new \ZipArchive();
+        $zip->open($zipPath, \ZipArchive::OVERWRITE);
+        $separator = app()->getLocale() === 'en' ? ',' : ';';
+        $guide = [__('messages.data_import.pack_intro'), ''];
+        foreach (DataImport::KINDS as $i => $kind) {
+            $name = sprintf('%02d_%s.csv', $i + 1, $kind);
+            $zip->addFromString($name, "\xEF\xBB\xBF".implode($separator, array_map(fn ($t) => '"'.str_replace('"', '""', $t).'"', DataImport::template($kind)))."\r\n");
+            $required = array_map(fn ($f) => DataImport::label($f), DataImport::REQUIRED[$kind]);
+            $guide[] = $name.' - '.__('messages.data_import.kinds.'.$kind);
+            $guide[] = '  '.__('messages.data_import.hints.'.$kind);
+            $guide[] = '  '.__('messages.data_import.required').' '.implode(', ', $required);
+            $guide[] = '';
+        }
+        $guide[] = __('messages.data_import.pack_values');
+        $zip->addFromString(__('messages.data_import.pack_guide').'.txt', "\xEF\xBB\xBF".implode("\r\n", $guide)."\r\n");
+        $zip->close();
+
+        return response()->download($zipPath, 'templates.zip')->deleteFileAfterSend();
     }
 
     /** The lines that failed, to fix them in the file and import it again. */

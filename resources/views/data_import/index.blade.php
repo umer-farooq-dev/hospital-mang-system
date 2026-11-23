@@ -24,9 +24,10 @@
                 <div class="form-text mb-3">{{ __('messages.data_import.hint') }}</div>
                 <div class="mb-5">
                     @foreach ($fields as $field)
-                        <span class="badge {{ in_array($field, $required) ? 'bg-primary' : 'bg-light text-dark' }} me-1 mb-1">{{ __('messages.data_import.fields.' . $field) }}</span>
+                        <span class="badge {{ in_array($field, $required) ? 'bg-primary' : 'bg-light text-dark' }} me-1 mb-1">{{ \App\Utils\DataImport::label($field) }}</span>
                     @endforeach
                     <a href="{{ route('data-import.template', $kind) }}" class="ms-3">{{ __('messages.data_import.template') }}</a>
+                    <a href="{{ route('data-import.templates') }}" class="ms-3">{{ __('messages.data_import.template_pack') }}</a>
                 </div>
                 {{ Form::open(['route' => 'data-import.preview', 'method' => 'post', 'files' => true, 'class' => 'row g-3 align-items-end']) }}
                 {{ Form::hidden('kind', $kind) }}
@@ -67,17 +68,17 @@
                     <div class="d-md-flex justify-content-between align-items-center mb-4">
                         <div>
                             <b>{{ $pending['name'] }}</b> ·
-                            {{ __('messages.data_import.counts', ['total' => $preview['total'], 'create' => $preview['create'], 'exists' => $preview['exists'], 'failed' => $preview['failed']]) }}
+                            {{ __('messages.data_import.counts', ['total' => $preview['total'], 'create' => $preview['create'], 'update' => $preview['update'], 'exists' => $preview['exists'], 'failed' => $preview['failed']]) }}
                             @if ($kind === 'opening_balances')
-                                · {{ __('messages.accounting.debit') }} {{ number_format($preview['debit'], 2) }} / {{ __('messages.accounting.credit') }} {{ number_format($preview['credit'], 2) }}
+                                · {{ __('messages.accounting.debit') }} {{ formatAmount($preview['debit']) }} / {{ __('messages.accounting.credit') }} {{ formatAmount($preview['credit']) }}
                             @endif
                             @if ($kind === 'opening_stock')
-                                · {{ __('messages.data_import.stock_value', ['value' => number_format($preview['value'], 2)]) }}
+                                · {{ __('messages.data_import.stock_value', ['value' => formatAmount($preview['value'])]) }}
                             @endif
                         </div>
-                        @if ($preview['create'] > 0)
+                        @if ($preview['create'] + $preview['update'] > 0)
                             {{ Form::open(['route' => 'data-import.store', 'method' => 'post', 'class' => 'mt-3 mt-md-0']) }}
-                            <button type="submit" class="btn btn-primary">{{ __('messages.data_import.import', ['count' => $preview['create']]) }}</button>
+                            <button type="submit" class="btn btn-primary">{{ __('messages.data_import.import', ['count' => $preview['create'] + $preview['update']]) }}</button>
                             {{ Form::close() }}
                         @endif
                     </div>
@@ -94,7 +95,7 @@
                         <table class="table table-sm table-row-dashed align-middle">
                             <thead><tr class="fw-bold text-muted">
                                 <th>{{ __('messages.data_import.line') }}</th>
-                                @foreach ($fields as $field)<th>{{ __('messages.data_import.fields.' . $field) }}</th>@endforeach
+                                @foreach ($fields as $field)<th>{{ \App\Utils\DataImport::label($field) }}</th>@endforeach
                                 <th>{{ __('messages.data_import.result') }}</th>
                             </tr></thead>
                             <tbody>
@@ -103,7 +104,7 @@
                                     <td>{{ $row['line'] }}</td>
                                     @foreach ($fields as $field)<td>{{ $row['data'][$field] ?? '' }}</td>@endforeach
                                     <td>
-                                        <span class="badge {{ ['create' => 'bg-success', 'exists' => 'bg-secondary text-dark', 'failed' => 'bg-danger'][$row['action']] }}">{{ __('messages.data_import.actions.' . $row['action']) }}</span>
+                                        <span class="badge {{ ['create' => 'bg-success', 'update' => 'bg-info', 'exists' => 'bg-secondary text-dark', 'failed' => 'bg-danger'][$row['action']] }}">{{ __('messages.data_import.actions.' . $row['action']) }}</span>
                                         @if ($row['error'])<div class="text-danger small">{{ $row['error'] }}</div>@endif
                                     </td>
                                 </tr>
@@ -126,7 +127,7 @@
                     <table class="table table-sm table-row-dashed align-middle">
                         <thead><tr class="fw-bold text-muted">
                             <th>{{ __('messages.common.created_on') }}</th><th>{{ __('messages.data_import.kind') }}</th><th>{{ __('messages.data_import.file') }}</th>
-                            <th class="text-end">{{ __('messages.data_import.actions.create') }}</th><th class="text-end">{{ __('messages.data_import.actions.exists') }}</th>
+                            <th class="text-end">{{ __('messages.data_import.actions.create') }}</th><th class="text-end">{{ __('messages.data_import.actions.update') }}</th><th class="text-end">{{ __('messages.data_import.actions.exists') }}</th>
                             <th class="text-end">{{ __('messages.data_import.actions.failed') }}</th><th></th><th></th>
                         </tr></thead>
                         <tbody>
@@ -135,12 +136,12 @@
                                 <td>{{ $run->created_at->format('d/m/Y H:i') }}<div class="text-muted small">{{ $run->user->full_name ?? '' }}</div></td>
                                 <td>{{ __('messages.data_import.kinds.' . $run->kind) }}</td>
                                 <td>{{ $run->file_name }}</td>
-                                <td class="text-end">{{ $run->created }}</td><td class="text-end">{{ $run->existing }}</td><td class="text-end">{{ $run->failed }}</td>
+                                <td class="text-end">{{ $run->created }}</td><td class="text-end">{{ $run->updated }}</td><td class="text-end">{{ $run->existing }}</td><td class="text-end">{{ $run->failed }}</td>
                                 <td>{{ $run->note }}</td>
                                 <td>@if ($run->errors)<a href="{{ route('data-import.errors', $run) }}">{{ __('messages.data_import.error_file') }}</a>@endif</td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="text-muted">{{ __('messages.common.no_data_available') }}</td></tr>
+                            <tr><td colspan="9" class="text-muted">{{ __('messages.common.no_data_available') }}</td></tr>
                         @endforelse
                         </tbody>
                     </table>

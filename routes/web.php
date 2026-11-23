@@ -1777,6 +1777,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('data-import', [\App\Http\Controllers\DataImportController::class, 'index'])->name('data-import.index');
         Route::post('data-import/preview', [\App\Http\Controllers\DataImportController::class, 'storePreview'])->name('data-import.preview');
         Route::post('data-import', [\App\Http\Controllers\DataImportController::class, 'store'])->name('data-import.store');
+        Route::get('data-import/templates', [\App\Http\Controllers\DataImportController::class, 'templatePack'])->name('data-import.templates');
         Route::get('data-import/template/{kind}', [\App\Http\Controllers\DataImportController::class, 'template'])->name('data-import.template');
         Route::get('go-live', [\App\Http\Controllers\GoLiveController::class, 'index'])->name('go-live.index');
         Route::post('go-live/settings', [\App\Http\Controllers\GoLiveController::class, 'updateSettings'])->name('go-live.settings');
