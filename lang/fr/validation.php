@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'multiple_of' => 'Le champ :attribute doit être un multiple de :value.',
+    'prohibited' => 'Le champ :attribute est interdit.',
+    'prohibited_if' => 'Le champ :attribute est interdit quand :other vaut :value.',
+    'prohibited_unless' => 'Le champ :attribute est interdit sauf si :other est dans :values.',
 
     /*
     |--------------------------------------------------------------------------

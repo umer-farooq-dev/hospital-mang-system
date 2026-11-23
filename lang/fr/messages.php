@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'available_slots' => 'Créneaux disponibles',
+    'post' => 'Publier',
 
     /*
     |--------------------------------------------------------------------------
@@ -250,6 +252,9 @@ return [
 
     //common keys
     'common' => [
+        'filter' => 'Filtrer',
+        'user_details' => 'Utilisateur',
+        'no_data_available' => 'Aucune donnée disponible',
         'export_excel' => 'Excel',
         'field_required' => 'Champ requis.',
         'change' => 'Changement',
@@ -553,6 +558,7 @@ return [
 
     // accountant keys
     'accountant' => [
+        'accountant' => 'Comptable',
         'new_accountant' => 'Nouveau comptable',
         'edit_accountant' => 'Modifier le comptable',
         'accountants' => 'Comptables',
@@ -740,6 +746,8 @@ return [
     ],
 
     'doctor' => [
+        'name' => 'Nom',
+        'no_doctor_available' => 'Aucun médecin disponible pour le moment',
         'new_doctor' => 'Nouveau docteur',
         'edit_doctor' => 'Modifier le docteur',
         'doctor_details' => 'Détails du médecin',
@@ -965,6 +973,8 @@ return [
     ],
 
     'document' => [
+        'documents' => 'Documents',
+        'view' => 'Voir',
         'document' => 'Document',
         'new_document' => 'Nouveau document',
         'edit_document' => 'Modifier le document',
@@ -1227,6 +1237,9 @@ return [
 
     // prescription keys
     'prescription' => [
+        'physical_information_name' => 'Nom de l\'information physique',
+        'physical_information_value' => 'Valeur de l\'information physique',
+        'rx' => 'Rx',
         'reference_id' => 'Pièce d\'identité',
         'prescription' => 'Prescription',
         'prescriptions' => 'Prescriptions',
@@ -1639,6 +1652,7 @@ return [
     ],
 
     'ipd_patient_consultant_register' => [
+        'consultant_instruction' => 'Instruction du consultant',
         'consultant_doctor' => 'Médecin consultant',
         'new_consultant_register' => 'Ajouter une instruction de consultant',
         'edit_consultant_register' => 'Modifier les instructions du consultant',
@@ -1842,6 +1856,7 @@ return [
     ],
 
     'live_consultation' => [
+        'invalid_access_token' => 'Jeton d\'accès invalide.',
         'live_consultation' => 'Consultation en direct',
         'new_live_consultation' => 'Nouvelle consultation en direct',
         'consultation_title' => 'Titre de la consultation',
@@ -1891,6 +1906,7 @@ return [
     ],
 
     'vaccinated_patient' => [
+        'vaccination_name' => 'Nom de la vaccination',
         'vaccinated_patient' => 'Patient vacciné',
         'patient' => 'Patient',
         'vaccination' => 'Vaccination',
@@ -2147,6 +2163,8 @@ return [
     ],
 
     'lunch_break' => [
+        'every_day' => 'Chaque jour',
+        'single_day' => 'Un seul jour',
         'lunch_breaks' => 'Pause déjeuner',
         'lunch_break' => 'Pause déjeuner',
         'break_create' => 'Pause déjeuner enregistrée avec succès.',
@@ -2220,6 +2238,7 @@ return [
     ],
 
     'custom_field' => [
+        'toggle' => 'Interrupteur',
         'custom_field' => 'Campo Personalizado',
         'add_custom_field' => 'Agregar Campo Personalizado',
         'edit_custom_field' => 'Editar Campo Personalizado',

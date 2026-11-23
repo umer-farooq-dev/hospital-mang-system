@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'expiry_date_required' => 'La date de péremption est obligatoire',
     'validate_image_type' => 'L\'image doit être un fichier de type : jpg, jpeg, png.',
     'n/a' => 'N/A',
     'please_select_appointment_time_slot' => 'Veuillez sélectionner le créneau horaire du rendez-vous',

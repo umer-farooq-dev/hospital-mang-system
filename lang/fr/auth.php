@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'password' => 'Mot de passe',
 
     /*
     |--------------------------------------------------------------------------
@@ -24,10 +25,15 @@ return [
     'sign_out' => 'Déconnexion',
     'register' => "S'inscrire",
     'login' => [
+        'title' => 'Connectez-vous pour ouvrir votre session',
+        'register_membership' => 'Créer un nouveau compte',
         'login' => 'Connexion',
         'forgot_password' => 'Mot de passe oublié',
     ],
     'registration' => [
+        'i_agree' => "J'accepte",
+        'terms' => 'les conditions',
+        'have_membership' => "J'ai déjà un compte",
         'patient_registration' => 'Inscription des patients',
         'already_user' => 'Vous avez déjà un compte',
     ],
