@@ -619,6 +619,16 @@
             @endcanroute
         @endmodule
 
+        {{-- Go-live data import --}}
+        @canroute('data-import.index')
+        <li class="nav-item  {{ Request::is('data-import*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('data-import.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-file-import"></i></span>
+                <span class="aside-menu-title">{{ __('messages.data_import.title') }}</span>
+            </a>
+        </li>
+        @endcanroute
+
         {{-- Roles and Permissions --}}
         @module('Roles', $modules)
             @canroute('roles.index')

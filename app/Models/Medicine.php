@@ -150,21 +150,8 @@ class Medicine extends Model
     {
         $summary = ['created' => 0, 'updated' => 0, 'skipped' => 0, 'unknown' => [], 'errors' => []];
         $key = fn ($text) => mb_strtolower(trim((string) $text));
-        $lists = [];
-        foreach (self::IMPORT_LISTS as $field => $type) {
-            // A file may be in any installed language: match the stored name and every translation of the item.
-            $locales = array_diff(array_map('basename', glob(lang_path('*'), GLOB_ONLYDIR) ?: []), ['vendor']);
-            $lists[$field] = [];
-            foreach (MasterListItem::where('type', $type)->get() as $item) {
-                $names = [$item->name];
-                foreach ($item->lang_key ? $locales : [] as $locale) {
-                    $names[] = __($item->lang_key, [], $locale);
-                }
-                foreach ($names as $name) {
-                    $lists[$field][$key($name)] ??= $item->code;
-                }
-            }
-        }
+        // A file may be in any installed language: match the stored name and every translation of the item.
+        $lists = array_map(fn ($type) => MasterListItem::codesByLabel($type), self::IMPORT_LISTS);
         $categories = Category::pluck('id', 'name')->mapWithKeys(fn ($id, $name) => [$key($name) => $id])->all();
         $brands = Brand::pluck('id', 'name')->mapWithKeys(fn ($id, $name) => [$key($name) => $id])->all();
 
