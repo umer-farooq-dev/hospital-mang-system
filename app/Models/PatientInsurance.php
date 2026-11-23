@@ -148,4 +148,14 @@ class PatientInsurance extends Model
         return trim($this->insurance->name.($number ? ' · '.$number : '')
             .($this->effective_coverage !== null ? ' · '.formatPercent($this->effective_coverage) : ''));
     }
+
+    /** The policy chosen first on a new visit, exam or admission: the valid one with the best priority, when Settings > Reception says so. */
+    public static function defaultFor($policies): ?self
+    {
+        if (Patient::registrationSettings()['default_payer'] !== 'policy') {
+            return null;
+        }
+
+        return collect($policies)->filter(fn ($p) => $p->is_active && $p->isValidOn())->sortBy('priority')->first();
+    }
 }

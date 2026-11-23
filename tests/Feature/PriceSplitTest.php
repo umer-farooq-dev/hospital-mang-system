@@ -151,4 +151,31 @@ class PriceSplitTest extends TestCase
 
         $this->assertSame([0.0, 0.0, 6000.0, ['policy_not_valid']], [$split['discount_amount'], $split['payer_amount'], $split['patient_amount'], $split['warnings']]);
     }
+
+    private function rule(string $key, string $value): void
+    {
+        \App\Models\Setting::create(['key' => $key, 'value' => $value]);
+    }
+
+    public function test_the_admin_sets_the_discount_order_how_discounts_combine_and_the_rounding(): void
+    {
+        $this->insurer->update(['discount' => 10]);
+        $this->rule('split_discount_combine', 'add');
+        $this->assertSame(20.0, PriceSplit::compute(10000, $this->policy(), 1)['discount_percent'], '10 + 10');
+
+        $this->rule('split_order', 'payer_first');
+        $split = PriceSplit::compute(10000, $this->policy(), 2); // insurer discount 10% only
+        $this->assertSame([8000.0, 1800.0, 9800.0, 200.0], [$split['payer_amount'], $split['patient_amount'], $split['net'], $split['discount_amount']],
+            'the insurer pays 80% of the full price, the reduction lowers the patient part');
+
+        $this->rule('split_rounding', '25');
+        $this->rule('split_rounding_mode', 'up');
+        $odd = PriceSplit::compute(6130, null, 2);
+        $this->assertSame([6150.0, 0.0], [$odd['patient_amount'], $odd['payer_amount']]);
+        $insured = PriceSplit::compute(6130, $this->policy(), 2);
+        $this->assertSame(0.0, fmod($insured['patient_amount'], 25), 'patient share rounded');
+        $this->assertEqualsWithDelta($insured['net'], $insured['payer_amount'] + $insured['patient_amount'], 0.001);
+        $this->assertSame(1125.0, PriceSplit::roundTo(1115, 25, 'nearest'));
+        $this->assertSame(1100.0, PriceSplit::roundTo(1110, 25, 'down'));
+    }
 }

@@ -12,7 +12,8 @@ listenChange('#ipdPatientId, #editIpdPatientId', function () {
         result.data.forEach(function (policy) {
             select.append($('<option>', { value: policy.id, text: policy.label }).attr('data-price-list', policy.price_list_id || ''));
         });
-        select.trigger('change.select2');
+        let preferred = result.data.find((p) => p.default);
+        select.val(preferred ? String(preferred.id) : '').trigger('change');
     });
 });
 

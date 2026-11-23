@@ -6,6 +6,7 @@
         ? \App\Models\PatientInsurance::with('insurance')->where('patient_id', $visitPatientId)->get()
             ->filter(fn ($policy) => $policy->isValidOn() || $policy->id === ($visit->patient_insurance_id ?? null))
         : collect();
+    $chosenPolicy = old('patient_insurance_id', $visit ? $visit->patient_insurance_id : \App\Models\PatientInsurance::defaultFor($policies)?->id);
 @endphp
 <div class="col-md-4">
     <div class="mb-5">
@@ -15,7 +16,7 @@
             <option value="">{{ __('messages.patient_insurance.self_pay') }}</option>
             @foreach ($policies as $policy)
                 <option value="{{ $policy->id }}" data-price-list="{{ $policy->insurance->price_list_id }}"
-                    {{ (int) old('patient_insurance_id', $visit->patient_insurance_id ?? null) === $policy->id ? 'selected' : '' }}>{{ $policy->option_label }}</option>
+                    {{ (int) $chosenPolicy === $policy->id ? 'selected' : '' }}>{{ $policy->option_label }}</option>
             @endforeach
         </select>
     </div>

@@ -134,6 +134,26 @@
                                 </label>
                                 <div class="form-text">{{ __('messages.cashier.session_required_hint') }}</div>
                             </div>
+                            <h4 class="mt-2 mb-4">{{ __('messages.split.rules') }}</h4>
+                            <div class="row g-3 mb-5">
+                                <div class="col-md-6">
+                                    {{ Form::label('split_order', __('messages.split.order') . ':', ['class' => 'form-label']) }}
+                                    {{ Form::select('split_order', collect(\App\Utils\PriceSplit::ORDERS)->mapWithKeys(fn ($o) => [$o => __('messages.split.orders.' . $o)]), $settings['split_order'] ?? 'discount_first', ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ Form::label('split_discount_combine', __('messages.split.combine') . ':', ['class' => 'form-label']) }}
+                                    {{ Form::select('split_discount_combine', collect(\App\Utils\PriceSplit::COMBINE)->mapWithKeys(fn ($o) => [$o => __('messages.split.combines.' . $o)]), $settings['split_discount_combine'] ?? 'compound', ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ Form::label('split_rounding', __('messages.split.rounding') . ':', ['class' => 'form-label']) }}
+                                    {{ Form::number('split_rounding', $settings['split_rounding'] ?? 0, ['class' => 'form-control', 'min' => 0, 'step' => 'any'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ Form::label('split_rounding_mode', __('messages.split.rounding_mode') . ':', ['class' => 'form-label']) }}
+                                    {{ Form::select('split_rounding_mode', collect(\App\Utils\PriceSplit::ROUNDING_MODES)->mapWithKeys(fn ($o) => [$o => __('messages.split.rounding_modes.' . $o)]), $settings['split_rounding_mode'] ?? 'nearest', ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
+                                </div>
+                                <div class="col-12 form-text mt-1">{{ __('messages.split.rules_hint') }}</div>
+                            </div>
                             <div class="mb-5">
                                 {{ Form::label('session_close_approval', __('messages.cashier.close_approval') . ':', ['class' => 'form-label']) }}
                                 <div class="row g-2">

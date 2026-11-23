@@ -130,10 +130,11 @@ class OpdPatientDepartmentController extends AppBaseController
     /** The patient's valid policies for the payer dropdown, with the price list of each payer. */
     public function getPayerOptions(Request $request)
     {
-        $options = PatientInsurance::with('insurance')->where('patient_id', $request->integer('patient_id'))->get()
-            ->filter(fn ($policy) => $policy->isValidOn($request->get('date')))
-            ->map(fn ($policy) => ['id' => $policy->id, 'label' => $policy->option_label, 'price_list_id' => $policy->insurance->price_list_id])
-            ->values();
+        $policies = PatientInsurance::with('insurance')->where('patient_id', $request->integer('patient_id'))->get()
+            ->filter(fn ($policy) => $policy->isValidOn($request->get('date')))->sortBy('priority');
+        $default = PatientInsurance::defaultFor($policies)?->id;
+        $options = $policies->map(fn ($policy) => ['id' => $policy->id, 'label' => $policy->option_label, 'price_list_id' => $policy->insurance->price_list_id,
+            'default' => $policy->id === $default])->values();
 
         return $this->sendResponse($options, '');
     }
