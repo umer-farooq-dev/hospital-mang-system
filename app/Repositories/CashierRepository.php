@@ -185,7 +185,8 @@ class CashierRepository
         return DB::transaction(function () use ($receipt, $user, $reason) {
             $receipt = Receipt::with('session', 'refund')->lockForUpdate()->findOrFail($receipt->id);
             $this->assertCorrectable($receipt);
-            $receipt->update(['voided_at' => now(), 'void_reason' => $reason, 'voided_by' => $user->id]);
+            $receipt->update(['voided_at' => now(), 'void_reason' => $reason, 'voided_by' => $user->id,
+                'void_requested_at' => null, 'void_requested_by' => null, 'void_request_reason' => null]);
             $this->settlePayables($receipt, MedicineBill::UNPAID);
 
             return $receipt;
@@ -334,24 +335,106 @@ class CashierRepository
         return (int) (Setting::where('key', 'cash_payment_method')->value('value') ?: 1);
     }
 
-    /** Close the session: expected cash, counted cash and the next closing number (N° Arrêt). */
-    public function close(CashSession $session, float $counted, ?string $notes): CashSession
+    /** Register close rules set by the admin (cash counters page). */
+    public static function closeRules(): array
+    {
+        $values = Setting::whereIn('key', ['session_close_approval', 'cash_difference_allowed'])->pluck('value', 'key');
+
+        return ['approval' => in_array($values['session_close_approval'] ?? '', CashSession::APPROVAL_MODES, true) ? $values['session_close_approval'] : 'none',
+            'allowed' => max(0, (float) ($values['cash_difference_allowed'] ?? 0))];
+    }
+
+    /** What should be in the register per payment method (cash includes the opening float). */
+    public static function expectedByMethod(CashSession $session): array
+    {
+        $expected = $session->netByMethod();
+        $cash = self::cashMethod();
+        $expected[$cash] = round(($expected[$cash] ?? 0) + $session->opening_float, 2);
+
+        return $expected;
+    }
+
+    /**
+     * Close the session with the amount counted per payment method (a single number = the cash counted),
+     * and the next closing number (N° Arrêt). A difference above the allowed amount, or every close
+     * if the admin chose so, waits for a supervisor's approval.
+     */
+    public function close(CashSession $session, float|array $counted, ?string $notes): CashSession
     {
         return DB::transaction(function () use ($session, $counted, $notes) {
             $session = CashSession::lockForUpdate()->findOrFail($session->id);
             if ($session->closed_at) {
                 return $session;
             }
-            $cash = $session->netByMethod()[self::cashMethod()] ?? 0;
+            $cash = self::cashMethod();
+            $counted = is_array($counted) ? $counted : [$cash => $counted];
+            $counted = array_map(fn ($v) => round((float) $v, 2), array_filter($counted, fn ($v) => $v !== null && $v !== ''));
+            $expected = self::expectedByMethod($session);
+            $rules = self::closeRules();
+            $over = collect($counted)->contains(fn ($amount, $method) => abs($amount - ($expected[$method] ?? 0)) > $rules['allowed'] + 0.004);
             $session->update([
                 'closed_at' => now(),
                 'closing_number' => (int) CashSession::lockForUpdate()->max('closing_number') + 1,
-                'expected_cash' => round($session->opening_float + $cash, 2),
-                'counted_cash' => round($counted, 2),
+                'expected_cash' => $expected[$cash] ?? round($session->opening_float, 2),
+                'counted_cash' => $counted[$cash] ?? null,
+                'counted_by_method' => $counted,
+                'expected_by_method' => $expected,
+                'approval_status' => $rules['approval'] === 'always' || ($rules['approval'] === 'difference' && $over) ? 'pending' : null,
                 'notes' => $notes,
             ]);
 
             return $session;
         });
+    }
+
+    /** A supervisor (not the cashier of the session) approves a closed session. */
+    public function approveClose(CashSession $session, User $user, ?string $note): CashSession
+    {
+        if ($session->approval_status !== 'pending') {
+            throw ValidationException::withMessages(['session' => __('messages.cashier.not_pending')]);
+        }
+        if ((int) $session->user_id === (int) $user->id) {
+            throw ValidationException::withMessages(['session' => __('messages.cashier.not_own_close')]);
+        }
+        $session->update(['approval_status' => 'approved', 'approved_by' => $user->id, 'approved_at' => now(), 'approval_note' => $note]);
+
+        return $session;
+    }
+
+    public static function voidNeedsApproval(): bool
+    {
+        return Setting::where('key', 'void_approval')->value('value') === '1';
+    }
+
+    /** First step of a void when a second person must approve it. */
+    public function requestVoid(Receipt $receipt, User $user, int $reason): Receipt
+    {
+        return DB::transaction(function () use ($receipt, $user, $reason) {
+            $receipt = Receipt::with('session', 'refund')->lockForUpdate()->findOrFail($receipt->id);
+            $this->assertCorrectable($receipt);
+            $receipt->update(['void_requested_at' => now(), 'void_requested_by' => $user->id, 'void_request_reason' => $reason]);
+
+            return $receipt;
+        });
+    }
+
+    /** Second step: another person confirms the requested void. */
+    public function approveVoid(Receipt $receipt, User $user): Receipt
+    {
+        if (! $receipt->void_requested_at) {
+            throw ValidationException::withMessages(['receipt' => __('messages.receipts.no_void_request')]);
+        }
+        if ((int) $receipt->void_requested_by === (int) $user->id) {
+            throw ValidationException::withMessages(['receipt' => __('messages.receipts.not_own_void')]);
+        }
+
+        return $this->void($receipt, $user, (int) $receipt->void_request_reason);
+    }
+
+    public function cancelVoidRequest(Receipt $receipt): Receipt
+    {
+        $receipt->update(['void_requested_at' => null, 'void_requested_by' => null, 'void_request_reason' => null]);
+
+        return $receipt;
     }
 }

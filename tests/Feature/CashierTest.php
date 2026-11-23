@@ -52,7 +52,13 @@ class CashierTest extends TestCase
             $t->unsignedBigInteger('closing_number')->nullable();
             $t->decimal('expected_cash', 15, 2)->nullable();
             $t->decimal('counted_cash', 15, 2)->nullable();
+            $t->json('counted_by_method')->nullable();
+            $t->json('expected_by_method')->nullable();
             $t->text('notes')->nullable();
+            $t->string('approval_status')->nullable();
+            $t->unsignedBigInteger('approved_by')->nullable();
+            $t->dateTime('approved_at')->nullable();
+            $t->string('approval_note')->nullable();
             $t->timestamps();
         });
         Schema::create('receipts', function (Blueprint $t) {
@@ -71,6 +77,9 @@ class CashierTest extends TestCase
             $t->dateTime('voided_at')->nullable();
             $t->unsignedInteger('void_reason')->nullable();
             $t->unsignedBigInteger('voided_by')->nullable();
+            $t->dateTime('void_requested_at')->nullable();
+            $t->unsignedBigInteger('void_requested_by')->nullable();
+            $t->unsignedInteger('void_request_reason')->nullable();
             $t->timestamps();
         });
         Schema::create('refunds', function (Blueprint $t) {
@@ -514,5 +523,50 @@ class CashierTest extends TestCase
         $this->assertSame(0, (int) DB::table('medicine_bills')->where('id', $bill)->value('payment_status'));
         $this->assertSame(20, \App\Utils\Stock::onHand($medicine, $store), 'receipt cancelled: back in stock');
         $this->assertSame('medicine_bill:'.$bill, $this->cashier->unpaidItems(7)->firstWhere('type', 'medicine_bill')['key']);
+    }
+
+    public function test_close_counts_each_method_and_a_difference_over_the_allowance_waits_for_another_person(): void
+    {
+        \App\Models\Setting::create(['key' => 'session_close_approval', 'value' => 'difference']);
+        \App\Models\Setting::create(['key' => 'cash_difference_allowed', 'value' => '200']);
+        $session = $this->cashier->open($this->user, 10000);
+        $this->cashier->collect($session, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]);   // cash 6 000
+        $this->cashier->collect($session, $this->user, 7, ['opd_visit:2'], ['payment_method' => 2]);   // cheque 1 242
+
+        $closed = $this->cashier->close($session, [1 => 15900, 2 => 1242], null);
+        $this->assertSame([16000.0, 15900.0, null], [$closed->expected_cash, $closed->counted_cash, $closed->approval_status], '100 short is within 200');
+        $this->assertSame([1 => -100.0, 2 => 0.0], $closed->differences());
+
+        $next = $this->cashier->open($this->user, 1000);
+        $pending = $this->cashier->close($next, [1 => 500], null);
+        $this->assertSame('pending', $pending->approval_status);
+        try {
+            $this->cashier->approveClose($pending, $this->user, null);
+            $this->fail('the cashier approves her own close');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('session', $e->errors());
+        }
+        $boss = \App\Models\User::find(DB::table('users')->insertGetId(['first_name' => 'Chef']));
+        $this->assertSame('approved', $this->cashier->approveClose($pending, $boss, 'manque justifié')->approval_status);
+    }
+
+    public function test_a_void_can_need_a_second_person(): void
+    {
+        \App\Models\Setting::create(['key' => 'void_approval', 'value' => '1']);
+        $this->assertTrue(CashierRepository::voidNeedsApproval());
+        $session = $this->cashier->open($this->user, 0);
+        $receipt = $this->cashier->collect($session, $this->user, 7, ['opd_visit:1'], ['payment_method' => 1]);
+        $this->cashier->requestVoid($receipt, $this->user, 4);
+        $this->assertNull($receipt->fresh()->voided_at, 'only requested');
+        try {
+            $this->cashier->approveVoid($receipt->fresh(), $this->user);
+            $this->fail('the requester approves her own void');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('receipt', $e->errors());
+        }
+        $boss = \App\Models\User::find(DB::table('users')->insertGetId(['first_name' => 'Chef']));
+        $voided = $this->cashier->approveVoid($receipt->fresh(), $boss);
+        $this->assertSame([4, $boss->id, null], [(int) $voided->void_reason, (int) $voided->voided_by, $voided->void_requested_at]);
+        $this->assertSame(['opd_visit:1', 'opd_visit:2'], $this->cashier->unpaidItems(7)->pluck('key')->all(), 'payable again');
     }
 }

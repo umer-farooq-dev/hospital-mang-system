@@ -135,6 +135,21 @@
                                 <div class="form-text">{{ __('messages.cashier.session_required_hint') }}</div>
                             </div>
                             <div class="mb-5">
+                                {{ Form::label('session_close_approval', __('messages.cashier.close_approval') . ':', ['class' => 'form-label']) }}
+                                <div class="row g-2">
+                                    <div class="col-8">{{ Form::select('session_close_approval', collect(\App\Models\CashSession::APPROVAL_MODES)->mapWithKeys(fn ($m) => [$m => __('messages.cashier.close_approval_modes.' . $m)]), $settings['session_close_approval'] ?? 'none', ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}</div>
+                                    <div class="col-4">{{ Form::number('cash_difference_allowed', $settings['cash_difference_allowed'] ?? 0, ['class' => 'form-control', 'min' => 0, 'step' => 'any', 'title' => __('messages.cashier.difference_allowed')] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}</div>
+                                </div>
+                                <div class="form-text">{{ __('messages.cashier.close_approval_hint') }}</div>
+                            </div>
+                            <div class="mb-5">
+                                <input type="hidden" name="void_approval" value="0">
+                                <label class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input" name="void_approval" value="1" {{ ($settings['void_approval'] ?? '0') === '1' ? 'checked' : '' }} {{ $canEdit ? '' : 'disabled' }}>
+                                    <span class="form-check-label">{{ __('messages.cashier.void_approval') }}</span>
+                                </label>
+                            </div>
+                            <div class="mb-5">
                                 {{ Form::label('policy_expired_mode', __('messages.cashier.policy_expired_mode') . ':', ['class' => 'form-label']) }}
                                 {{ Form::select('policy_expired_mode', collect(\App\Http\Controllers\CashCounterController::POLICY_EXPIRED_MODES)->mapWithKeys(fn ($m) => [$m => __('messages.cashier.policy_expired_modes.' . $m)]), $settings['policy_expired_mode'] ?? 'self_pay', ['class' => 'form-select'] + ($canEdit ? [] : ['disabled' => 'disabled'])) }}
                             </div>

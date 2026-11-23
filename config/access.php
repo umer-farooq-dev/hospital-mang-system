@@ -455,6 +455,9 @@ return [
         Controllers\CashierController::class.'@printSession' => ['cashier', 'list'],
         // Undoing money is a supervisor's action (delete); correcting the method is an edit.
         Controllers\ReceiptController::class.'@void' => ['receipts', 'delete'],
+        Controllers\ReceiptController::class.'@approveVoid' => ['receipts', 'approve'],
+        Controllers\ReceiptController::class.'@cancelVoidRequest' => ['receipts', 'approve'],
+        Controllers\ReceiptController::class.'@approveSession' => ['receipts', 'approve'],
         Controllers\ReceiptController::class.'@refund' => ['receipts', 'delete'],
         Controllers\ReceiptController::class.'@changeMethod' => ['receipts', 'edit'],
         Controllers\ReceiptController::class.'@changeDoctor' => ['receipts', 'edit'],

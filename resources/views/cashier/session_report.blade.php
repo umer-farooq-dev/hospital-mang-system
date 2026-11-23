@@ -44,9 +44,19 @@
     @endforeach
     <tr><th>{{ __('messages.cashier.total_collected') }}</th><th class="num">{{ formatMoney(array_sum($totals)) }}</th></tr>
     <tr><td>{{ __('messages.cashier.expected_cash') }}</td><td class="num">{{ formatMoney($expected) }}</td></tr>
-    @if ($session->counted_cash !== null)
+    @if ($session->counted_by_method)
+        @foreach ($session->counted_by_method as $method => $counted)
+            <tr><td>{{ __('messages.cashier.counted') }} · {{ \App\Models\PaymentMethod::label($method) }}</td><td class="num">{{ formatMoney($counted) }}
+                ({{ __('messages.cashier.difference') }} {{ formatMoney($session->differences()[$method] ?? 0) }})</td></tr>
+        @endforeach
+    @elseif ($session->counted_cash !== null)
         <tr><td>{{ __('messages.cashier.counted_cash') }}</td><td class="num">{{ formatMoney($session->counted_cash) }}</td></tr>
         <tr><th>{{ __('messages.cashier.difference') }}</th><th class="num">{{ formatMoney($session->counted_cash - $expected) }}</th></tr>
+    @endif
+    @if ($session->approval_status)
+        <tr><th>{{ __('messages.cashier.approval') }}</th><th class="num">{{ $session->approval_status === 'approved'
+            ? __('messages.cashier.approved_by', ['name' => $session->approver->full_name ?? '', 'date' => $session->approved_at?->format('d/m/Y H:i')]).($session->approval_note ? ' · '.$session->approval_note : '')
+            : __('messages.cashier.approval_pending') }}</th></tr>
     @endif
 </table>
 

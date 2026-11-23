@@ -128,9 +128,12 @@ class CashierController extends AppBaseController
         if (! $session) {
             return redirect(route('cashier.index'));
         }
-        $input = $request->validate(['counted_cash' => 'required|numeric|min:0', 'notes' => 'nullable|string|max:1000']);
-        $session = $this->cashierRepository->close($session, (float) $input['counted_cash'], $input['notes'] ?? null);
-        Flash::success(__('messages.cashier.session_closed', ['number' => $session->closing_number]));
+        $cash = CashierRepository::cashMethod();
+        $input = $request->validate(['counted' => 'required|array', 'counted.'.$cash => 'required|numeric|min:0', 'counted.*' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string|max:1000'], [], ['counted.'.$cash => __('messages.cashier.counted_cash')]);
+        $session = $this->cashierRepository->close($session, $input['counted'], $input['notes'] ?? null);
+        Flash::success(__('messages.cashier.session_closed', ['number' => $session->closing_number])
+            .($session->approval_status === 'pending' ? ' '.__('messages.cashier.close_pending') : ''));
 
         return redirect(route('cashier.index', ['closed' => $session->id]));
     }

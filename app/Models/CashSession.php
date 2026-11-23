@@ -13,7 +13,8 @@ class CashSession extends Model
 {
     protected $table = 'cash_sessions';
 
-    protected $fillable = ['cash_counter_id', 'user_id', 'opened_at', 'opening_float', 'closed_at', 'closing_number', 'expected_cash', 'counted_cash', 'notes'];
+    protected $fillable = ['cash_counter_id', 'user_id', 'opened_at', 'opening_float', 'closed_at', 'closing_number', 'expected_cash', 'counted_cash', 'notes',
+        'counted_by_method', 'expected_by_method', 'approval_status', 'approved_by', 'approved_at', 'approval_note'];
 
     protected $casts = [
         'opened_at' => 'datetime',
@@ -22,7 +23,28 @@ class CashSession extends Model
         'expected_cash' => 'float',
         'counted_cash' => 'float',
         'closing_number' => 'integer',
+        'counted_by_method' => 'array',
+        'expected_by_method' => 'array',
+        'approved_at' => 'datetime',
     ];
+
+    const APPROVAL_MODES = ['none', 'difference', 'always'];
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /** Counted minus expected, per payment method that was counted. */
+    public function differences(): array
+    {
+        $out = [];
+        foreach ((array) $this->counted_by_method as $method => $counted) {
+            $out[$method] = round((float) $counted - (float) ($this->expected_by_method[$method] ?? 0), 2);
+        }
+
+        return $out;
+    }
 
     public function counter(): BelongsTo
     {

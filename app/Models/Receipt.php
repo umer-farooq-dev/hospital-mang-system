@@ -15,7 +15,8 @@ class Receipt extends Model
     protected $table = 'receipts';
 
     protected $fillable = ['receipt_number', 'cash_session_id', 'cash_counter_id', 'user_id', 'patient_id', 'payment_method', 'amount',
-        'amount_received', 'change_given', 'cheque_number', 'cheque_drawer', 'voided_at', 'void_reason', 'voided_by'];
+        'amount_received', 'change_given', 'cheque_number', 'cheque_drawer', 'voided_at', 'void_reason', 'voided_by',
+        'void_requested_at', 'void_requested_by', 'void_request_reason'];
 
     protected $casts = [
         'receipt_number' => 'integer',
@@ -40,6 +41,11 @@ class Receipt extends Model
     public function getStatusAttribute(): string
     {
         return $this->voided_at ? 'voided' : ($this->refund ? 'refunded' : 'valid');
+    }
+
+    public function voidRequester(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'void_requested_by');
     }
 
     public function getVoidReasonNameAttribute(): ?string

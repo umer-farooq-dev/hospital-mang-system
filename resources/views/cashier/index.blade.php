@@ -216,12 +216,17 @@
                             </div>
                             <div class="modal-body">
                                 @php($cashMethod = \App\Repositories\CashierRepository::cashMethod())
-                                <p class="text-muted">{{ __('messages.cashier.expected_cash') }}: <b>{{ formatMoney($session->opening_float + ($totals[$cashMethod] ?? 0)) }}</b></p>
-                                <div class="mb-5">
-                                    {{ Form::label('counted_cash', __('messages.cashier.counted_cash') . ':', ['class' => 'form-label']) }}
-                                    <span class="required"></span>
-                                    {{ Form::number('counted_cash', null, ['class' => 'form-control', 'min' => 0, 'step' => 'any', 'required']) }}
-                                </div>
+                                @php($expectedByMethod = \App\Repositories\CashierRepository::expectedByMethod($session))
+                                <p class="text-muted">{{ __('messages.cashier.count_hint') }}</p>
+                                @foreach ($expectedByMethod as $method => $expectedAmount)
+                                    @if ($method == $cashMethod || abs($expectedAmount) >= 0.005)
+                                        <div class="row g-2 align-items-center mb-3">
+                                            <label class="col-5 form-label mb-0 {{ $method == $cashMethod ? 'required' : '' }}">{{ \App\Models\PaymentMethod::label($method) }}</label>
+                                            <div class="col-3 text-muted text-end">{{ formatMoney($expectedAmount) }}</div>
+                                            <div class="col-4"><input type="number" name="counted[{{ $method }}]" class="form-control" min="0" step="any" {{ $method == $cashMethod ? 'required' : '' }}></div>
+                                        </div>
+                                    @endif
+                                @endforeach
                                 <div>
                                     {{ Form::label('notes', __('messages.cashier.notes') . ':', ['class' => 'form-label']) }}
                                     {{ Form::textarea('notes', null, ['class' => 'form-control', 'rows' => 2, 'maxlength' => 1000]) }}
