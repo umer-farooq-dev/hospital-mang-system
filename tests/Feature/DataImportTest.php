@@ -149,4 +149,30 @@ class DataImportTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $date->invoke($import, '31/02/2026', 'dob');
     }
+
+    public function test_patient_balances_are_imported_once_for_the_cashier(): void
+    {
+        Schema::create('patients', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedBigInteger('user_id')->nullable();
+            $t->string('patient_unique_id');
+            $t->timestamps();
+        });
+        Schema::create('patient_opening_balances', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedInteger('patient_id');
+            $t->decimal('amount', 15, 2);
+            $t->string('label');
+            $t->date('as_of');
+            $t->unsignedBigInteger('data_import_run_id')->nullable();
+            $t->timestamps();
+        });
+        DB::table('patients')->insert(['patient_unique_id' => 'P-0007']);
+        $rows = [['Numéro patient' => 'P-0007', 'Montant' => '3 500', 'Libellé' => 'Ancien dossier'], ['Numéro patient' => 'P-9999', 'Montant' => '10'],
+            ['Numéro patient' => 'P-0007', 'Montant' => '0']];
+        $run = $this->run_('patient_balances', $rows, ['date' => '2026-11-30']);
+        $this->assertSame([1, 2], [$run->created, $run->failed]);
+        $this->assertSame([3500.0, '2026-11-30'], [(float) DB::table('patient_opening_balances')->value('amount'), substr(DB::table('patient_opening_balances')->value('as_of'), 0, 10)]);
+        $this->assertSame(1, $this->run_('patient_balances', $rows)->existing, 'not twice');
+    }
 }

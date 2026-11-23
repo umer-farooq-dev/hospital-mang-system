@@ -30,6 +30,7 @@ class ReceiptLine extends Model
         'advance_payment' => AdvancedPayment::class,
         'medicine_bill' => MedicineBill::class,
         'claim_line' => ClaimLine::class,
+        'opening_balance' => PatientOpeningBalance::class,
     ];
 
     public function receipt(): BelongsTo

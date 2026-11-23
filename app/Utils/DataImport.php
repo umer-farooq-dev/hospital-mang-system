@@ -40,7 +40,7 @@ use Illuminate\Support\Str;
 class DataImport
 {
     // In the order a new hospital fills them.
-    const KINDS = ['departments', 'doctors', 'staff', 'insurers', 'coverage_rules', 'suppliers', 'tariff', 'surgical_acts', 'patients', 'policies', 'opening_stock', 'opening_balances'];
+    const KINDS = ['departments', 'doctors', 'staff', 'insurers', 'coverage_rules', 'suppliers', 'tariff', 'surgical_acts', 'patients', 'policies', 'opening_stock', 'opening_balances', 'patient_balances', 'payer_balances'];
 
     // Column titles accepted for each field (compared lower-case, without accents, spaces as "_"),
     // besides the field labels of every installed language.
@@ -86,11 +86,16 @@ class DataImport
         'opening_stock' => ['medicine' => ['medicine', 'name', 'nom', 'medicament', 'produit', 'designation'], 'code' => ['code', 'cis', 'cis_code', 'code_cis', 'barcode', 'code_barre'],
             'store' => ['store', 'depot', 'magasin'], 'batch_no' => ['batch_no', 'batch', 'lot', 'n_lot'], 'expiry_date' => ['expiry_date', 'expiry', 'peremption', 'date_peremption', 'expiration'],
             'quantity' => ['quantity', 'qty', 'quantite', 'qte', 'stock'], 'unit_cost' => ['unit_cost', 'cost', 'cout', 'prix_achat', 'pa', 'cmup']],
+        'patient_balances' => ['patient' => ['patient', 'patient_number', 'numero', 'n_dossier', 'dossier'], 'amount' => ['amount', 'montant', 'solde', 'reste_a_payer'],
+            'label' => ['label', 'libelle', 'motif', 'description']],
+        'payer_balances' => ['insurer' => ['insurer', 'insurance', 'payer', 'assureur', 'assurance', 'societe'], 'number' => ['number', 'numero', 'facture', 'n_facture', 'invoice'],
+            'date' => ['date', 'date_facture'], 'amount' => ['amount', 'montant', 'solde', 'reste_du'], 'label' => ['label', 'libelle', 'description']],
         'opening_balances' => ['account' => ['account', 'code', 'compte', 'n_compte'], 'label' => ['label', 'libelle', 'intitule'], 'debit' => ['debit'], 'credit' => ['credit']],
     ];
 
     const REQUIRED = ['departments' => ['name'], 'tariff' => ['type', 'act'], 'surgical_acts' => ['name'], 'coverage_rules' => ['insurer'], 'patients' => ['last_name', 'first_name', 'gender'], 'policies' => ['patient', 'insurer'], 'doctors' => ['last_name', 'first_name', 'email', 'gender', 'department'],
-        'staff' => ['role', 'last_name', 'first_name', 'email', 'gender'], 'insurers' => ['name'], 'suppliers' => ['name'], 'opening_stock' => ['quantity'], 'opening_balances' => ['account']];
+        'staff' => ['role', 'last_name', 'first_name', 'email', 'gender'], 'insurers' => ['name'], 'suppliers' => ['name'], 'opening_stock' => ['quantity'], 'opening_balances' => ['account'],
+        'patient_balances' => ['patient', 'amount'], 'payer_balances' => ['insurer', 'number', 'amount']];
 
     // Staff role => [accepted words, repository that creates the account]
     const ROLES = [
@@ -743,6 +748,53 @@ class DataImport
         $this->remember('rule', $key);
 
         return [$action, fn () => CoverageRule::updateOrCreate($where, $values)];
+    }
+
+    /** What a patient owed on the first day, collected later at the cashier. */
+    private function preparePatientBalances(array $data): array
+    {
+        $patientId = Patient::where('patient_unique_id', $data['patient'])->value('id') ?? $this->fail('unknown_patient', ['value' => $data['patient']]);
+        $amount = $this->number($data['amount'], 'amount');
+        if ($amount <= 0) {
+            $this->fail('bad_number', ['field' => self::label('amount'), 'value' => $data['amount']]);
+        }
+        $label = mb_substr($data['label'] ?? __('messages.data_import.old_balance'), 0, 255);
+        $key = $patientId.'|'.$label.'|'.$amount;
+        if ($this->seen('patient_balance', $key) || \App\Models\PatientOpeningBalance::where(['patient_id' => $patientId, 'label' => $label, 'amount' => $amount])->exists()) {
+            return ['exists', null];
+        }
+        $this->remember('patient_balance', $key);
+        $asOf = $this->date($this->options['date'] ?? null, 'date') ?? now()->toDateString();
+
+        return ['create', fn () => \App\Models\PatientOpeningBalance::create(['patient_id' => $patientId, 'amount' => $amount, 'label' => $label, 'as_of' => $asOf,
+            'data_import_run_id' => $this->ctx['run']->id ?? null])];
+    }
+
+    /** An insurer's unpaid invoice from before go-live: settled with the payments, ageing and statement of third-party billing. */
+    private function preparePayerBalances(array $data): array
+    {
+        $insurers = $this->index('insurers', fn () => Insurance::get(['id', 'name', 'insurance_code'])
+            ->flatMap(fn ($i) => [mb_strtolower($i->name) => $i->id] + ($i->insurance_code ? [mb_strtolower($i->insurance_code) => $i->id] : []))->all());
+        $insuranceId = $insurers[mb_strtolower($data['insurer'])] ?? $this->fail('unknown_insurer', ['value' => $data['insurer']]);
+        $amount = $this->number($data['amount'], 'amount');
+        if ($amount <= 0) {
+            $this->fail('bad_number', ['field' => self::label('amount'), 'value' => $data['amount']]);
+        }
+        $date = $this->date($data['date'] ?? null, 'date') ?? $this->date($this->options['date'] ?? null, 'date') ?? now()->toDateString();
+        $number = mb_substr($data['number'], 0, 50);
+        if ($this->seen('payer_balance', $insuranceId.'|'.$number) || \App\Models\ClaimInvoice::where('insurance_id', $insuranceId)->where('number', $number)->exists()) {
+            return ['exists', null];
+        }
+        $this->remember('payer_balance', $insuranceId.'|'.$number);
+
+        return ['create', function () use ($insuranceId, $number, $date, $amount, $data) {
+            $insurance = Insurance::find($insuranceId);
+            $invoice = \App\Models\ClaimInvoice::create(['number' => $number, 'insurance_id' => $insuranceId, 'billing_option' => $insurance->billing_option,
+                'period_from' => $date, 'period_to' => $date, 'issued_on' => $date, 'due_on' => $insurance->credit_days ? Carbon::parse($date)->addDays($insurance->credit_days) : null,
+                'status' => 'issued', 'is_opening' => true, 'total_claimed' => $amount, 'note' => __('messages.data_import.old_invoice'), 'created_by' => auth()->id()]);
+            $invoice->lines()->create(['source_type' => 'opening', 'source_id' => 0, 'service_date' => $date, 'description' => mb_substr($data['label'] ?? __('messages.data_import.old_invoice'), 0, 255),
+                'total' => $amount, 'payer_amount' => $amount, 'status' => 'pending']);
+        }];
     }
 
     private function prepareOpeningStock(array $data): array

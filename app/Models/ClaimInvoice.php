@@ -29,7 +29,7 @@ class ClaimInvoice extends Model
 
     const STATUSES = [self::ISSUED, self::PARTIAL, self::PAID, self::CLOSED, self::CANCELLED];
 
-    protected $fillable = ['number', 'insurance_id', 'billing_option', 'period_from', 'period_to', 'issued_on', 'due_on', 'status',
+    protected $fillable = ['number', 'insurance_id', 'billing_option', 'period_from', 'period_to', 'issued_on', 'due_on', 'status', 'is_opening',
         'total_claimed', 'note', 'created_by', 'cancelled_by', 'cancelled_at'];
 
     protected $casts = ['period_from' => 'date', 'period_to' => 'date', 'issued_on' => 'date', 'due_on' => 'date', 'total_claimed' => 'float', 'cancelled_at' => 'datetime'];

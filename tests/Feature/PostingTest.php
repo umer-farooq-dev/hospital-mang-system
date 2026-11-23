@@ -41,7 +41,7 @@ class PostingTest extends TestCase
         $this->table('receipt_lines', fn ($t) => [$t->unsignedBigInteger('receipt_id'), $t->string('payable_type'), $t->unsignedBigInteger('payable_id'), $t->decimal('amount', 15, 2)]);
         $this->table('refunds', fn ($t) => [$t->unsignedBigInteger('receipt_id'), $t->decimal('amount', 15, 2)]);
         $this->table('insurances', fn ($t) => [$t->string('name')]);
-        $this->table('claim_invoices', fn ($t) => [$t->string('number'), $t->unsignedInteger('insurance_id'), $t->date('issued_on'), $t->decimal('total_claimed', 15, 2), $t->string('status'), $t->dateTime('cancelled_at')->nullable()]);
+        $this->table('claim_invoices', fn ($t) => [$t->string('number'), $t->unsignedInteger('insurance_id'), $t->date('issued_on'), $t->decimal('total_claimed', 15, 2), $t->string('status'), $t->boolean('is_opening')->default(false), $t->dateTime('cancelled_at')->nullable()]);
         $this->table('claim_lines', fn ($t) => [$t->unsignedBigInteger('claim_invoice_id'), $t->string('source_type'), $t->string('description')->default(''), $t->decimal('payer_amount', 15, 2),
             $t->decimal('paid_amount', 15, 2)->default(0), $t->string('status')->default('pending'), $t->date('settled_on')->nullable()]);
         $this->table('claim_payments', fn ($t) => [$t->unsignedBigInteger('claim_invoice_id'), $t->date('paid_on'), $t->decimal('amount', 15, 2), $t->unsignedInteger('payment_method')->nullable(), $t->string('reference')->nullable()]);
@@ -163,5 +163,14 @@ class PostingTest extends TestCase
         $options = ['columns' => ['account', 'direction', 'amount'], 'decimal' => '.', 'date_format' => 'd/m/Y'];
         $this->assertCount(4, \App\Utils\SageExport::rows($entries, $options + ['group' => 'none']));
         $this->assertSame([['5711', 'D', '1500.00'], ['706100', 'C', '1500.00']], \App\Utils\SageExport::rows($entries, $options + ['group' => 'day']));
+    }
+
+    public function test_an_invoice_brought_from_before_go_live_posts_only_its_payment(): void
+    {
+        DB::table('insurances')->insert(['id' => 1, 'name' => 'MUGEF']);
+        DB::table('claim_invoices')->insert(['id' => 1, 'number' => 'OLD-17', 'insurance_id' => 1, 'issued_on' => now()->subDay()->toDateString(), 'total_claimed' => 9000, 'status' => 'issued', 'is_opening' => true]);
+        DB::table('claim_payments')->insert(['claim_invoice_id' => 1, 'paid_on' => now()->subDay()->toDateString(), 'amount' => 9000, 'payment_method' => 2]);
+        $this->assertSame(1, Posting::generate(now()->subDays(2), now())['posted'], 'the payment only');
+        $this->assertEquals(-9000, $this->balance('4112'), 'clears what the opening balances put on the payers account');
     }
 }
