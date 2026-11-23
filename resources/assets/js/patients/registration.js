@@ -138,3 +138,165 @@ listenClick(".webcam-capture", function () {
         0.9
     );
 });
+
+// Card reader (Settings > Reception): the webcam reads the three MRZ lines on the back of the ID card
+// (parseMrz in mrz.js checks every check digit), fills the form, and keeps the image for the documents.
+// The OCR engine is served from public/vendor/tesseract and loaded only when the reader is opened.
+let idScan = { stream: null, form: null, worker: null, running: false };
+
+function loadOcrEngine(base) {
+    if (window.Tesseract) {
+        return Promise.resolve();
+    }
+    return new Promise(function (resolve, reject) {
+        let script = document.createElement("script");
+        script.src = base + "/tesseract.min.js";
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
+
+listenClick(".id-card-scan-open", function () {
+    idScan.form = $(this).closest("form");
+    let modal = $("#idCardScanModal").appendTo("body");
+    let errorBox = modal.find(".id-scan-error").addClass("d-none");
+    let status = modal.find(".id-scan-status");
+    modal.modal("show");
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        errorBox.text(errorBox.data("https")).removeClass("d-none");
+        return;
+    }
+    status.text(status.data("loading"));
+    let base = modal.data("base");
+    navigator.mediaDevices
+        .getUserMedia({ video: { width: { ideal: 1920 }, height: { ideal: 1080 }, facingMode: "environment" }, audio: false })
+        .then(function (stream) {
+            idScan.stream = stream;
+            modal.find(".id-scan-video")[0].srcObject = stream;
+            return loadOcrEngine(base);
+        })
+        .then(function () {
+            if (idScan.worker) {
+                return idScan.worker;
+            }
+            return Tesseract.createWorker("eng", 1, {
+                workerPath: base + "/worker.min.js",
+                corePath: base,
+                langPath: base,
+                gzip: true,
+            }).then(function (worker) {
+                idScan.worker = worker;
+                return worker.setParameters({
+                    tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<",
+                    tessedit_pageseg_mode: "6",
+                }).then(() => worker);
+            });
+        })
+        .then(function () {
+            if (!idScan.stream) {
+                return;
+            }
+            status.text(status.data("reading"));
+            idScan.running = true;
+            readCardLoop(modal);
+        })
+        .catch(function (error) {
+            let message = error && error.name === "NotAllowedError" ? errorBox.data("denied") : errorBox.data("engine");
+            errorBox.text(message).removeClass("d-none");
+            status.text("");
+        });
+});
+
+// Reads the band inside the green frame again and again until a frame passes every check digit.
+function readCardLoop(modal) {
+    if (!idScan.running || !idScan.stream) {
+        return;
+    }
+    let video = modal.find(".id-scan-video")[0];
+    if (!video.videoWidth) {
+        setTimeout(() => readCardLoop(modal), 300);
+        return;
+    }
+    let canvas = modal.find(".id-scan-canvas")[0];
+    let band = { x: video.videoWidth * 0.08, y: video.videoHeight * 0.6, w: video.videoWidth * 0.84, h: video.videoHeight * 0.3 };
+    let scale = Math.min(2, 1600 / band.w);
+    canvas.width = band.w * scale;
+    canvas.height = band.h * scale;
+    let context = canvas.getContext("2d");
+    context.filter = "grayscale(1) contrast(1.6)";
+    context.drawImage(video, band.x, band.y, band.w, band.h, 0, 0, canvas.width, canvas.height);
+    idScan.worker
+        .recognize(canvas)
+        .then(function (result) {
+            let card = window.parseMrz(result.data.text);
+            if (card) {
+                fillFromCard(modal, video, card);
+            } else {
+                setTimeout(() => readCardLoop(modal), 200);
+            }
+        })
+        .catch(() => setTimeout(() => readCardLoop(modal), 1000));
+}
+
+function titleCase(text) {
+    return text.toLowerCase().replace(/(^|[\s-])\S/g, (c) => c.toUpperCase());
+}
+
+function fillFromCard(modal, video, card) {
+    idScan.running = false;
+    let form = idScan.form;
+    let set = (name, value) => value && form.find("[name=" + name + "]").val(value).trigger("change");
+    set("last_name", card.lastName);
+    set("first_name", titleCase(card.firstNames));
+    set("id_document_number", card.documentNumber);
+    let idType = modal.data("id-type");
+    if (idType) {
+        set("id_document_type", String(idType));
+    }
+    if (card.sex) {
+        form.find("[name=gender][value=" + (card.sex === "F" ? 1 : 0) + "]").prop("checked", true).trigger("change");
+    }
+    if (card.birthDate) {
+        let dob = form.find("[name=dob]")[0];
+        if (dob && dob._flatpickr) {
+            dob._flatpickr.setDate(card.birthDate, true);
+        } else {
+            set("dob", card.birthDate);
+        }
+    }
+    // Keep a picture of the whole card for the patient's documents.
+    let canvas = modal.find(".id-scan-canvas")[0];
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    let context = canvas.getContext("2d");
+    context.filter = "none";
+    context.drawImage(video, 0, 0);
+    canvas.toBlob(
+        function (blob) {
+            let input = form.find(".id-card-image")[0];
+            if (input && blob) {
+                let transfer = new DataTransfer();
+                transfer.items.add(new File([blob], "id-card.jpg", { type: "image/jpeg" }));
+                input.files = transfer.files;
+            }
+        },
+        "image/jpeg",
+        0.85
+    );
+    let messages = $(".id-scan-messages");
+    let expired = card.expiryDate && card.expiryDate < new Date().toISOString().slice(0, 10);
+    modal.modal("hide");
+    displaySuccessMessage(messages.data("done"));
+    if (expired) {
+        displayErrorMessage(String(messages.data("expired")).replace(":date", card.expiryDate.split("-").reverse().join("/")));
+    }
+}
+
+listenHiddenBsModal("#idCardScanModal", function () {
+    idScan.running = false;
+    if (idScan.stream) {
+        idScan.stream.getTracks().forEach((track) => track.stop());
+        idScan.stream = null;
+    }
+});

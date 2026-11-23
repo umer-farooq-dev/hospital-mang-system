@@ -57,9 +57,11 @@ class PatientController extends AppBaseController
 
     public function store(CreatePatientRequest $request)
     {
+        $request->validate(['id_card_image' => 'nullable|image|max:5120']);
         $input = $request->all();
 
         $patient = $this->patientRepository->store($input);
+        $this->saveCardImage($request, $patient);
         $this->patientRepository->createNotification($input);
         Flash::success(__('messages.advanced_payment.patient') . ' ' . __('messages.common.saved_successfully'));
 
@@ -110,9 +112,11 @@ class PatientController extends AppBaseController
             return redirect(route('patients.index'));
         }
 
+        $request->validate(['id_card_image' => 'nullable|image|max:5120']);
         $input = $request->all();
         $input['status'] = isset($input['status']) ? 1 : 0;
         $this->patientRepository->update($input, $patient);
+        $this->saveCardImage($request, $patient);
 
         Flash::success(__('messages.advanced_payment.patient') . ' ' . __('messages.common.updated_successfully'));
 
@@ -195,5 +199,17 @@ class PatientController extends AppBaseController
     public function getBirthDate($id)
     {
         return Patient::whereId($id)->with('user')->first();
+    }
+
+    /** The ID card read by the webcam is kept in the patient's documents (Settings > Reception chooses the document type). */
+    private function saveCardImage(\Illuminate\Http\Request $request, Patient $patient): void
+    {
+        $typeId = Patient::registrationSettings()['id_scan_save_as'];
+        if (! $typeId || ! $request->hasFile('id_card_image')) {
+            return;
+        }
+        $document = \App\Models\Document::create(['title' => __('messages.reception.id_card_title'), 'document_type_id' => $typeId,
+            'patient_id' => $patient->id, 'uploaded_by' => auth()->id()]);
+        $document->addMedia($request->file('id_card_image'))->toMediaCollection(\App\Models\Document::PATH, config('app.media_disc'));
     }
 }
