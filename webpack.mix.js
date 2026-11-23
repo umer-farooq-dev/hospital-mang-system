@@ -20,6 +20,12 @@ mix.copyDirectory(
 mix.copyDirectory("resources/assets/img", "public/assets/img");
 // Camera QR/barcode reader, loaded only on pages that scan (Reception Desk).
 mix.copy("node_modules/html5-qrcode/dist/html5-qrcode.min.js", "public/assets/js/html5-qrcode.min.js");
+// ID card reader (OCR of the MRZ), loaded on demand by assets/js/patients/registration.js
+mix.copy("node_modules/tesseract.js/dist/tesseract.min.js", "public/vendor/tesseract/tesseract.min.js");
+mix.copy("node_modules/tesseract.js/dist/worker.min.js", "public/vendor/tesseract/worker.min.js");
+mix.copy("node_modules/tesseract.js-core/tesseract-core-lstm.wasm.js", "public/vendor/tesseract/tesseract-core-lstm.wasm.js");
+mix.copy("node_modules/tesseract.js-core/tesseract-core-simd-lstm.wasm.js", "public/vendor/tesseract/tesseract-core-simd-lstm.wasm.js");
+mix.copy("node_modules/@tesseract.js-data/eng/4.0.0_best_int/eng.traineddata.gz", "public/vendor/tesseract/eng.traineddata.gz");
 mix.copyDirectory("resources/assets/theme/images", "public/assets/images");
 mix.copyDirectory("resources/assets/theme/webfonts", "public/webfonts");
 mix.copyDirectory("resources/assets/theme/fonts", "public/fonts");
@@ -608,6 +614,7 @@ mix.js(
         "resources/assets/js/patients/patients_data_listing.js",
         "resources/assets/js/patients/insurances.js",
         "resources/assets/js/patients/create-edit.js",
+        "resources/assets/js/patients/mrz.js",
         "resources/assets/js/patients/registration.js",
         "resources/assets/js/reception_desk/reception_desk.js",
         "resources/assets/js/admins/admin.js",

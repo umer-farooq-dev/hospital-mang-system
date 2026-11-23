@@ -110,6 +110,7 @@ class Patient extends Model
         if (self::$registrationSettings === null) {
             $values = Setting::whereIn('key', [
                 'patient_required_fields', 'patient_portal_login', 'patient_duplicate_check', 'patient_duplicate_fields', 'reception_webcam',
+                'reception_id_scan', 'id_scan_document_type', 'id_scan_save_as',
             ])->pluck('value', 'key');
             $list = fn ($key, $allowed) => array_values(array_intersect($allowed, explode(',', (string) $values->get($key, ''))));
 
@@ -119,6 +120,10 @@ class Patient extends Model
                 'duplicate_check' => in_array($values->get('patient_duplicate_check'), self::DUPLICATE_MODES) ? $values->get('patient_duplicate_check') : 'off',
                 'duplicate_fields' => $list('patient_duplicate_fields', self::DUPLICATE_FIELDS),
                 'webcam' => (bool) $values->get('reception_webcam', 1),
+                // Card reader: read the MRZ on the back of the ID card with the webcam.
+                'id_scan' => (bool) $values->get('reception_webcam', 1) && (bool) $values->get('reception_id_scan', 1),
+                'id_scan_document_type' => $values->get('id_scan_document_type') ?: null, // ID document type set on the form
+                'id_scan_save_as' => $values->get('id_scan_save_as') ?: null,             // document type of the saved card image
             ];
         }
 

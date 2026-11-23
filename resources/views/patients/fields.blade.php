@@ -128,6 +128,12 @@
                     <i class="fas fa-camera me-1"></i>{{ __('messages.reception.take_photo') }}
                 </button>
             @endif
+            @if (\App\Models\Patient::registrationSettings()['id_scan'])
+                <button type="button" class="btn btn-sm btn-light-primary mt-3 id-card-scan-open">
+                    <i class="fas fa-id-card me-1"></i>{{ __('messages.reception.scan_id_card') }}
+                </button>
+                <input type="file" name="id_card_image" class="d-none id-card-image" accept="image/jpeg">
+            @endif
         </div>
     </div>
     <hr>
@@ -204,4 +210,5 @@
 
 @if (\App\Models\Patient::registrationSettings()['webcam'])
     @include('patients.webcam_photo_modal')
+    @include('patients.id_card_scan_modal')
 @endif

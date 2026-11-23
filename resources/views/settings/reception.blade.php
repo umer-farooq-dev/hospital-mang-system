@@ -57,6 +57,24 @@
             </div>
             <div class="text-muted fs-7">{{ __('messages.reception.webcam_hint') }}</div>
         </div>
+        <div class="col-md-12 mb-3">
+            <div class="d-flex align-items-center">
+                <span class="form-label mb-0">{{ __('messages.reception.id_scan') }}:</span>
+                <label class="form-check form-switch form-switch-sm ms-3">
+                    <input type="checkbox" name="reception_id_scan" class="form-check-input" value="1" {{ $reception['id_scan'] ? 'checked' : '' }}>
+                    <span class="custom-switch-indicator"></span>
+                </label>
+            </div>
+            <div class="text-muted fs-7">{{ __('messages.reception.id_scan_hint') }}</div>
+        </div>
+        <div class="col-md-4 mb-3">
+            {{ Form::label('id_scan_document_type', __('messages.reception.id_scan_document_type') . ':', ['class' => 'form-label']) }}
+            {{ Form::select('id_scan_document_type', \App\Models\MasterListItem::options('id_document_type', $reception['id_scan_document_type']), $reception['id_scan_document_type'], ['class' => 'form-select', 'placeholder' => __('messages.common.choose')]) }}
+        </div>
+        <div class="col-md-4 mb-3">
+            {{ Form::label('id_scan_save_as', __('messages.reception.id_scan_save_as') . ':', ['class' => 'form-label']) }}
+            {{ Form::select('id_scan_save_as', \App\Models\DocumentType::orderBy('name')->pluck('name', 'id'), $reception['id_scan_save_as'], ['class' => 'form-select', 'placeholder' => __('messages.reception.id_scan_no_image')]) }}
+        </div>
 
         <div class="col-md-12 mb-3 mt-3">
             <h5>{{ __('messages.reception.duplicate_check') }}</h5>
