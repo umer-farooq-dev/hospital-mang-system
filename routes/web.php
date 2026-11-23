@@ -782,6 +782,17 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('stock-transfers/{stockTransfer}/cancel', [\App\Http\Controllers\StockTransferController::class, 'cancel'])->name('stock-transfers.cancel');
     });
     Route::middleware('access:Admin|Accountant')->group(function () {
+        Route::get('accounting/entries', [\App\Http\Controllers\JournalEntryController::class, 'index'])->name('accounting.entries.index')->middleware('modules');
+        Route::get('accounting/entries/create', [\App\Http\Controllers\JournalEntryController::class, 'create'])->name('accounting.entries.create');
+        Route::post('accounting/entries', [\App\Http\Controllers\JournalEntryController::class, 'store'])->name('accounting.entries.store');
+        Route::get('accounting/entries/{journalEntry}', [\App\Http\Controllers\JournalEntryController::class, 'show'])->name('accounting.entries.show');
+        Route::post('accounting/entries/{journalEntry}/reverse', [\App\Http\Controllers\JournalEntryController::class, 'storeReversal'])->name('accounting.entries.reverse');
+        Route::get('accounting/setup', [\App\Http\Controllers\AccountingSetupController::class, 'index'])->name('accounting.setup');
+        Route::post('accounting/accounts', [\App\Http\Controllers\AccountingSetupController::class, 'updateAccounts'])->name('accounting.accounts.update');
+        Route::post('accounting/years', [\App\Http\Controllers\AccountingSetupController::class, 'updateYears'])->name('accounting.years.update');
+        Route::post('accounting/journals', [\App\Http\Controllers\AccountingSetupController::class, 'updateJournals'])->name('accounting.journals.update');
+        Route::get('accounting/ledger', [\App\Http\Controllers\AccountingReportController::class, 'ledger'])->name('accounting.ledger');
+        Route::get('accounting/trial-balance', [\App\Http\Controllers\AccountingReportController::class, 'trialBalance'])->name('accounting.trial-balance');
         Route::get('third-party/claims', [\App\Http\Controllers\ClaimController::class, 'index'])->name('claims.index')->middleware('modules');
         Route::get('third-party/claims/create', [\App\Http\Controllers\ClaimController::class, 'create'])->name('claims.create');
         Route::post('third-party/claims', [\App\Http\Controllers\ClaimController::class, 'store'])->name('claims.store');
