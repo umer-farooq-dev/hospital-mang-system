@@ -795,6 +795,13 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('accounting/years', [\App\Http\Controllers\AccountingSetupController::class, 'updateYears'])->name('accounting.years.update');
         Route::post('accounting/journals', [\App\Http\Controllers\AccountingSetupController::class, 'updateJournals'])->name('accounting.journals.update');
         Route::get('accounting/ledger', [\App\Http\Controllers\AccountingReportController::class, 'ledger'])->name('accounting.ledger');
+        Route::get('accounting/profit-loss', [\App\Http\Controllers\AccountingReportController::class, 'profitLoss'])->name('accounting.profit-loss');
+        Route::get('accounting/balance-sheet', [\App\Http\Controllers\AccountingReportController::class, 'balanceSheet'])->name('accounting.balance-sheet');
+        Route::get('accounting/cash-book', [\App\Http\Controllers\AccountingReportController::class, 'cashBook'])->name('accounting.cash-book');
+        Route::get('accounting/turnover', [\App\Http\Controllers\AccountingReportController::class, 'turnover'])->name('accounting.turnover');
+        Route::get('accounting/export', [\App\Http\Controllers\AccountingExportController::class, 'index'])->name('accounting.export');
+        Route::get('accounting/export/download', [\App\Http\Controllers\AccountingExportController::class, 'exportEntries'])->name('accounting.export.download');
+        Route::post('accounting/export/settings', [\App\Http\Controllers\AccountingExportController::class, 'updateSettings'])->name('accounting.export.settings');
         Route::get('accounting/trial-balance', [\App\Http\Controllers\AccountingReportController::class, 'trialBalance'])->name('accounting.trial-balance');
         Route::get('third-party/claims', [\App\Http\Controllers\ClaimController::class, 'index'])->name('claims.index')->middleware('modules');
         Route::get('third-party/claims/create', [\App\Http\Controllers\ClaimController::class, 'create'])->name('claims.create');
