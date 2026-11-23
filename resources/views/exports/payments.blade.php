@@ -16,7 +16,7 @@
             <td>{{ date('jS M, Y', strtotime($payment->payment_date)) }}</td>
             <td>{{ $payment->account->name }}</td>
             <td>{{ $payment->pay_to }}</td>
-            <td>{{ number_format($payment->amount, 2) }}</td>
+            <td>{{ inputAmount($payment->amount) }}</td>
             <td>{{ $payment->description }}</td>
         </tr>
     @endforeach

@@ -15,7 +15,7 @@
             <td>{{ $loop->iteration }}</td>
             <td>{{ $service->name }}</td>
             <td>{{ $service->quantity }}</td>
-            <td>{{ number_format($service->rate,2) }}</td>
+            <td>{{ inputAmount($service->rate) }}</td>
             <td>{{ ($service->status == 1) ? __('messages.common.active') : __('messages.common.de_active') }}</td>
             <td>{!! !empty($service->description) ? nl2br(e($service->description)) : __('messages.common.n/a') !!}</td>
         </tr>

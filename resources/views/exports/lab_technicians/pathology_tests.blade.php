@@ -27,7 +27,7 @@
             <td>{{ (!empty($pathologyTest->method)) ? $pathologyTest->method : __('messages.common.n/a') }}</td>
             <td>{!! (!empty($pathologyTest->report_days)) ? nl2br(e($pathologyTest->report_days)) : __('messages.common.n/a') !!}</td>
             <td>{{ $pathologyTest->chargecategory->name }}</td>
-            <td>{{ number_format($pathologyTest->standard_charge,2) }}</td>
+            <td>{{ inputAmount($pathologyTest->standard_charge) }}</td>
         </tr>
     @endforeach
     </tbody>

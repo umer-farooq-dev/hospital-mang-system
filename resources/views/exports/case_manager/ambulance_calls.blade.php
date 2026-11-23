@@ -17,7 +17,7 @@
             <td>{{ $ambulanceCall->ambulance->vehicle_model }}</td>
             <td>{{ date('jS M, Y', strtotime($ambulanceCall->date)) }}</td>
             <td>{{ $ambulanceCall->driver_name }}</td>
-            <td>{{ number_format($ambulanceCall->amount,2) }}</td>
+            <td>{{ inputAmount($ambulanceCall->amount) }}</td>
         </tr>
     @endforeach
     </tbody>

@@ -18,7 +18,7 @@
             <td>{{ $incomeHead[$income->income_head] }}</td>
             <td>{{ !empty($income->invoice_number) ? $income->invoice_number : __('messages.common.n/a') }}</td>
             <td>{{ date('jS M, Y', strtotime($income->date)) }}</td>
-            <td>{{ number_format($income->amount, 2) }}</td>
+            <td>{{ inputAmount($income->amount) }}</td>
             <td>{{ $income->description }}</td>
         </tr>
     @endforeach

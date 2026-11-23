@@ -115,11 +115,11 @@
                                     {{ Form::number('quantity[]', $invoiceItem->quantity, ['class' => 'form-control qty', 'required', 'type' => 'number', 'min' => 1, 'placeholder' => __('messages.invoice.qty')]) }}
                                 </td>
                                 <td class="text-center">
-                                    {{ Form::text('price[]', number_format($invoiceItem->price, 2), ['class' => 'form-control price-input price', 'required', 'placeholder' => __('messages.invoice.price')]) }}
+                                    {{ Form::text('price[]', inputAmount($invoiceItem->price), ['class' => 'form-control price-input price', 'required', 'placeholder' => __('messages.invoice.price')]) }}
                                 </td>
                                 <td class="amount text-center item-total pt-5 ms-2 text-nowrap">
                                     {{--                                <span>{{ getCurrencySymbol() }}</span> --}}
-                                    <span class="amount item-total">{{ number_format($invoiceItem->total, 2) }}</span>
+                                    <span class="amount item-total">{{ inputAmount($invoiceItem->total) }}</span>
                                 </td>
                                 <td class="text-end">
                                     <a href="javascript:void(0)" title="{{ __('messages.common.delete') }}"
@@ -167,7 +167,7 @@
                             <td class="font-weight-bold ">{{ __('messages.invoice.sub_total') . ':' }}</td>
                             <td class="font-weight-bold  {{getCurrentLoginUserLanguageName()=='ar' ? 'text-start' : 'text-end'}}">
                                 <span>{{ getCurrencySymbol() }}</span> <span id="total" class="price">
-                                    {{ isset($invoice) ? number_format($invoice->amount, 2) : 0 }}
+                                    {{ isset($invoice) ? inputAmount($invoice->amount) : 0 }}
                                 </span>
                             </td>
                         </tr>

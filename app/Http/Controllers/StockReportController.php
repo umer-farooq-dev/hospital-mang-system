@@ -46,7 +46,7 @@ class StockReportController extends AppBaseController
             fwrite($out, "\xEF\xBB\xBF"); // Excel reads the accents
             fputcsv($out, $report['head'], ';');
             foreach ($report['rows'] as $row) {
-                fputcsv($out, array_map(fn ($cell) => is_float($cell) ? number_format($cell, 2, ',', '') : $cell, $row), ';');
+                fputcsv($out, array_map(fn ($cell) => is_float($cell) ? number_format($cell, currencyFormatSettings()['decimals'], ',', '') : $cell, $row), ';');
             }
             fclose($out);
         }, $name, ['Content-Type' => 'text/csv; charset=UTF-8']);

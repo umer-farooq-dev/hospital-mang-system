@@ -18,7 +18,7 @@
             <td>{{ $expenseHead[$expense->expense_head] }}</td>
             <td>{{ !empty($expense->invoice_number) ? $expense->invoice_number : __('messages.common.n/a') }}</td>
             <td>{{ date('jS M, Y', strtotime($expense->date)) }}</td>
-            <td>{{ number_format($expense->amount, 2) }}</td>
+            <td>{{ inputAmount($expense->amount) }}</td>
             <td>{{ $expense->description }}</td>
         </tr>
     @endforeach

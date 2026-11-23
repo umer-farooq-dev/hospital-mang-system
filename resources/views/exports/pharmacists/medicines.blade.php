@@ -20,8 +20,8 @@
             <td>{{ $medicine->brand->name }}</td>
             <td>{{ $medicine->category->name }}</td>
             <td>{{ $medicine->salt_composition }}</td>
-            <td>{{ number_format($medicine->selling_price, 2) }}</td>
-            <td>{{ number_format($medicine->buying_price, 2) }}</td>
+            <td>{{ inputAmount($medicine->selling_price) }}</td>
+            <td>{{ inputAmount($medicine->buying_price) }}</td>
             <td>{!! !empty($medicine->side_effects) ? nl2br(e($medicine->side_effects)) : __('messages.common.n/a') !!}</td>
             <td>{!! !empty($medicine->description) ? nl2br(e($medicine->description)) : __('messages.common.n/a') !!}</td>
         </tr>

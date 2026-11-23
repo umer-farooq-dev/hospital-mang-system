@@ -17,7 +17,7 @@
                 <td>{{ $bed->name }}</td>
                 <td>{{ $bed->bedType->title }}</td>
                 <td>{{ $bed->bed_id }}</td>
-                <td>{{ number_format($bed->charge, 2) }}</td>
+                <td>{{ inputAmount($bed->charge) }}</td>
                 <td>{{ $bed->is_available ? __('messages.common.yes') : __('messages.common.no') }}</td>
                 <td>{!! !empty($bed->description) ? nl2br(e($bed->description)) : __('messages.common.n/a') !!}</td>
             </tr>

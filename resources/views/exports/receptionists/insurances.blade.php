@@ -18,12 +18,12 @@
         <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $insurance->name }}</td>
-            <td>{{ number_format($insurance->service_tax, 2) }}</td>
+            <td>{{ inputAmount($insurance->service_tax) }}</td>
             <td>{{ isset($insurance->discount) ? $insurance->discount.'%' : __('messages.common.n/a') }}</td>
             <td>{{ $insurance->insurance_no }}</td>
             <td>{{ $insurance->insurance_code }}</td>
-            <td>{{ number_format($insurance->hospital_rate, 2) }}</td>
-            <td>{{ number_format($insurance->total, 2) }}</td>
+            <td>{{ inputAmount($insurance->hospital_rate) }}</td>
+            <td>{{ inputAmount($insurance->total) }}</td>
             <td>{{ ($insurance->status === 1) ? __('messages.common.active') : __('messages.common.de_active') }}</td>
             <td>{!! !empty($insurance->remark) ? nl2br(e($insurance->remark)) : __('messages.common.n/a') !!}</td>
         </tr>
@@ -43,7 +43,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $insuranceDisease->disease_name }}</td>
-                            <td>{{ number_format($insuranceDisease->disease_charge, 2) }}</td>
+                            <td>{{ inputAmount($insuranceDisease->disease_charge) }}</td>
                         </tr>
                     @endforeach
                     </tbody>

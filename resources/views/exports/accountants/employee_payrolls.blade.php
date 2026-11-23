@@ -26,10 +26,10 @@
             <td>{{ $employeePayroll->month }}</td>
             <td>{{ $employeePayroll->year }}</td>
             <td>{{ ($employeePayroll->status == 0) ? __('messages.invoice.not_paid') : __('messages.invoice.paid') }}</td>
-            <td>{{ number_format($employeePayroll->basic_salary, 2) }}</td>
-            <td>{{ number_format($employeePayroll->allowance, 2) }}</td>
-            <td>{{ number_format($employeePayroll->deductions, 2) }}</td>
-            <td>{{ number_format($employeePayroll->net_salary, 2) }}</td>
+            <td>{{ inputAmount($employeePayroll->basic_salary) }}</td>
+            <td>{{ inputAmount($employeePayroll->allowance) }}</td>
+            <td>{{ inputAmount($employeePayroll->deductions) }}</td>
+            <td>{{ inputAmount($employeePayroll->net_salary) }}</td>
         </tr>
     @endforeach
     </tbody>
