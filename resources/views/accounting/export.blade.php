@@ -62,6 +62,7 @@
                     <div class="col-md-2">{{ Form::label('decimal', __('messages.sage.decimal'), ['class' => 'form-label']) }}{{ Form::select('decimal', [',' => '1250,50', '.' => '1250.50'], $options['decimal'], ['class' => 'form-select'] + $off) }}</div>
                     <div class="col-md-2">{{ Form::label('encoding', __('messages.sage.encoding'), ['class' => 'form-label']) }}{{ Form::select('encoding', \App\Utils\SageExport::ENCODINGS, $options['encoding'], ['class' => 'form-select'] + $off) }}</div>
                     <div class="col-md-1">{{ Form::label('extension', __('messages.sage.extension'), ['class' => 'form-label']) }}{{ Form::select('extension', ['csv' => '.csv', 'txt' => '.txt'], $options['extension'], ['class' => 'form-select'] + $off) }}</div>
+                    <div class="col-md-3">{{ Form::label('group', __('messages.sage.group'), ['class' => 'form-label']) }}{{ Form::select('group', collect(\App\Utils\SageExport::GROUPS)->mapWithKeys(fn ($g) => [$g => __('messages.sage.groups.' . $g)]), $options['group'] ?? 'none', ['class' => 'form-select'] + $off) }}</div>
                     <div class="col-md-2"><label class="form-check"><input type="checkbox" class="form-check-input" name="header" value="1" {{ $options['header'] ? 'checked' : '' }} {{ $canEdit ? '' : 'disabled' }}> <span class="form-check-label">{{ __('messages.sage.header') }}</span></label></div>
                     @if ($canEdit)<div class="col-md-1"><button class="btn btn-primary w-100">{{ __('messages.common.save') }}</button></div>@endif
                 </div>

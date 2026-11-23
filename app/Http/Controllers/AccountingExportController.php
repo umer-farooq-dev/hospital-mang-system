@@ -58,6 +58,7 @@ class AccountingExportController extends AppBaseController
             'decimal' => 'required|in:".",","',
             'encoding' => ['required', Rule::in(array_keys(SageExport::ENCODINGS))],
             'extension' => 'required|in:csv,txt',
+            'group' => ['required', Rule::in(SageExport::GROUPS)],
         ]);
         $data['columns'] = array_values(array_unique(array_filter($data['columns'])));
         $data['header'] = $request->boolean('header');

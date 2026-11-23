@@ -7,6 +7,7 @@ use App\Models\ClaimInvoice;
 use App\Models\ClaimLine;
 use App\Models\ClaimPayment;
 use App\Models\DoctorStatement;
+use App\Models\EmployeePayroll;
 use App\Models\Expense;
 use App\Models\FundTransfer;
 use App\Models\Income;
@@ -36,13 +37,14 @@ class Posting
         'patients' => '4111', 'payers' => '4112', 'suppliers' => '401', 'purchase_paid' => '5711',
         'stock.medicines' => '311', 'stock.items' => '331', 'cost.medicines' => '6031', 'cost.items' => '605', 'stock_adjustment' => '6031',
         'write_off' => '651', 'doctor_fees' => '632', 'withholding' => '447', 'referrer_fees' => '632', 'finance_cash' => '5711', 'payer_payment' => '521',
+        'salaries' => '661', 'payroll_deductions' => '447',
     ];
 
     // Journal per kind of event: key => default journal code.
-    const JOURNALS = ['receipts' => 'CA', 'claims' => 'TP', 'claim_payments' => 'BQ', 'purchases' => 'AC', 'stock' => 'OD', 'fees' => 'OD', 'finance' => 'CA', 'transfers' => 'CA'];
+    const JOURNALS = ['receipts' => 'CA', 'claims' => 'TP', 'claim_payments' => 'BQ', 'purchases' => 'AC', 'stock' => 'OD', 'fees' => 'OD', 'finance' => 'CA', 'transfers' => 'CA', 'payroll' => 'OD'];
 
     const EVENTS = ['receipt', 'receipt_void', 'receipt_refund', 'claim_invoice', 'claim_cancel', 'claim_payment', 'claim_write_off', 'claim_to_patient',
-        'purchase', 'item_stock', 'stock', 'doctor_fees', 'referrer_fees', 'expense', 'income', 'payment', 'fund_transfer'];
+        'purchase', 'item_stock', 'stock', 'doctor_fees', 'referrer_fees', 'expense', 'income', 'payment', 'fund_transfer', 'payroll'];
 
     public static function accounts(): array
     {
@@ -184,6 +186,18 @@ class Posting
             $plans->push($plan('referrer_payout', $p->id, 'referrer_fees', $p->paid_on, 'fees',
                 __('messages.posting.labels.referrer_fees', ['name' => MasterListItem::label('referrer', $p->referrer_code, '')]), $p->reference,
                 [['referrer_fees', (float) $p->amount, 0], [self::money($p->payment_method), 0, (float) $p->amount]]));
+        }
+
+        // Salaries marked paid: gross to salaries, net paid out of the finance cash, deductions owed.
+        foreach (EmployeePayroll::where('status', EmployeePayroll::PAID)->whereBetween('updated_at', [$from, $to])->get() as $p) {
+            $net = (float) $p->net_salary;
+            $deductions = max(0, (float) $p->deductions);
+            $lines = [['salaries', $net + $deductions, 0], ['finance_cash', 0, $net]];
+            if ($deductions > 0) {
+                $lines[] = ['payroll_deductions', 0, $deductions];
+            }
+            $plans->push($plan('payroll', $p->id, 'payroll', $p->updated_at, 'payroll', __('messages.posting.labels.payroll', ['month' => $p->month, 'year' => $p->year,
+                'number' => $p->payroll_id]), (string) $p->payroll_id, $lines));
         }
 
         foreach (Expense::whereBetween('date', [$from, $to])->get() as $e) {
