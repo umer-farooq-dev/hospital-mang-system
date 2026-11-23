@@ -61,6 +61,15 @@ class CashierTest extends TestCase
             $t->string('approval_note')->nullable();
             $t->timestamps();
         });
+        Schema::create('patient_opening_balances', function (Blueprint $t) {
+            $t->id();
+            $t->unsignedInteger('patient_id');
+            $t->decimal('amount', 15, 2);
+            $t->string('label');
+            $t->date('as_of');
+            $t->unsignedBigInteger('data_import_run_id')->nullable();
+            $t->timestamps();
+        });
         Schema::create('receipts', function (Blueprint $t) {
             $t->id();
             $t->unsignedBigInteger('receipt_number');
@@ -568,5 +577,15 @@ class CashierTest extends TestCase
         $voided = $this->cashier->approveVoid($receipt->fresh(), $boss);
         $this->assertSame([4, $boss->id, null], [(int) $voided->void_reason, (int) $voided->voided_by, $voided->void_requested_at]);
         $this->assertSame(['opd_visit:1', 'opd_visit:2'], $this->cashier->unpaidItems(7)->pluck('key')->all(), 'payable again');
+    }
+
+    public function test_a_balance_from_before_go_live_is_collected_like_any_item(): void
+    {
+        \App\Models\PatientOpeningBalance::create(['patient_id' => 7, 'amount' => 3500, 'label' => 'Ancien dossier', 'as_of' => '2026-11-30']);
+        $item = $this->cashier->unpaidItems(7)->firstWhere('type', 'opening_balance');
+        $this->assertEquals(3500, $item['outstanding']);
+        $session = $this->cashier->open($this->user, 0);
+        $this->cashier->collect($session, $this->user, 7, [$item['key']], ['payment_method' => 1]);
+        $this->assertNull($this->cashier->unpaidItems(7)->firstWhere('type', 'opening_balance'), 'paid');
     }
 }

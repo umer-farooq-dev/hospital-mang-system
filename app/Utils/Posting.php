@@ -33,7 +33,7 @@ class Posting
     // Account keys with no list behind them: key => default account code.
     const ACCOUNTS = [
         'revenue.opd_visit' => '706100', 'revenue.exam_item' => '706300', 'revenue.medicine_bill' => '701', 'revenue.ipd_payment' => '706200',
-        'revenue.ipd_bill' => '706200', 'revenue.advance_payment' => '4191', 'revenue.claim_line' => '4111',
+        'revenue.ipd_bill' => '706200', 'revenue.advance_payment' => '4191', 'revenue.claim_line' => '4111', 'revenue.opening_balance' => '4111',
         'patients' => '4111', 'payers' => '4112', 'suppliers' => '401', 'purchase_paid' => '5711',
         'stock.medicines' => '311', 'stock.items' => '331', 'cost.medicines' => '6031', 'cost.items' => '605', 'stock_adjustment' => '6031',
         'write_off' => '651', 'doctor_fees' => '632', 'withholding' => '447', 'referrer_fees' => '632', 'finance_cash' => '5711', 'payer_payment' => '521',
@@ -133,14 +133,15 @@ class Posting
             $plans->push($undo('receipt', $refund->receipt_id, 'receipt', $refund->created_at, 'receipt_refund'));
         }
 
-        foreach (ClaimInvoice::with('lines', 'insurance')->whereBetween('issued_on', [$from->toDateString(), $to->toDateString()])->get() as $c) {
+        // Invoices brought from before go-live are already in the opening balances: only their payments post.
+        foreach (ClaimInvoice::with('lines', 'insurance')->where('is_opening', false)->whereBetween('issued_on', [$from->toDateString(), $to->toDateString()])->get() as $c) {
             $lines = [['payers', (float) $c->total_claimed, 0]];
             foreach ($c->lines->groupBy('source_type') as $type => $group) {
                 $lines[] = ['revenue.'.$type, 0, (float) $group->sum('payer_amount')];
             }
             $plans->push($plan('claim_invoice', $c->id, 'claim_invoice', $c->issued_on, 'claims', __('messages.posting.labels.claim', ['number' => $c->number, 'payer' => $c->insurance->name ?? '']), $c->number, $lines));
         }
-        foreach (ClaimInvoice::whereNotNull('cancelled_at')->whereBetween('cancelled_at', [$from, $to])->get() as $c) {
+        foreach (ClaimInvoice::where('is_opening', false)->whereNotNull('cancelled_at')->whereBetween('cancelled_at', [$from, $to])->get() as $c) {
             $plans->push($undo('claim_invoice', $c->id, 'claim_invoice', $c->cancelled_at, 'claim_cancel'));
         }
         foreach (ClaimPayment::with('invoice.insurance')->whereBetween('paid_on', [$from->toDateString(), $to->toDateString()])->get() as $p) {

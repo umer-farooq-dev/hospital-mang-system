@@ -47,6 +47,12 @@
                         {{ Form::select('store_id', $stores, $pending['options']['store_id'] ?? null, ['class' => 'form-select', 'placeholder' => __('messages.common.choose')]) }}
                     </div>
                 @endif
+                @if (in_array($kind, ['patient_balances', 'payer_balances']))
+                    <div class="col-md-2">
+                        {{ Form::label('date', __('messages.data_import.balance_date') . ':', ['class' => 'form-label']) }}
+                        {{ Form::date('date', $pending['options']['date'] ?? null, ['class' => 'form-control']) }}
+                    </div>
+                @endif
                 @if ($kind === 'opening_balances')
                     <div class="col-md-2">
                         {{ Form::label('date', __('messages.data_import.fields.date') . ':', ['class' => 'form-label required']) }}
