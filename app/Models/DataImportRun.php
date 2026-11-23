@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /** One import of a file at go-live: what was created, what already existed, the lines that failed. */
 class DataImportRun extends Model
 {
-    protected $fillable = ['kind', 'file_name', 'user_id', 'options', 'created', 'existing', 'failed', 'errors', 'note'];
+    protected $fillable = ['kind', 'file_name', 'user_id', 'options', 'created', 'updated', 'existing', 'failed', 'errors', 'note'];
 
-    protected $casts = ['options' => 'array', 'errors' => 'array', 'created' => 'integer', 'existing' => 'integer', 'failed' => 'integer'];
+    protected $casts = ['options' => 'array', 'errors' => 'array', 'created' => 'integer', 'updated' => 'integer', 'existing' => 'integer', 'failed' => 'integer'];
 
     public function user(): BelongsTo
     {

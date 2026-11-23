@@ -20,7 +20,7 @@ class DataImportTest extends TestCase
                 $t->unsignedInteger('sort_order')->default(0), $t->boolean('is_active')->default(true)],
             'suppliers' => fn ($t) => [$t->string('name'), $t->string('contact_person')->nullable(), $t->string('phone')->nullable(), $t->string('email')->nullable(),
                 $t->text('address')->nullable(), $t->string('tax_number')->nullable(), $t->boolean('is_active')->default(true)],
-            'insurances' => fn ($t) => [$t->string('name'), $t->unsignedInteger('payer_type')->default(1), $t->decimal('coverage_percent', 5, 2)->nullable(),
+            'insurances' => fn ($t) => [$t->string('name'), $t->unsignedInteger('payer_type')->default(1), $t->decimal('coverage_percent', 5, 2)->nullable(), $t->double('discount')->nullable(),
                 $t->string('insurance_code'), $t->string('contact_person')->nullable(), $t->string('phone')->nullable(), $t->string('email')->nullable(),
                 $t->text('address')->nullable(), $t->string('billing_option')->default('per_visit'), $t->unsignedInteger('credit_days')->nullable(),
                 $t->text('claim_note')->nullable(), $t->double('service_tax')->default(0), $t->double('hospital_rate')->default(0), $t->double('total')->default(0), $t->boolean('status')],
@@ -42,7 +42,7 @@ class DataImportTest extends TestCase
             'journal_lines' => fn ($t) => [$t->unsignedBigInteger('journal_entry_id'), $t->unsignedInteger('account_id'), $t->string('label')->nullable(),
                 $t->decimal('debit', 15, 2)->default(0), $t->decimal('credit', 15, 2)->default(0)],
             'data_import_runs' => fn ($t) => [$t->string('kind'), $t->string('file_name'), $t->unsignedBigInteger('user_id')->nullable(), $t->json('options')->nullable(),
-                $t->unsignedInteger('created')->default(0), $t->unsignedInteger('existing')->default(0), $t->unsignedInteger('failed')->default(0), $t->json('errors')->nullable(), $t->string('note')->nullable()],
+                $t->unsignedInteger('created')->default(0), $t->unsignedInteger('updated')->default(0), $t->unsignedInteger('existing')->default(0), $t->unsignedInteger('failed')->default(0), $t->json('errors')->nullable(), $t->string('note')->nullable()],
         ];
         foreach ($tables as $name => $columns) {
             Schema::create($name, function (Blueprint $t) use ($columns) {
