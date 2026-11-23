@@ -54,6 +54,17 @@
         </li>
         @endcanroute
     @endmodule
+    {{-- Accounting --}}
+    @module('Accounting', $modules)
+        @canroute('accounting.entries.index')
+        <li class="nav-item {{ Request::is('accounting*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('accounting.entries.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-book"></i></span>
+                <span class="aside-menu-title">{{ __('messages.accounting.accounting') }}</span>
+            </a>
+        </li>
+        @endcanroute
+    @endmodule
     {{-- Third-party billing --}}
     @module('Claims', $modules)
         @canroute('claims.index')
@@ -1940,6 +1951,16 @@
                     </a>
                 </li>
             @endif
+            @module('Accounting', $modules)
+                @canroute('accounting.entries.index')
+                <li class="nav-item {{ Request::is('accounting*') ? 'active' : '' }}">
+                    <a class="nav-link  d-flex align-items-center py-3" href="{{ route('accounting.entries.index') }}">
+                        <span class="aside-menu-icon me-3"><i class="fas fa-book"></i></span>
+                        <span class="aside-menu-title">{{ __('messages.accounting.accounting') }}</span>
+                    </a>
+                </li>
+                @endcanroute
+            @endmodule
             @module('Claims', $modules)
                 @canroute('claims.index')
                 <li class="nav-item {{ Request::is('third-party*') ? 'active' : '' }}">

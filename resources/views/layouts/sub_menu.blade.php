@@ -10,6 +10,29 @@
     </a>
 </li>
 @endcanroute
+{{-- Accounting (P7) --}}
+@module('Accounting', $modules)
+    @canroute('accounting.entries.index')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('accounting/entries*') ? 'active' : '' }}" href="{{ route('accounting.entries.index') }}">{{ __('messages.accounting.entries') }}</a>
+    </li>
+    @endcanroute
+    @canroute('accounting.ledger')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('accounting/ledger*') ? 'active' : '' }}" href="{{ route('accounting.ledger') }}">{{ __('messages.accounting.ledger') }}</a>
+    </li>
+    @endcanroute
+    @canroute('accounting.trial-balance')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('accounting/trial-balance*') ? 'active' : '' }}" href="{{ route('accounting.trial-balance') }}">{{ __('messages.accounting.trial_balance') }}</a>
+    </li>
+    @endcanroute
+    @canroute('accounting.setup')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('accounting/setup*') ? 'active' : '' }}" href="{{ route('accounting.setup') }}">{{ __('messages.accounting.setup') }}</a>
+    </li>
+    @endcanroute
+@endmodule
 {{-- Third-party billing (P6) --}}
 @module('Claims', $modules)
     @canroute('claims.index')
