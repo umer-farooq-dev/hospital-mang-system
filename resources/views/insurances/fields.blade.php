@@ -195,7 +195,7 @@
                                     {{ Form::text('disease_name[]', $disease->disease_name, ['class' => 'form-control disease-name ', 'placeholder' => __('messages.insurance.diseases_name')]) }}
                                 </td>
                                 <td>
-                                    {{ Form::text('disease_charge[]', number_format($disease->disease_charge, 2), [
+                                    {{ Form::text('disease_charge[]', inputAmount($disease->disease_charge), [
                                         'class' => 'form-control  disease-charge  price-input',
                                         'placeholder' => __('messages.insurance.diseases_charge'),
                                     ]) }}
@@ -235,7 +235,7 @@
                                 {{ __('messages.insurance.total_amount') . ':' }}</td>
                             <td class="{{getCurrentLoginUserLanguageName()=='ar' ? 'text-left' : 'text-right'}}">
                                 <span id="insuranceTotal"
-                                    class="totalAmount {{getCurrentLoginUserLanguageName()=='ar' ? 'me-2' : 'ms-2'}}">{{ isset($insurance) ? getCurrencySymbol() . '' . number_format($insurance->total, 2) : getCurrencySymbol() . '' . 0 }}
+                                    class="totalAmount {{getCurrentLoginUserLanguageName()=='ar' ? 'me-2' : 'ms-2'}}">{{ isset($insurance) ? getCurrencySymbol() . '' . inputAmount($insurance->total) : getCurrencySymbol() . '' . 0 }}
                                 </span>
                             </td>
                         </tr>

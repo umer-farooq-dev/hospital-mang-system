@@ -54,10 +54,10 @@
                                 {{ Form::number('quantity[]', $packageServiceItem->quantity, ['class' => 'form-control text-gray-700 qty','required','placeholder' => __('messages.package.qty')]) }}
                             </td>
                             <td class="service-price">
-                                {{ Form::text('rate[]', number_format($packageServiceItem->rate,2), ['class' => 'form-control text-gray-700 price-input price','required','placeholder' => __('messages.package.rate')]) }}
+                                {{ Form::text('rate[]', inputAmount($packageServiceItem->rate), ['class' => 'form-control text-gray-700 price-input price','required','placeholder' => __('messages.package.rate')]) }}
                             </td>
                             <td class="amount text-right item-total text-gray-700">
-                                {{ number_format($packageServiceItem->amount,2) }}
+                                {{ inputAmount($packageServiceItem->amount) }}
                         </td>
                         <td class="text-center">
                             <a href="javascript:void(0)" title="{{__('messages.common.delete')}}"
@@ -99,7 +99,7 @@
                     <td class="font-weight-bold form-label fs-6 fw-bolder text-gray-700 mb-3">{{ __('messages.package.total_amount').(':') }}</td>
                     <td class="{{getCurrentLoginUserLanguageName()=='ar' ? 'text-left' : 'text-right'}}">
                         <span id="packageTotal" class="packagePrice {{getCurrentLoginUserLanguageName()=='ar' ? 'me-2' : 'ms-2'}}">
-                            {{ isset($package) ? getCurrencySymbol() . '' . number_format($package->total_amount,2) : getCurrencySymbol() . '' . 0 }}
+                            {{ isset($package) ? getCurrencySymbol() . '' . inputAmount($package->total_amount) : getCurrencySymbol() . '' . 0 }}
                         </span>
                     </td>
                 </tr>

@@ -72,8 +72,8 @@ class ReferrerCommissionController extends AppBaseController
             $t = fn ($k) => __('messages.referrer_commissions.'.$k);
             fputcsv($out, [$t('referrer'), $t('visits'), $t('amount'), '%', $t('commission'), $t('paid_column'), $t('due')], ';');
             foreach ($rows as $r) {
-                fputcsv($out, [$r['name'], $r['visits'], number_format($r['amount'], 2, ',', ''), number_format($r['percent'], 2, ',', ''),
-                    number_format($r['commission'], 2, ',', ''), number_format($r['paid'], 2, ',', ''), number_format($r['due'], 2, ',', '')], ';');
+                fputcsv($out, [$r['name'], $r['visits'], number_format($r['amount'], currencyFormatSettings()['decimals'], ',', ''), number_format($r['percent'], 2, ',', ''),
+                    number_format($r['commission'], currencyFormatSettings()['decimals'], ',', ''), number_format($r['paid'], currencyFormatSettings()['decimals'], ',', ''), number_format($r['due'], currencyFormatSettings()['decimals'], ',', '')], ';');
             }
             fclose($out);
         }, 'referrer-commissions-'.$from->format('Ymd').'-'.$to->format('Ymd').'.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);

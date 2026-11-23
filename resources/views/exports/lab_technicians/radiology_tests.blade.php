@@ -23,7 +23,7 @@
             <td>{{ (!empty($radiologyTest->subcategory)) ? $radiologyTest->subcategory : __('messages.common.n/a') }}</td>
             <td>{{ (!empty($radiologyTest->report_days)) ? $radiologyTest->report_days : __('messages.common.n/a') }}</td>
             <td>{{ $radiologyTest->chargecategory->name }}</td>
-            <td>{{ number_format($radiologyTest->standard_charge,2) }}</td>
+            <td>{{ inputAmount($radiologyTest->standard_charge) }}</td>
         </tr>
     @endforeach
     </tbody>

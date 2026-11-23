@@ -287,13 +287,13 @@
                             <tr>
                                 <td class="font-weight-bold text-start">{{ __('messages.purchase_medicine.tax') . ':' }}</td>
                                 <td class="text-gray-900 text-end pe-0">
-                                    {{ number_format($medicineBill->tax_amount, 2) }}%
+                                    {{ formatPercent($medicineBill->tax_amount) }}
                                 </td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold text-start">{{ __('messages.purchase_medicine.discount') . ':' }}</td>
                                 <td class="text-gray-900 text-end pe-0">
-                                    {{ number_format($medicineBill->discount, 2) }}%
+                                    {{ formatPercent($medicineBill->discount) }}
                                 </td>
                             </tr>
                             <tr>

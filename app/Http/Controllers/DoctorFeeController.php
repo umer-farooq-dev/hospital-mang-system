@@ -93,9 +93,9 @@ class DoctorFeeController extends AppBaseController
             fputcsv($out, [__('messages.stock.date'), __('messages.doctor_fees.kind'), __('messages.doctor_fees.detail'), __('messages.doctor_fees.base'), '%', __('messages.doctor_fees.amount')], ';');
             foreach ($doctorStatement->lines as $line) {
                 fputcsv($out, [$line->line_date?->format('d/m/Y'), __('messages.doctor_fees.kinds.'.$line->kind), $line->description,
-                    number_format($line->base_amount, 2, ',', ''), $line->percent !== null ? number_format($line->percent, 2, ',', '') : '', number_format($line->amount, 2, ',', '')], ';');
+                    number_format($line->base_amount, currencyFormatSettings()['decimals'], ',', ''), $line->percent !== null ? number_format($line->percent, 2, ',', '') : '', number_format($line->amount, currencyFormatSettings()['decimals'], ',', '')], ';');
             }
-            fputcsv($out, ['', '', __('messages.doctor_fees.net'), '', '', number_format($doctorStatement->net, 2, ',', '')], ';');
+            fputcsv($out, ['', '', __('messages.doctor_fees.net'), '', '', number_format($doctorStatement->net, currencyFormatSettings()['decimals'], ',', '')], ';');
             fclose($out);
         }, $doctorStatement->number.'.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }

@@ -866,7 +866,7 @@ class DataImport
         $debit = round($this->ctx['debit'] ?? 0, 2);
         $credit = round($this->ctx['credit'] ?? 0, 2);
         if (abs($debit - $credit) > 0.004) {
-            $this->fail('unbalanced', ['debit' => number_format($debit, 2), 'credit' => number_format($credit, 2)]);
+            $this->fail('unbalanced', ['debit' => formatAmount($debit), 'credit' => formatAmount($credit)]);
         }
         $this->journal();
         $year = Ledger::yearFor(Carbon::parse($this->openingDate()));

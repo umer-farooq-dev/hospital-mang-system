@@ -112,9 +112,9 @@
                             {{ Form::number('qty[]', $billItem->qty, ['class' => 'form-control qty quantity','required', 'placeholder' => __('messages.bill.qty')]) }}
                         </td>
                         <td>
-                            {{ Form::text('price[]', number_format($billItem->price,2), ['class' => 'form-control price-input price','required', 'placeholder' => __('messages.bill.price')]) }}
+                            {{ Form::text('price[]', inputAmount($billItem->price), ['class' => 'form-control price-input price','required', 'placeholder' => __('messages.bill.price')]) }}
                         </td>
-                        <td class="amount text-right itemTotal">{{ number_format($billItem->amount,2) }}
+                        <td class="amount text-right itemTotal">{{ inputAmount($billItem->amount) }}
                         </td>
                         <td class="text-center">
                             <i class="fa fa-trash text-danger delete-bill-add-item pointer"></i>
@@ -150,7 +150,7 @@
             <tr>
                 <td class="form-label text-right">{{ __('messages.bill.total_amount').(':') }}</td>
                 <td class="text-right">
-                    <span id="totalPrice" class="price">{{ isset($bill) ? getCurrencySymbol() . '' . number_format($bill->amount,2) : getCurrencySymbol() . '' . 0 }}</span>
+                    <span id="totalPrice" class="price">{{ isset($bill) ? getCurrencySymbol() . '' . inputAmount($bill->amount) : getCurrencySymbol() . '' . 0 }}</span>
                 </td>
             </tr>
             </tbody>

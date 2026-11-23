@@ -448,6 +448,14 @@ function formatAmount($amount): string
 }
 
 /**
+ * An amount for a form field, a script or a spreadsheet: the decimals from settings, a dot, no thousands separator (6000, 1250.50).
+ */
+function inputAmount($amount): string
+{
+    return number_format((float) $amount, currencyFormatSettings()['decimals'], '.', '');
+}
+
+/**
  * A percentage without trailing zeros, with the decimal separator from settings (80%, 12,5%).
  */
 function formatPercent($value): string

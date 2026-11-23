@@ -92,13 +92,13 @@
                                             <label
                                                 class="fw-bold text-muted py-3">{{ __('messages.purchase_medicine.tax_amount') }}</label>
                                             <span
-                                                class="fw-bold fs-6 text-gray-800">{{ number_format($medicinePurchase->tax, 2) }}%</span>
+                                                class="fw-bold fs-6 text-gray-800">{{ formatPercent($medicinePurchase->tax) }}</span>
                                         </div>
                                         <div class="col-lg-4 d-flex flex-column">
                                             <label
                                                 class="fw-bold text-muted py-3">{{ __('messages.purchase_medicine.discount') }}</label>
                                             <span
-                                                class="fw-bold fs-6 text-gray-800">{{ number_format($medicinePurchase->discount, 2) }}%</span>
+                                                class="fw-bold fs-6 text-gray-800">{{ formatPercent($medicinePurchase->discount) }}</span>
                                         </div>
                                         <div class="col-lg-4 d-flex flex-column">
                                             <label
@@ -191,7 +191,7 @@
                                                                 {{ __('messages.purchase_medicine.tax') . ':' }}</td>
                                                             <td
                                                                 class="text-gray-900 {{ getCurrentLoginUserLanguageName() == 'ar' ? 'text-start' : 'text-end' }} pe-0">
-                                                                {{ number_format($medicinePurchase->tax, 2) }}%
+                                                                {{ formatPercent($medicinePurchase->tax) }}
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -200,7 +200,7 @@
                                                             </td>
                                                             <td
                                                                 class="text-gray-900 {{ getCurrentLoginUserLanguageName() == 'ar' ? 'text-start' : 'text-end' }} pe-0">
-                                                                {{ number_format($medicinePurchase->discount, 2) }}%
+                                                                {{ formatPercent($medicinePurchase->discount) }}
                                                             </td>
                                                         </tr>
                                                         <tr>
