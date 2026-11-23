@@ -26,7 +26,7 @@
                 <div class="d-flex justify-content-between flex-wrap mb-7">
                     <div>
                         <div class="fs-3 fw-bold">{{ getAppName() }}</div>
-                        <div class="text-muted">{{ __('messages.claims.invoice') }} N° <b>{{ $invoice->number }}</b></div>
+                        <div class="text-muted">{{ $invoice->insurance?->claim_title ?: __('messages.claims.invoice') }} N° <b>{{ $invoice->number }}</b></div>
                         <div class="text-muted">{{ __('messages.claims.issued_on') }}: {{ $invoice->issued_on->format('d/m/Y') }}
                             @if ($invoice->due_on) · {{ __('messages.claims.due_on') }}: {{ $invoice->due_on->format('d/m/Y') }}@endif</div>
                         <div class="text-muted">{{ __('messages.claims.period') }}: {{ $invoice->period_from->format('d/m/Y') }} – {{ $invoice->period_to->format('d/m/Y') }}</div>
@@ -37,7 +37,7 @@
                         @if ($invoice->insurance?->phone)<div class="text-muted">{{ $invoice->insurance->phone }}</div>@endif
                     </div>
                 </div>
-                @include('claims.lines_table', ['rows' => $invoice->lines])
+                @include('claims.lines_table', ['rows' => $invoice->lines, 'columns' => $invoice->insurance?->claimColumns()])
                 @if ($invoice->insurance?->claim_note)
                     <div class="mt-5" style="white-space: pre-line">{{ $invoice->insurance->claim_note }}</div>
                 @endif

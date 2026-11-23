@@ -58,6 +58,17 @@ class Insurance extends Model
 
     const PAYER_TYPE = 'payer_type';
 
+    // Optional columns of the claim invoice; the date, act, total and payer share are always printed.
+    const CLAIM_COLUMNS = ['patient_number', 'voucher', 'icd10', 'patient_share'];
+
+    const DEFAULT_CLAIM_COLUMNS = ['patient_number', 'voucher', 'patient_share'];
+
+    /** Columns this insurer's claim invoices show. */
+    public function claimColumns(): array
+    {
+        return $this->claim_columns === null ? self::DEFAULT_CLAIM_COLUMNS : array_values(array_intersect(self::CLAIM_COLUMNS, $this->claim_columns));
+    }
+
     public static function rules(?int $ignoreId = null): array
     {
         return [
@@ -76,6 +87,9 @@ class Insurance extends Model
             'billing_option' => ['required', Rule::in(self::BILLING_OPTIONS)],
             'credit_days' => 'nullable|integer|min:0|max:365',
             'claim_note' => 'nullable|string|max:2000',
+            'claim_title' => 'nullable|string|max:100',
+            'claim_columns' => 'nullable|array',
+            'claim_columns.*' => ['string', Rule::in(self::CLAIM_COLUMNS)],
             'price_list_id' => 'nullable|integer|exists:price_lists,id',
             'tax_id' => 'nullable|max:50',
             'trade_register' => 'nullable|max:50',
@@ -116,6 +130,8 @@ class Insurance extends Model
         'billing_option',
         'credit_days',
         'claim_note',
+        'claim_title',
+        'claim_columns',
         'price_list_id',
         'tax_id',
         'trade_register',
@@ -133,6 +149,7 @@ class Insurance extends Model
     ];
 
     protected $casts = [
+        'claim_columns' => 'array',
         'id' => 'integer',
         'payer_type' => 'integer',
         'coverage_percent' => 'float',

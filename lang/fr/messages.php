@@ -3873,6 +3873,9 @@ return [
         'line_error' => "Ligne :line (:name) n'a pas pu être enregistrée.",
     ],
     'claims' => [
+        'claim_title' => 'Titre de ses factures',
+        'claim_columns' => 'Colonnes de ses factures',
+        'columns' => ['patient_number' => 'Numéro patient', 'voucher' => 'N° bon', 'icd10' => 'CIM-10', 'patient_share' => 'Part patient (T.M.)'],
         'third_party' => 'Facturation tiers payants',
         'claims' => 'Factures tiers payants',
         'invoice' => 'Facture tiers payant',

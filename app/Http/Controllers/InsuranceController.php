@@ -58,6 +58,7 @@ class InsuranceController extends AppBaseController
         $input['hospital_rate'] = $input['hospital_rate'] ?? 0;
         $input['total'] = $input['total'] ?? 0;
         $input['status'] = isset($input['status']) ? 1 : 0;
+        $input['claim_columns'] = $request->has('claim_layout_sent') ? array_values((array) $request->input('claim_columns', [])) : null;
         try {
             DB::beginTransaction();
             $insurance = $this->insuranceRepository->store($input);
@@ -94,6 +95,7 @@ class InsuranceController extends AppBaseController
         $input['hospital_rate'] = $input['hospital_rate'] ?? 0;
         $input['total'] = $input['total'] ?? 0;
         $input['status'] = isset($input['status']) ? 1 : 0;
+        $input['claim_columns'] = $request->has('claim_layout_sent') ? array_values((array) $request->input('claim_columns', [])) : null;
         try {
             DB::beginTransaction();
             $insurance = $this->insuranceRepository->update($insurance, $input);
