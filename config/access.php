@@ -344,6 +344,7 @@ return [
         Controllers\ClaimController::class => 'claims',
         Controllers\JournalEntryController::class => 'journal_entries',
         Controllers\AccountingSetupController::class => 'accounting_setup',
+        Controllers\PostingController::class => 'accounting_setup',
         Controllers\AccountingReportController::class => 'accounting_reports',
         Controllers\ClaimSettlementController::class => 'claims',
         Controllers\DoctorFeeController::class => 'doctor_fees',

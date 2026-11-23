@@ -27,6 +27,11 @@
         <a class="nav-link p-0 {{ Request::is('accounting/trial-balance*') ? 'active' : '' }}" href="{{ route('accounting.trial-balance') }}">{{ __('messages.accounting.trial_balance') }}</a>
     </li>
     @endcanroute
+    @canroute('accounting.posting')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('accounting/posting*') ? 'active' : '' }}" href="{{ route('accounting.posting') }}">{{ __('messages.posting.title') }}</a>
+    </li>
+    @endcanroute
     @canroute('accounting.setup')
     <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
         <a class="nav-link p-0 {{ Request::is('accounting/setup*') ? 'active' : '' }}" href="{{ route('accounting.setup') }}">{{ __('messages.accounting.setup') }}</a>
