@@ -17,7 +17,8 @@ use Illuminate\Validation\ValidationException;
 class CashCounterController extends AppBaseController
 {
     const SETTINGS = ['receipt_start_number', 'receipt_followup_days', 'receipt_paper', 'cash_payment_method', 'receipt_footer_text',
-        'followup_mode', 'followup_percent', 'policy_expired_mode', 'cashier_session_required'];
+        'followup_mode', 'followup_percent', 'policy_expired_mode', 'cashier_session_required',
+        'session_close_approval', 'cash_difference_allowed', 'void_approval'];
 
     const FOLLOWUP_MODES = ['off', 'free', 'percent'];
 
@@ -78,6 +79,9 @@ class CashCounterController extends AppBaseController
                 'followup_percent' => 'nullable|numeric|min:0|max:100',
                 'policy_expired_mode' => ['required', Rule::in(self::POLICY_EXPIRED_MODES)],
                 'cashier_session_required' => 'nullable|in:0,1',
+                'session_close_approval' => ['required', Rule::in(\App\Models\CashSession::APPROVAL_MODES)],
+                'cash_difference_allowed' => 'nullable|numeric|min:0',
+                'void_approval' => 'nullable|in:0,1',
             ])->validate();
             foreach (self::SETTINGS as $key) {
                 $value = $settings[$key] ?? null;

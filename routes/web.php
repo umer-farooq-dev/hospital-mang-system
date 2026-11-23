@@ -498,6 +498,9 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
     });
     Route::middleware('access:Admin|Accountant')->group(function () {
         Route::post('receipts/{receipt}/void', [ReceiptController::class, 'void'])->name('receipts.void');
+        Route::post('receipts/{receipt}/void/approve', [ReceiptController::class, 'approveVoid'])->name('receipts.void.approve');
+        Route::post('receipts/{receipt}/void/cancel', [ReceiptController::class, 'cancelVoidRequest'])->name('receipts.void.cancel');
+        Route::post('cash-sessions/{cashSession}/approve', [ReceiptController::class, 'approveSession'])->name('cash-sessions.approve');
         Route::post('receipts/{receipt}/refund', [ReceiptController::class, 'refund'])->name('receipts.refund');
         Route::post('receipts/{receipt}/method', [ReceiptController::class, 'changeMethod'])->name('receipts.method');
         Route::post('receipts/{receipt}/doctor', [ReceiptController::class, 'changeDoctor'])->name('receipts.doctor');

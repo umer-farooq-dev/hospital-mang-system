@@ -22,6 +22,44 @@
         <div class="d-flex flex-column">
             @include('flash::message')
             @include('layouts.errors')
+            @php($canApprove = canAccessRoute('receipts.void.approve'))
+            @if ($canApprove && ($pendingVoids->isNotEmpty() || $pendingCloses->isNotEmpty()))
+                <div class="card mb-5 border border-warning">
+                    <div class="card-body">
+                        <h3 class="mb-4">{{ __('messages.receipts.to_approve') }}</h3>
+                        @foreach ($pendingVoids as $pending)
+                            <div class="d-md-flex justify-content-between align-items-center py-2 border-bottom border-gray-200">
+                                <div>{{ __('messages.receipts.void_request_line', ['number' => $pending->receipt_number, 'amount' => formatMoney($pending->amount),
+                                    'patient' => $pending->patient->patientUser->full_name ?? '', 'user' => $pending->voidRequester->full_name ?? '',
+                                    'reason' => \App\Models\MasterListItem::label(\App\Models\Refund::REASON_LIST, $pending->void_request_reason)]) }}</div>
+                                <div class="d-flex gap-2 mt-2 mt-md-0">
+                                    @if ((int) $pending->void_requested_by !== (int) auth()->id())
+                                        {{ Form::open(['route' => ['receipts.void.approve', $pending->id]]) }}<button class="btn btn-sm btn-danger">{{ __('messages.receipts.approve_void') }}</button>{{ Form::close() }}
+                                    @endif
+                                    {{ Form::open(['route' => ['receipts.void.cancel', $pending->id]]) }}<button class="btn btn-sm btn-light">{{ __('messages.receipts.cancel_request') }}</button>{{ Form::close() }}
+                                </div>
+                            </div>
+                        @endforeach
+                        @foreach ($pendingCloses as $close)
+                            <div class="d-md-flex justify-content-between align-items-center py-2 border-bottom border-gray-200">
+                                <div>
+                                    <a href="{{ route('cash-sessions.print', $close->id) }}" target="_blank">{{ __('messages.cashier.close_report') }} N° {{ $close->closing_number }}</a>
+                                    · {{ $close->counter->code ?? '' }} · {{ $close->user->full_name ?? '' }} · {{ $close->closed_at?->format('d/m/Y H:i') }}
+                                    @foreach ($close->differences() as $method => $difference)
+                                        <span class="badge {{ abs($difference) < 0.005 ? 'bg-light text-dark' : 'bg-warning text-dark' }} ms-1">{{ \App\Models\PaymentMethod::label($method) }} {{ formatMoney($difference) }}</span>
+                                    @endforeach
+                                </div>
+                                @if ((int) $close->user_id !== (int) auth()->id())
+                                    {{ Form::open(['route' => ['cash-sessions.approve', $close->id], 'class' => 'd-flex gap-2 mt-2 mt-md-0']) }}
+                                    <input type="text" name="approval_note" class="form-control form-control-sm" placeholder="{{ __('messages.cashier.notes') }}" maxlength="1000">
+                                    <button class="btn btn-sm btn-primary text-nowrap">{{ __('messages.cashier.approve_close') }}</button>
+                                    {{ Form::close() }}
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
             <div class="card">
                 <div class="card-body">
                     <form method="GET" action="{{ route('receipts.index') }}" class="row g-3 align-items-end mb-6">
@@ -78,6 +116,9 @@
                                         <td class="text-end text-nowrap">{{ formatMoney($receipt->amount) }}</td>
                                         <td>
                                             <span class="badge bg-light-{{ $badges[$receipt->status] }}">{{ __('messages.receipts.status.' . $receipt->status) }}</span>
+                                            @if ($receipt->void_requested_at && ! $receipt->voided_at)
+                                                <div class="badge bg-warning text-dark">{{ __('messages.receipts.void_pending') }}</div>
+                                            @endif
                                             @if ($receipt->status === 'voided')
                                                 <div class="text-muted fs-7">{{ $receipt->void_reason_name }}</div>
                                             @elseif ($receipt->refund)

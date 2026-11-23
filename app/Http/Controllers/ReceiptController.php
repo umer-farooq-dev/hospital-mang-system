@@ -45,6 +45,8 @@ class ReceiptController extends AppBaseController
             'methods' => PaymentMethod::options(),
             'reasons' => MasterListItem::options(Refund::REASON_LIST),
             'doctors' => \App\Models\Doctor::with('doctorUser')->get()->where('doctorUser.status', 1)->pluck('doctorUser.full_name', 'id')->sort()->all(),
+            'pendingVoids' => Receipt::with('voidRequester', 'patient.patientUser')->whereNotNull('void_requested_at')->whereNull('voided_at')->latest('void_requested_at')->get(),
+            'pendingCloses' => \App\Models\CashSession::with('user', 'counter')->where('approval_status', 'pending')->latest('closed_at')->get(),
         ]);
     }
 
@@ -59,8 +61,40 @@ class ReceiptController extends AppBaseController
     public function void(Request $request, Receipt $receipt)
     {
         $input = $this->reason($request);
-        $this->cashierRepository->void($receipt, Auth::user(), (int) $input['reason']);
+        if (CashierRepository::voidNeedsApproval()) {
+            $this->cashierRepository->requestVoid($receipt, Auth::user(), (int) $input['reason']);
+            Flash::success(__('messages.receipts.void_requested', ['number' => $receipt->receipt_number]));
+        } else {
+            $this->cashierRepository->void($receipt, Auth::user(), (int) $input['reason']);
+            Flash::success(__('messages.receipts.voided', ['number' => $receipt->receipt_number]));
+        }
+
+        return redirect()->back();
+    }
+
+    /** Second person confirms a requested void. */
+    public function approveVoid(Receipt $receipt)
+    {
+        $this->cashierRepository->approveVoid($receipt, Auth::user());
         Flash::success(__('messages.receipts.voided', ['number' => $receipt->receipt_number]));
+
+        return redirect()->back();
+    }
+
+    public function cancelVoidRequest(Receipt $receipt)
+    {
+        $this->cashierRepository->cancelVoidRequest($receipt);
+        Flash::success(__('messages.receipts.void_request_cancelled', ['number' => $receipt->receipt_number]));
+
+        return redirect()->back();
+    }
+
+    /** A supervisor approves a register close whose difference is above the allowed amount (or every close, per setting). */
+    public function approveSession(Request $request, \App\Models\CashSession $cashSession)
+    {
+        $input = $request->validate(['approval_note' => 'nullable|string|max:1000']);
+        $this->cashierRepository->approveClose($cashSession, Auth::user(), $input['approval_note'] ?? null);
+        Flash::success(__('messages.cashier.close_approved', ['number' => $cashSession->closing_number]));
 
         return redirect()->back();
     }
