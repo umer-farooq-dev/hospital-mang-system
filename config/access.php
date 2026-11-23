@@ -346,6 +346,7 @@ return [
         Controllers\AccountingSetupController::class => 'accounting_setup',
         Controllers\PostingController::class => 'accounting_setup',
         Controllers\AccountingReportController::class => 'accounting_reports',
+        Controllers\AccountingExportController::class => 'accounting_reports',
         Controllers\ClaimSettlementController::class => 'claims',
         Controllers\DoctorFeeController::class => 'doctor_fees',
         Controllers\ReferrerCommissionController::class => 'referrer_commissions',

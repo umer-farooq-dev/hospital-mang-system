@@ -134,4 +134,24 @@ class LedgerTest extends TestCase
         $this->refused(fn () => Ledger::reverse($reversal->load('lines', 'journal')));
         $this->assertSame(Journal::first()->id, $reversal->journal_id);
     }
+
+    public function test_the_export_file_follows_the_admin_layout_and_skips_exported_entries(): void
+    {
+        $entry = Ledger::post('CA', '2026-11-05', 'Reçu Kaboré', [['account_id' => $this->acc['5711'], 'debit' => 1250.5], ['account_id' => $this->acc['706100'], 'credit' => 1250.5]], 'R-117511');
+        \App\Models\Setting::create(['key' => 'sage_export', 'value' => json_encode(['columns' => ['date', 'journal', 'account', 'label', 'direction', 'amount'],
+            'separator' => 'tab', 'date_format' => 'dmy', 'decimal' => ',', 'header' => false, 'encoding' => 'Windows-1252', 'extension' => 'txt'])]);
+        $from = \Illuminate\Support\Carbon::parse('2026-11-01');
+        $to = \Illuminate\Support\Carbon::parse('2026-11-30');
+        $options = \App\Utils\SageExport::options();
+        $rows = \App\Utils\SageExport::rows(\App\Utils\SageExport::entries($from, $to, true), $options);
+        $this->assertSame([['051126', 'CA', '5711', 'Reçu Kaboré', 'D', '1250,50'], ['051126', 'CA', '706100', 'Reçu Kaboré', 'C', '1250,50']], $rows);
+
+        $content = \App\Utils\SageExport::content($rows, $options);
+        $this->assertStringContainsString("051126\tCA\t5711", $content);
+        $this->assertSame('Reçu Kaboré', trim(mb_convert_encoding(explode("\t", $content)[3], 'UTF-8', 'Windows-1252'), '"'), 'ANSI for Sage');
+
+        \App\Models\JournalEntry::whereKey($entry->id)->update(['exported_at' => now()]);
+        $this->assertCount(0, \App\Utils\SageExport::entries($from, $to, true));
+        $this->assertCount(1, \App\Utils\SageExport::entries($from, $to, false));
+    }
 }

@@ -27,6 +27,31 @@
         <a class="nav-link p-0 {{ Request::is('accounting/trial-balance*') ? 'active' : '' }}" href="{{ route('accounting.trial-balance') }}">{{ __('messages.accounting.trial_balance') }}</a>
     </li>
     @endcanroute
+    @canroute('accounting.profit-loss')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('accounting/profit-loss*') ? 'active' : '' }}" href="{{ route('accounting.profit-loss') }}">{{ __('messages.accounting.profit_loss') }}</a>
+    </li>
+    @endcanroute
+    @canroute('accounting.balance-sheet')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('accounting/balance-sheet*') ? 'active' : '' }}" href="{{ route('accounting.balance-sheet') }}">{{ __('messages.accounting.balance_sheet') }}</a>
+    </li>
+    @endcanroute
+    @canroute('accounting.cash-book')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('accounting/cash-book*') ? 'active' : '' }}" href="{{ route('accounting.cash-book') }}">{{ __('messages.accounting.cash_book') }}</a>
+    </li>
+    @endcanroute
+    @canroute('accounting.turnover')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('accounting/turnover*') ? 'active' : '' }}" href="{{ route('accounting.turnover') }}">{{ __('messages.accounting.turnover') }}</a>
+    </li>
+    @endcanroute
+    @canroute('accounting.export')
+    <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
+        <a class="nav-link p-0 {{ Request::is('accounting/export*') ? 'active' : '' }}" href="{{ route('accounting.export') }}">{{ __('messages.sage.title') }}</a>
+    </li>
+    @endcanroute
     @canroute('accounting.posting')
     <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('accounting*') ? 'd-none' : '' }}">
         <a class="nav-link p-0 {{ Request::is('accounting/posting*') ? 'active' : '' }}" href="{{ route('accounting.posting') }}">{{ __('messages.posting.title') }}</a>
