@@ -56,6 +56,7 @@ class PostingTest extends TestCase
         $this->table('expenses', fn ($t) => [$t->integer('expense_head'), $t->string('name'), $t->string('invoice_number')->nullable(), $t->dateTime('date'), $t->double('amount')]);
         $this->table('incomes', fn ($t) => [$t->integer('income_head'), $t->string('name'), $t->string('invoice_number')->nullable(), $t->dateTime('date'), $t->double('amount')]);
         $this->table('payments', fn ($t) => [$t->date('payment_date'), $t->unsignedInteger('account_id'), $t->string('pay_to'), $t->double('amount')]);
+        $this->table('employee_payrolls', fn ($t) => [$t->string('payroll_id'), $t->string('month'), $t->integer('year'), $t->double('net_salary'), $t->double('deductions')->default(0), $t->integer('status')]);
         $this->table('fund_transfers', fn ($t) => [$t->unsignedBigInteger('from_counter_id'), $t->unsignedBigInteger('to_counter_id')->nullable(), $t->unsignedInteger('destination')->nullable(),
             $t->unsignedInteger('payment_method'), $t->decimal('amount', 15, 2)]);
 
@@ -138,5 +139,29 @@ class PostingTest extends TestCase
 
         \App\Models\Setting::create(['key' => 'posting_accounts', 'value' => json_encode(['expense_head.1' => DB::table('accounts')->where('code', '605')->value('id')])]);
         $this->assertSame(1, Posting::generate(now()->subDays(2), now())['posted'], 'fixed rule: only the missing entry is posted');
+    }
+
+    public function test_paid_salaries_post_gross_net_and_deductions(): void
+    {
+        DB::table('employee_payrolls')->insert([['payroll_id' => 'PR1', 'month' => 'November', 'year' => 2026, 'net_salary' => 90000, 'deductions' => 10000, 'status' => 1, 'updated_at' => now()->subDay()],
+            ['payroll_id' => 'PR2', 'month' => 'November', 'year' => 2026, 'net_salary' => 50000, 'deductions' => 0, 'status' => 0, 'updated_at' => now()->subDay()]]);
+        $result = Posting::generate(now()->subDays(2), now());
+        $this->assertSame([1, []], [$result['posted'], $result['errors']], 'only the paid salary');
+        $this->assertEquals(100000, $this->balance('661'));
+        $this->assertEquals(-90000, $this->balance('5711'));
+        $this->assertEquals(-10000, $this->balance('447'));
+    }
+
+    public function test_the_export_can_add_up_lines_per_entry_or_per_journal_and_day(): void
+    {
+        DB::table('receipts')->insert([['id' => 1, 'receipt_number' => 1, 'cash_counter_id' => 1, 'payment_method' => 1, 'amount' => 1000, 'created_at' => now()->subDay()],
+            ['id' => 2, 'receipt_number' => 2, 'cash_counter_id' => 1, 'payment_method' => 1, 'amount' => 500, 'created_at' => now()->subDay()]]);
+        DB::table('receipt_lines')->insert([['receipt_id' => 1, 'payable_type' => 'opd_visit', 'payable_id' => 1, 'amount' => 1000],
+            ['receipt_id' => 2, 'payable_type' => 'opd_visit', 'payable_id' => 2, 'amount' => 500]]);
+        Posting::generate(now()->subDays(2), now());
+        $entries = \App\Utils\SageExport::entries(now()->subDays(2), now(), false);
+        $options = ['columns' => ['account', 'direction', 'amount'], 'decimal' => '.', 'date_format' => 'd/m/Y'];
+        $this->assertCount(4, \App\Utils\SageExport::rows($entries, $options + ['group' => 'none']));
+        $this->assertSame([['5711', 'D', '1500.00'], ['706100', 'C', '1500.00']], \App\Utils\SageExport::rows($entries, $options + ['group' => 'day']));
     }
 }
