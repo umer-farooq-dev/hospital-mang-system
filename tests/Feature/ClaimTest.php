@@ -25,8 +25,17 @@ class ClaimTest extends TestCase
             $t->string('name');
             $t->string('billing_option')->default('monthly');
             $t->unsignedSmallInteger('credit_days')->nullable();
+            $t->json('claim_columns')->nullable();
             $t->timestamps();
         });
+        foreach (['opd_diagnoses' => 'opd_patient_department_id', 'ipd_diagnoses' => 'ipd_patient_department_id'] as $table => $key) {
+            Schema::create($table, function (Blueprint $t) use ($key) {
+                $t->id();
+                $t->unsignedBigInteger($key);
+                $t->string('icd10_code')->nullable();
+                $t->timestamps();
+            });
+        }
         Schema::create('patient_insurances', function (Blueprint $t) {
             $t->id();
             $t->unsignedInteger('patient_id');
@@ -253,5 +262,23 @@ class ClaimTest extends TestCase
 
         $again = ClaimInvoice::eligible(1, Carbon::parse('2026-11-01'), Carbon::parse('2026-11-30'));
         $this->assertSame([3000.0], $again->where('source_id', $visit->source_id)->where('source_type', 'opd_visit')->pluck('payer_amount')->all());
+    }
+
+    public function test_claim_lines_carry_the_icd10_codes_and_each_insurer_chooses_its_columns(): void
+    {
+        $this->seedActs();
+        $visitId = DB::table('opd_patient_departments')->where('voucher_number', 'B-1')->value('id');
+        DB::table('opd_diagnoses')->insert([['opd_patient_department_id' => $visitId, 'icd10_code' => 'B50'], ['opd_patient_department_id' => $visitId, 'icd10_code' => null]]);
+        DB::table('ipd_diagnoses')->insert(['ipd_patient_department_id' => 1, 'icd10_code' => 'O82']);
+        $invoice = ClaimInvoice::generate(1, Carbon::parse('2026-11-01'), Carbon::parse('2026-11-30'), 1)->first();
+        $codes = $invoice->lines->mapWithKeys(fn ($l) => [$l->source_type.':'.$l->voucher_number => $l->icd10Codes()])->all();
+        $this->assertSame(['B50'], $codes['opd_visit:B-1']);
+        $this->assertSame(['O82'], $codes['ipd_bill:H-1'], 'the admission diagnoses');
+        $this->assertSame([], $codes['medicine_bill:'] ?? []);
+
+        $insurer = \App\Models\Insurance::find(1);
+        $this->assertSame(\App\Models\Insurance::DEFAULT_CLAIM_COLUMNS, $insurer->claimColumns());
+        $insurer->update(['claim_columns' => ['icd10', 'nonsense']]);
+        $this->assertSame(['icd10'], $insurer->fresh()->claimColumns());
     }
 }

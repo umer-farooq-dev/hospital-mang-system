@@ -55,6 +55,23 @@
         {{ Form::textarea('claim_note', null, ['class' => 'form-control', 'rows' => 2, 'maxlength' => 2000]) }}
         <div class="form-text">{{ __('messages.claims.claim_note_hint') }}</div>
     </div>
+    @php($claimColumns = isset($insurance) ? $insurance->claimColumns() : \App\Models\Insurance::DEFAULT_CLAIM_COLUMNS)
+    <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('claim_title', __('messages.claims.claim_title') . ':', ['class' => 'form-label']) }}
+        {{ Form::text('claim_title', null, ['class' => 'form-control', 'maxlength' => 100, 'placeholder' => __('messages.claims.invoice')]) }}
+    </div>
+    <div class="form-group col-sm-6 mb-5">
+        <input type="hidden" name="claim_layout_sent" value="1">
+        <label class="form-label">{{ __('messages.claims.claim_columns') }}:</label>
+        <div class="d-flex flex-wrap gap-4">
+            @foreach (\App\Models\Insurance::CLAIM_COLUMNS as $column)
+                <label class="form-check form-check-inline mb-0">
+                    <input type="checkbox" class="form-check-input" name="claim_columns[]" value="{{ $column }}" {{ in_array($column, $claimColumns) ? 'checked' : '' }}>
+                    <span class="form-check-label">{{ __('messages.claims.columns.' . $column) }}</span>
+                </label>
+            @endforeach
+        </div>
+    </div>
     <div class="form-group col-sm-6 mb-5">
         {{ Form::label('price_list_id', __('messages.insurance.price_list_id') . ':', ['class' => 'form-label']) }}
         {{ Form::select('price_list_id', $priceLists, null, ['class' => 'form-select', 'data-control' => 'select2', 'placeholder' => __('messages.insurance.price_list_default')]) }}

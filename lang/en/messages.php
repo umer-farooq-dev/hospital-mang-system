@@ -3882,6 +3882,9 @@ return [
         'line_error' => 'Line :line (:name) could not be saved.',
     ],
     'claims' => [
+        'claim_title' => 'Title of its claim invoices',
+        'claim_columns' => 'Columns of its claim invoices',
+        'columns' => ['patient_number' => 'Patient number', 'voucher' => 'Voucher number', 'icd10' => 'ICD-10', 'patient_share' => 'Patient share (T.M.)'],
         'third_party' => 'Third-party billing',
         'claims' => 'Claims',
         'invoice' => 'Claim invoice',

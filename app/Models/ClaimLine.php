@@ -77,4 +77,21 @@ class ClaimLine extends Model
             $this->invoice->refreshStatus();
         });
     }
+
+    /** ICD-10 codes of the diagnoses of the visit or admission the line comes from (exams of an admission use its diagnoses). */
+    public function icd10Codes(): array
+    {
+        $admissionId = match ($this->source_type) {
+            'ipd_bill' => IpdBill::whereKey($this->source_id)->value('ipd_patient_department_id'),
+            'exam_item' => ExamOrderItem::with('order:id,ipd_patient_department_id')->find($this->source_id)?->order?->ipd_patient_department_id,
+            default => null,
+        };
+        $query = match (true) {
+            $this->source_type === 'opd_visit' => OpdDiagnosis::where('opd_patient_department_id', $this->source_id),
+            (bool) $admissionId => IpdDiagnosis::where('ipd_patient_department_id', $admissionId),
+            default => null,
+        };
+
+        return $query ? $query->whereNotNull('icd10_code')->where('icd10_code', '!=', '')->distinct()->pluck('icd10_code')->all() : [];
+    }
 }
