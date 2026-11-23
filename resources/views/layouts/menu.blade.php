@@ -619,6 +619,16 @@
             @endcanroute
         @endmodule
 
+        {{-- Go-live check --}}
+        @canroute('go-live.index')
+        <li class="nav-item  {{ Request::is('go-live*') ? 'active' : '' }}">
+            <a class="nav-link  d-flex align-items-center py-3" href="{{ route('go-live.index') }}">
+                <span class="aside-menu-icon me-3"><i class="fas fa-clipboard-check"></i></span>
+                <span class="aside-menu-title">{{ __('messages.go_live.title') }}</span>
+            </a>
+        </li>
+        @endcanroute
+
         {{-- Go-live data import --}}
         @canroute('data-import.index')
         <li class="nav-item  {{ Request::is('data-import*') ? 'active' : '' }}">
