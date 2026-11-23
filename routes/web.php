@@ -787,6 +787,9 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::post('accounting/entries', [\App\Http\Controllers\JournalEntryController::class, 'store'])->name('accounting.entries.store');
         Route::get('accounting/entries/{journalEntry}', [\App\Http\Controllers\JournalEntryController::class, 'show'])->name('accounting.entries.show');
         Route::post('accounting/entries/{journalEntry}/reverse', [\App\Http\Controllers\JournalEntryController::class, 'storeReversal'])->name('accounting.entries.reverse');
+        Route::get('accounting/posting', [\App\Http\Controllers\PostingController::class, 'index'])->name('accounting.posting');
+        Route::post('accounting/posting/rules', [\App\Http\Controllers\PostingController::class, 'updateRules'])->name('accounting.posting.update');
+        Route::post('accounting/posting/generate', [\App\Http\Controllers\PostingController::class, 'storeGeneration'])->name('accounting.posting.generate');
         Route::get('accounting/setup', [\App\Http\Controllers\AccountingSetupController::class, 'index'])->name('accounting.setup');
         Route::post('accounting/accounts', [\App\Http\Controllers\AccountingSetupController::class, 'updateAccounts'])->name('accounting.accounts.update');
         Route::post('accounting/years', [\App\Http\Controllers\AccountingSetupController::class, 'updateYears'])->name('accounting.years.update');
