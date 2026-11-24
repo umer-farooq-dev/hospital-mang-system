@@ -24,4 +24,8 @@ assert.deepStrictEqual(
 assert.strictEqual(parseMrz([l1.replace("12345", "12845"), l2, l3].join("\n")), null);
 assert.strictEqual(parseMrz("no card here"), null);
 assert.strictEqual(checkDigit("B00000008"), "5"); // ICAO example weights 7-3-1
+// A desk MRZ scanner types the 90 characters on one line.
+const typed = parseMrz(l1 + l2 + l3);
+assert.deepStrictEqual([typed.documentNumber, typed.birthDate, typed.lastName], ["B12345678", "1990-04-15", "OUEDRAOGO"]);
+assert.strictEqual(parseMrz(l1 + l2), null, "two lines are not a card");
 console.log("mrz ok");

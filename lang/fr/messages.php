@@ -432,6 +432,9 @@ return [
 
     // insurance keys
     'insurance' => [
+        'contract_from' => 'Contrat du',
+        'contract_to' => "Contrat jusqu'au",
+        'contract_hint' => "Après cette date, le payeur n'est plus proposé et ses patients paient eux-mêmes.",
         'insurance' => 'Assurance',
         'insurances' => 'Assurances',
         'insurance_details' => 'Détails de l\'assurance',
@@ -567,6 +570,8 @@ return [
 
     // employee payroll keys
     'employee_payroll' => [
+        'payment_method' => 'Payé par',
+        'payment_method_default' => 'Caisse finance (par défaut)',
         'employee_payroll' => 'Paie des employés',
         'employee_payrolls' => 'Paie des employés',
         'employee_payroll_details' => 'Détails de la paie des employés',
@@ -2694,6 +2699,10 @@ return [
     ],
 
     'reception' => [
+        'mrz_scanner' => 'Scanner de carte (MRZ)',
+        'mrz_scanner_hint' => "Un champ de la fiche patient reçoit ce que tape le scanner de carte d'identité (les trois lignes du dos de la carte, comme un clavier) ; la fiche se remplit. Pas besoin de webcam.",
+        'mrz_scanner_placeholder' => 'Scanner : posez la carte sous le scanner',
+        'mrz_scanner_invalid' => "Le texte du scanner n'est pas une carte d'identité lisible. Scannez à nouveau la carte.",
         'default_payer' => 'Payeur proposé en premier (consultations, examens, admissions)',
         'default_payers' => ['self' => 'Paiement direct', 'policy' => 'Le contrat principal valide du patient'],
         'id_scan' => "Lecteur de carte (carte d'identité)",
@@ -2841,6 +2850,7 @@ return [
         'any_payer' => 'Tous les assurés',
         'is_active' => 'Active',
         'status' => [
+            'contract_ended' => 'Contrat terminé',
             'valid' => 'Valide',
             'expired' => 'Expirée',
             'not_started' => 'Pas encore valable',

@@ -39,6 +39,8 @@ class PatientInsuranceTest extends TestCase
             $table->double('total')->default(0);
             $table->string('insurance_no')->nullable();
             $table->string('insurance_code');
+            $table->date('contract_from')->nullable();
+            $table->date('contract_to')->nullable();
             $table->string('billing_option')->default('per_visit');
             $table->boolean('status')->default(1);
             $table->timestamps();
@@ -117,5 +119,23 @@ class PatientInsuranceTest extends TestCase
         $insurer->update(['status' => 0]);
         $this->assertSame([], PatientInsurance::validOn()->pluck('id')->all(), 'a deactivated payer covers nobody');
         $this->assertSame('inactive', $valid->fresh()->validity_status);
+    }
+
+    public function test_a_payer_whose_contract_ended_covers_nobody_and_is_no_longer_offered(): void
+    {
+        $this->travelTo('2026-06-15');
+        $insurer = $this->payer();
+        $policy = PatientInsurance::create(['patient_id' => 1, 'insurance_id' => $insurer->id]);
+        $this->assertArrayHasKey($insurer->id, \App\Models\Insurance::options());
+
+        $insurer->update(['contract_from' => '2025-07-01', 'contract_to' => '2026-06-14']);
+        $this->assertSame('contract_ended', $policy->fresh()->validity_status);
+        $this->assertSame([], PatientInsurance::validOn()->pluck('id')->all());
+        $this->assertArrayNotHasKey($insurer->id, \App\Models\Insurance::options());
+        $this->assertArrayHasKey($insurer->id, \App\Models\Insurance::options($insurer->id), 'kept on a record that already uses it');
+
+        $insurer->update(['contract_from' => '2026-07-01', 'contract_to' => null]);
+        $this->assertSame('not_started', $policy->fresh()->validity_status);
+        $this->assertTrue($policy->fresh()->isValidOn('2026-07-01'));
     }
 }

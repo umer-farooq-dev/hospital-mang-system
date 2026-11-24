@@ -436,6 +436,9 @@ return [
 
     // insurance keys
     'insurance' => [
+        'contract_from' => 'Contract from',
+        'contract_to' => 'Contract until',
+        'contract_hint' => 'After this date the payer is no longer offered and its patients pay themselves.',
         'insurance' => 'Insurance',
         'insurances' => 'Insurances',
         'insurance_details' => 'Insurance Details',
@@ -565,6 +568,8 @@ return [
 
     // employee payroll keys
     'employee_payroll' => [
+        'payment_method' => 'Paid by',
+        'payment_method_default' => 'Finance cash (default)',
         'employee_payroll' => 'Employee Payroll',
         'employee_payrolls' => 'Employee Payrolls',
         'employee_payroll_details' => 'Employee Payroll Details',
@@ -2684,6 +2689,10 @@ return [
     ],
 
     'reception' => [
+        'mrz_scanner' => 'Desk MRZ scanner',
+        'mrz_scanner_hint' => 'A field on the patient form receives what a desk ID scanner types (the three lines of the back of the card, as a keyboard); the form fills itself. No webcam needed.',
+        'mrz_scanner_placeholder' => 'Scanner: place the card under the scanner',
+        'mrz_scanner_invalid' => 'The scanner text is not a readable ID card. Scan the card again.',
         'default_payer' => 'Payer chosen first on visits, exams and admissions',
         'default_payers' => ['self' => 'Self-pay', 'policy' => "The patient's main valid policy"],
         'id_scan' => 'Card reader (ID card)',
@@ -2831,6 +2840,7 @@ return [
         'any_payer' => 'Any payer (insured)',
         'is_active' => 'Active',
         'status' => [
+            'contract_ended' => 'Contract ended',
             'valid' => 'Valid',
             'expired' => 'Expired',
             'not_started' => 'Not started',

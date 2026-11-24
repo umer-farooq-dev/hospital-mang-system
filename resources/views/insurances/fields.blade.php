@@ -50,6 +50,15 @@
         {{ Form::label('credit_days', __('messages.insurance.credit_days') . ':', ['class' => 'form-label']) }}
         {{ Form::number('credit_days', null, ['class' => 'form-control', 'min' => 0, 'max' => 365, 'placeholder' => __('messages.insurance.credit_days')]) }}
     </div>
+    <div class="form-group col-sm-3 mb-5">
+        {{ Form::label('contract_from', __('messages.insurance.contract_from') . ':', ['class' => 'form-label']) }}
+        {{ Form::date('contract_from', isset($insurance) ? $insurance->contract_from?->toDateString() : null, ['class' => 'form-control']) }}
+    </div>
+    <div class="form-group col-sm-3 mb-5">
+        {{ Form::label('contract_to', __('messages.insurance.contract_to') . ':', ['class' => 'form-label']) }}
+        {{ Form::date('contract_to', isset($insurance) ? $insurance->contract_to?->toDateString() : null, ['class' => 'form-control']) }}
+        <div class="form-text">{{ __('messages.insurance.contract_hint') }}</div>
+    </div>
     <div class="form-group col-sm-12 mb-5">
         {{ Form::label('claim_note', __('messages.claims.claim_note') . ':', ['class' => 'form-label']) }}
         {{ Form::textarea('claim_note', null, ['class' => 'form-control', 'rows' => 2, 'maxlength' => 2000]) }}

@@ -1,5 +1,5 @@
 @php
-    $badges = ['valid' => 'success', 'expired' => 'danger', 'not_started' => 'warning', 'inactive' => 'secondary'];
+    $badges = ['valid' => 'success', 'expired' => 'danger', 'not_started' => 'warning', 'inactive' => 'secondary', 'contract_ended' => 'danger'];
 @endphp
 @if ($policies->isEmpty())
     <div class="text-muted py-5 text-center">{{ __('messages.patient_insurance.no_policy') }}</div>

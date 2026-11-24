@@ -110,7 +110,7 @@ class Patient extends Model
         if (self::$registrationSettings === null) {
             $values = Setting::whereIn('key', [
                 'patient_required_fields', 'patient_portal_login', 'patient_duplicate_check', 'patient_duplicate_fields', 'reception_webcam',
-                'reception_id_scan', 'id_scan_document_type', 'id_scan_save_as', 'default_payer',
+                'reception_id_scan', 'id_scan_document_type', 'id_scan_save_as', 'default_payer', 'reception_mrz_scanner',
             ])->pluck('value', 'key');
             $list = fn ($key, $allowed) => array_values(array_intersect($allowed, explode(',', (string) $values->get($key, ''))));
 
@@ -122,6 +122,8 @@ class Patient extends Model
                 'webcam' => (bool) $values->get('reception_webcam', 1),
                 // Card reader: read the MRZ on the back of the ID card with the webcam.
                 'id_scan' => (bool) $values->get('reception_webcam', 1) && (bool) $values->get('reception_id_scan', 1),
+                // Desk MRZ scanner that types the card's three lines like a keyboard (no webcam needed).
+                'mrz_scanner' => (bool) $values->get('reception_mrz_scanner', 1),
                 'id_scan_document_type' => $values->get('id_scan_document_type') ?: null, // ID document type set on the form
                 'id_scan_save_as' => $values->get('id_scan_save_as') ?: null,             // document type of the saved card image
                 'default_payer' => $values->get('default_payer') === 'policy' ? 'policy' : 'self', // payer chosen first on visits and exams

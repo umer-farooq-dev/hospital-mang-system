@@ -64,6 +64,7 @@ class SettingController extends AppBaseController
             'reception_webcam' => $request->boolean('reception_webcam') ? '1' : '0',
             'queue_card_count' => (string) $input['queue_card_count'],
             'reception_id_scan' => $request->boolean('reception_id_scan') ? '1' : '0',
+            'reception_mrz_scanner' => $request->boolean('reception_mrz_scanner') ? '1' : '0',
             'id_scan_document_type' => (string) ($input['id_scan_document_type'] ?? ''),
             'id_scan_save_as' => (string) ($input['id_scan_save_as'] ?? ''),
             'default_payer' => $input['default_payer'] ?? 'self',

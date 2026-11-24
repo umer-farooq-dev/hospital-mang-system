@@ -101,7 +101,9 @@ class PatientInsurance extends Model
         $day = Carbon::parse($date ?? now())->toDateString();
 
         return $query->where('is_active', true)
-            ->whereHas('insurance', fn (Builder $q) => $q->where('status', Insurance::ACTIVE))
+            ->whereHas('insurance', fn (Builder $q) => $q->where('status', Insurance::ACTIVE)
+                ->where(fn (Builder $c) => $c->whereNull('contract_from')->orWhereDate('contract_from', '<=', $day))
+                ->where(fn (Builder $c) => $c->whereNull('contract_to')->orWhereDate('contract_to', '>=', $day)))
             ->where(fn (Builder $q) => $q->whereNull('valid_from')->orWhereDate('valid_from', '<=', $day))
             ->where(fn (Builder $q) => $q->whereNull('valid_to')->orWhereDate('valid_to', '>=', $day));
     }
@@ -118,6 +120,10 @@ class PatientInsurance extends Model
         $day = Carbon::parse($date ?? now())->startOfDay();
         if (! $this->is_active || ! $this->insurance || $this->insurance->status != Insurance::ACTIVE) {
             return 'inactive';
+        }
+        // The hospital's contract with the payer: a policy of an ended contract is no longer used.
+        if ($contract = $this->insurance->contractStatusOn($day)) {
+            return $contract === 'ended' ? 'contract_ended' : 'not_started';
         }
         if ($this->valid_to && $this->valid_to->lt($day)) {
             return 'expired';

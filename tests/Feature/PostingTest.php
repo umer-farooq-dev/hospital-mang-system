@@ -56,7 +56,7 @@ class PostingTest extends TestCase
         $this->table('expenses', fn ($t) => [$t->integer('expense_head'), $t->string('name'), $t->string('invoice_number')->nullable(), $t->dateTime('date'), $t->double('amount')]);
         $this->table('incomes', fn ($t) => [$t->integer('income_head'), $t->string('name'), $t->string('invoice_number')->nullable(), $t->dateTime('date'), $t->double('amount')]);
         $this->table('payments', fn ($t) => [$t->date('payment_date'), $t->unsignedInteger('account_id'), $t->string('pay_to'), $t->double('amount')]);
-        $this->table('employee_payrolls', fn ($t) => [$t->string('payroll_id'), $t->string('month'), $t->integer('year'), $t->double('net_salary'), $t->double('deductions')->default(0), $t->integer('status')]);
+        $this->table('employee_payrolls', fn ($t) => [$t->string('payroll_id'), $t->string('month'), $t->integer('year'), $t->double('net_salary'), $t->double('deductions')->default(0), $t->integer('status'), $t->unsignedInteger('payment_method')->nullable()]);
         $this->table('fund_transfers', fn ($t) => [$t->unsignedBigInteger('from_counter_id'), $t->unsignedBigInteger('to_counter_id')->nullable(), $t->unsignedInteger('destination')->nullable(),
             $t->unsignedInteger('payment_method'), $t->decimal('amount', 15, 2)]);
 
@@ -150,6 +150,15 @@ class PostingTest extends TestCase
         $this->assertEquals(100000, $this->balance('661'));
         $this->assertEquals(-90000, $this->balance('5711'));
         $this->assertEquals(-10000, $this->balance('447'));
+    }
+
+    public function test_a_salary_paid_by_bank_transfer_leaves_the_bank_account(): void
+    {
+        DB::table('employee_payrolls')->insert(['payroll_id' => 'PR3', 'month' => 'November', 'year' => 2026, 'net_salary' => 60000, 'deductions' => 0, 'status' => 1,
+            'payment_method' => 2, 'updated_at' => now()->subDay()]);
+        Posting::generate(now()->subDays(2), now());
+        $this->assertEquals(-60000, $this->balance('521'), 'method 2 (transfer) posts to the bank');
+        $this->assertEquals(0, $this->balance('5711'));
     }
 
     public function test_the_export_can_add_up_lines_per_entry_or_per_journal_and_day(): void
