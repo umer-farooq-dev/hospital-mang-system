@@ -71,8 +71,8 @@
                 <div class="vs-footer__wrapper-widget">
                     <h3 class="vs-footer__wrapper-title">{{ __('messages.web_menu.working_hours') }}</h3>
                     <div class="vs-footer__wrapper-content">
-                        <p class="mb-2"><i class="fa-regular fa-calendar me-2"></i>{{ $value('hospital_from_day') }}</p>
-                        <p class="mb-3"><i class="fa-regular fa-clock me-2"></i>{{ $value('hospital_from_time') }}</p>
+                        <p class="mb-2"><i class="fa-solid fa-calendar me-2"></i>{{ $value('hospital_from_day') }}</p>
+                        <p class="mb-3"><i class="fa-solid fa-clock me-2"></i>{{ $value('hospital_from_time') }}</p>
                         <a href="{{ route('working-hours') }}" class="vsBtn">{{ __('messages.web_front.see_hours') }}<span></span></a>
                     </div>
                 </div>

@@ -157,7 +157,7 @@
                 @php($videoFile = frontFile(\App\Models\FrontSetting::VIDEO_KEY))
                 <div class="vs-video vs-video--bg space" @unless ($videoFile) data-bg-src="{{ frontImage('home_page_video_image', 'bg/video-h3-bg.jpg') }}" @endunless>
                     @if ($videoFile)
-                        <video class="vs-video__media" autoplay muted loop playsinline preload="auto" poster="{{ frontImage('home_page_video_image', 'bg/video-h3-bg.jpg') }}" aria-hidden="true">
+                        <video class="vs-video__media" muted loop playsinline preload="none" data-lazy-video poster="{{ frontImage('home_page_video_image', 'bg/video-h3-bg.jpg') }}" aria-hidden="true">
                             <source src="{{ $videoFile }}" type="{{ str_ends_with($videoFile, '.webm') ? 'video/webm' : 'video/mp4' }}">
                         </video>
                     @endif
@@ -400,4 +400,19 @@
                 @break
         @endswitch
     @endforeach
+@endsection
+@section('scripts')
+    <script>
+        // start the background video only when it is about to be seen (saves the download for visitors who never scroll there)
+        document.querySelectorAll('video[data-lazy-video]').forEach(function (video) {
+            if (!('IntersectionObserver' in window)) { video.preload = 'auto'; video.play().catch(function () {}); return; }
+            new IntersectionObserver(function (entries, observer) {
+                if (!entries[0].isIntersecting) return;
+                observer.disconnect();
+                video.preload = 'auto';
+                video.load();
+                video.play().catch(function () {});
+            }, {rootMargin: '300px'}).observe(video);
+        });
+    </script>
 @endsection

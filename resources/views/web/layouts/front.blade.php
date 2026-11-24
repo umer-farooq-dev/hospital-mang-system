@@ -28,7 +28,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
     @yield('page_css')
-    @livewireStyles
     @yield('css')
 </head>
 
@@ -76,13 +75,11 @@
         </span>
     </button>
 
-    @livewireScripts
-    {{-- the admin vendor bundle ships Font Awesome JS; the website uses the theme's icon font instead --}}
-    <script>window.FontAwesomeConfig = {autoReplaceSvg: false, observeMutations: false, autoA11y: false};</script>
     <script src="{{ mix('js/front-third-party.js') }}"></script>
+    <script src="{{ asset('web_front/kliniko/js/bootstrap.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
     <script src="{{ asset('messages.js') }}"></script>
-    @routes
+    @routes('website')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
     <script src="{{ mix('js/front-pages.js') }}"></script>
     {{-- theme effects (Kliniko) --}}

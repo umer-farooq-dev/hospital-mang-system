@@ -45,7 +45,7 @@
                             <div class="vs-service__Dtxt">
                                 @if ($item->category || $item->published_at)
                                     <p class="content-meta">
-                                        @if ($item->published_at)<span><i class="fa-regular fa-calendar"></i> {{ $item->published_at->translatedFormat('d F Y') }}</span>@endif
+                                        @if ($item->published_at)<span><i class="fa-solid fa-calendar"></i> {{ $item->published_at->translatedFormat('d F Y') }}</span>@endif
                                         @if ($item->category)<span><i class="fa-solid fa-tag"></i> {{ $item->category }}</span>@endif
                                     </p>
                                 @endif
