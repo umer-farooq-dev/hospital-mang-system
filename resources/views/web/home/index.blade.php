@@ -154,15 +154,20 @@
                 @break
 
             @case('video')
-                <div class="vs-video space bg-fixed" data-bg-src="{{ frontImage('home_page_video_image', 'bg/video-h3-bg.jpg') }}">
+                @php($videoFile = frontFile(\App\Models\FrontSetting::VIDEO_KEY))
+                <div class="vs-video vs-video--bg space" @unless ($videoFile) data-bg-src="{{ frontImage('home_page_video_image', 'bg/video-h3-bg.jpg') }}" @endunless>
+                    @if ($videoFile)
+                        <video class="vs-video__media" autoplay muted loop playsinline preload="auto" poster="{{ frontImage('home_page_video_image', 'bg/video-h3-bg.jpg') }}" aria-hidden="true">
+                            <source src="{{ $videoFile }}" type="{{ str_ends_with($videoFile, '.webm') ? 'video/webm' : 'video/mp4' }}">
+                        </video>
+                    @endif
                     <div class="container">
                         <div class="video_btn text-center">
                             @if ($video)
                                 <a href="{{ $video }}" class="play-btn popup-video" aria-label="video"><i class="fa-solid fa-play"></i></a>
-                            @else
-                                <h2 class="video-banner-title">{{ $f('home_page_subtitle') }}</h2>
-                                <a href="{{ route('appointment') }}" class="vsBtn mt-3">{{ __('messages.web_home.book_appointment') }}<span></span></a>
                             @endif
+                            <h2 class="video-banner-title">{{ $f('home_page_subtitle') }}</h2>
+                            <a href="{{ route('appointment') }}" class="vsBtn">{{ __('messages.web_home.book_appointment') }}<span></span></a>
                         </div>
                     </div>
                 </div>

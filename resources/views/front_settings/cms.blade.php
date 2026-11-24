@@ -301,6 +301,20 @@
                     </div>
             </div>
             <div class="row mb-5">
+                <div class="form-group col-md-6 mb-5">
+                    {{ Form::label('home_page_video_file', __('messages.front_web.background_video').':', ['class' => 'form-label']) }}
+                    @if (frontFile(\App\Models\FrontSetting::VIDEO_KEY))
+                        <video src="{{ frontFile(\App\Models\FrontSetting::VIDEO_KEY) }}" class="w-100 rounded mb-3" style="max-height:180px;object-fit:cover" muted loop autoplay playsinline></video>
+                        <label class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="home_page_video_remove" value="1">
+                            <span class="form-check-label">{{ __('messages.front_web.remove_video') }}</span>
+                        </label>
+                    @endif
+                    <input type="file" name="home_page_video_file" id="home_page_video_file" class="form-control" accept="video/mp4,video/webm">
+                    <div class="form-text">{{ __('messages.front_web.video_hint') }}</div>
+                </div>
+            </div>
+            <div class="row mb-5">
                     <div class="form-group col-sm-6 col-lg-3 mb-5">
                         <div class="row2" io-image-input="true">
                             {{ Form::label('page_banner_image', __('messages.front_web.page_banner_image').':', ['class' => 'form-label']) }}
