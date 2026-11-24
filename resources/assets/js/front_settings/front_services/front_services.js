@@ -56,6 +56,12 @@ function renderFrontServiceData(id) {
                         'url("' + $('#indexServiceDefaultDocumentImageUrl').val() + '")');
                 $('#editFrontServiceName').val(result.data.name);
                 $('#editFrontServiceDescription').val(result.data.short_description);
+                $('#editFrontServiceBody').val(result.data.description);
+                $('#editFrontServiceCategory').val(result.data.category);
+                $('#editFrontServicePublishedAt').val(result.data.published_at);
+                $('#editFrontServiceSortOrder').val(result.data.sort_order);
+                $('#editFrontServicePreviewPicture').css('background-image',
+                    'url("' + (result.data.image_url || $('#indexServiceDefaultDocumentImageUrl').val()) + '")');
                 if (isEmpty(result.data.icon_url)) {
                     $('#frontServiceIconUrl').hide();
                     $('.btn-view').hide();

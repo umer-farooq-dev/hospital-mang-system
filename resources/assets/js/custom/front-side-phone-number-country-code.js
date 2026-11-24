@@ -20,14 +20,8 @@ function loadFrontPhoneNumberCountryCodeData() {
     ];
 
     let intl = window.intlTelInput(input, {
-        initialCountry: "auto",
+        initialCountry: $(".getISOCode").val() || "bf",
         separateDialCode: true,
-        geoIpLookup: function (success) {
-            $.get("https://ipinfo.io", function () {}, "jsonp").always(function (resp) {
-                let countryCode = resp && resp.country ? resp.country : "in";
-                success(countryCode);
-            });
-        },
         utilsScript: $(".utilsScript").val(),
     });
 

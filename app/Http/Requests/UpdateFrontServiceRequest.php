@@ -24,7 +24,11 @@ class UpdateFrontServiceRequest extends FormRequest
     {
         $rules = FrontService::$rules;
         unset($rules['icon']);
-        $rules['icon'] = 'mimes:jpeg,jpg,png,gif,pdf,docx,mp3,mp4,webp';
+        $rules['icon'] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
+        $rules['image'] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096';
+        $rules['category'] = 'nullable|string|max:100';
+        $rules['published_at'] = 'nullable|date';
+        $rules['sort_order'] = 'nullable|integer|min:0';
 
         return $rules;
     }

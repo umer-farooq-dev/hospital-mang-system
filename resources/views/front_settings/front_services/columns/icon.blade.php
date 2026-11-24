@@ -1,8 +1,9 @@
-@if (!empty($row->icon_url))
+@php($thumb = $row->icon_url ?: $row->image_url)
+@if (!empty($thumb))
     <div class="d-flex align-items-center">
         <div class="image image-mini me-3">
             <a href="javascript:void(0)">
-                <img src="{{$row->icon_url}}" alt="user" class="user-img rounded-circle object-contain">
+                <img src="{{ $thumb }}" alt="user" class="user-img rounded-circle object-contain">
             </a>
         </div>
     </div>

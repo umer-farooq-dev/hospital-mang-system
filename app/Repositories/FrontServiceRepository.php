@@ -26,11 +26,7 @@ class FrontServiceRepository extends BaseRepository
     {
         try {
             $frontService = FrontService::create($input);
-
-            if (isset($input['icon']) && ! empty($input['icon'])) {
-                $frontService->addMedia($input['icon'])->toMediaCollection(FrontService::PATH,
-                    config('app.media_disc'));
-            }
+            $this->saveMedia($frontService, $input);
 
             return true;
         } catch (\Exception $e) {
@@ -38,16 +34,22 @@ class FrontServiceRepository extends BaseRepository
         }
     }
 
+    private function saveMedia(FrontService $frontService, array $input): void
+    {
+        foreach (['icon' => FrontService::PATH, 'image' => FrontService::IMAGE_PATH] as $field => $collection) {
+            if (! empty($input[$field])) {
+                $frontService->clearMediaCollection($collection);
+                $frontService->addMedia($input[$field])->toMediaCollection($collection, config('app.media_disc'));
+            }
+        }
+    }
+
     public function updateFrontService($input, $frontServiceId)
     {
         try {
+            unset($input['type']); // a service stays a service
             $frontService = $this->update($input, $frontServiceId);
-
-            if (isset($input['icon']) && ! empty($input['icon'])) {
-                $frontService->clearMediaCollection(FrontService::PATH);
-                $frontService->addMedia($input['icon'])->toMediaCollection(FrontService::PATH,
-                    config('app.media_disc'));
-            }
+            $this->saveMedia($frontService, $input);
         } catch (\Exception $e) {
             throw new UnprocessableEntityHttpException($e->getMessage());
         }

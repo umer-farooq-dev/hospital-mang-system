@@ -21,7 +21,12 @@ class FrontServiceRequest extends FormRequest
     public function rules(): array
     {
         $rules = FrontService::$rules;
-        $rules['icon'] = 'required|mimes:jpg,jpeg,png';
+        $rules['type'] = 'required|in:'.implode(',', array_keys(FrontService::TYPES));
+        $rules['icon'] = 'required_if:type,'.FrontService::SERVICE.'|nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
+        $rules['image'] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096';
+        $rules['category'] = 'nullable|string|max:100';
+        $rules['published_at'] = 'nullable|date';
+        $rules['sort_order'] = 'nullable|integer|min:0';
 
         return $rules;
     }

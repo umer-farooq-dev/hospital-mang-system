@@ -20,6 +20,13 @@ class FrontCmsServiceTable extends LivewireTableComponent
 
     protected $model = FrontService::class;
 
+    public int $type = FrontService::SERVICE;
+
+    public function builder(): \Illuminate\Database\Eloquent\Builder
+    {
+        return FrontService::query()->with('media')->where('type', $this->type);
+    }
+
     protected $listeners = ['refresh' => '$refresh', 'resetPage'];
 
     // public function resetPage($pageName = 'page')
@@ -61,6 +68,13 @@ class FrontCmsServiceTable extends LivewireTableComponent
             Column::make(__('messages.common.name'), 'name')
                 ->sortable()
                 ->searchable(),
+            Column::make(__('messages.front_web.category'), 'category')
+                ->sortable()
+                ->hideIf($this->type === FrontService::SERVICE),
+            Column::make(__('messages.front_web.published_at'), 'published_at')
+                ->sortable()
+                ->format(fn ($value) => $value ? substr((string) $value, 0, 10) : '')
+                ->hideIf($this->type !== FrontService::POST),
             Column::make(__('messages.common.description'), 'short_description')
                 ->sortable()
                 ->searchable(),

@@ -17,9 +17,11 @@ class FrontServiceController extends AppBaseController
         $this->frontServiceRepository = $frontServiceRepository;
     }
 
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        return view('front_settings.front_services.index');
+        $type = array_key_exists((int) $request->type, FrontService::TYPES) ? (int) $request->type : FrontService::SERVICE;
+
+        return view('front_settings.front_services.index', compact('type'));
     }
 
     public function store(FrontServiceRequest $request)
@@ -56,8 +58,7 @@ class FrontServiceController extends AppBaseController
     {
         try {
             $frontService = FrontService::find($id);
-            $frontService->clearMediaCollection(FrontService::PATH);
-            $frontService->delete();
+            $frontService->delete(); // media library removes icon and image with the model
 
             return $this->sendSuccess(__('messages.front_service').' '.__('messages.common.deleted_successfully'));
         } catch (\Exception $e) {

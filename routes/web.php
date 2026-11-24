@@ -157,6 +157,9 @@ Route::middleware('setLanguage')->group(function () {
     Route::get('/appointment', [Web\WebController::class, 'appointment'])->name('appointment');
     Route::post('/appointment-form', [Web\WebController::class, 'appointmentFromOther'])->name('appointment.post');
     Route::get('/our-services', [Web\WebController::class, 'services'])->name('our-services');
+    Route::get('/our-services/{id}', [Web\WebController::class, 'services'])->whereNumber('id')->name('service-details');
+    Route::get('/case-studies/{id?}', [Web\WebController::class, 'cases'])->whereNumber('id')->name('case-studies');
+    Route::get('/news/{id?}', [Web\WebController::class, 'news'])->whereNumber('id')->name('news');
     Route::get('/our-doctors', [Web\WebController::class, 'doctors'])->name('our-doctors');
     Route::get('/terms-of-service', [Web\WebController::class, 'termsOfService'])->name('terms-of-service');
     Route::get('/privacy-policy', [Web\WebController::class, 'privacyPolicy'])->name('privacy-policy');

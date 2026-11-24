@@ -110,16 +110,8 @@ function loadPhoneNumberCountryCodeData() {
         var countryValue = $(".getISOCode").val();
     }
     let intl = window.intlTelInput(input, {
-        initialCountry: countryValue,
+        initialCountry: countryValue || $(".getISOCode").val() || "bf",
         separateDialCode: true,
-        geoIpLookup: function (success, failure) {
-            $.get("https://ipinfo.io", function () {}, "jsonp").always(
-                function (resp) {
-                    var countryCode = resp && resp.country ? resp.country : "";
-                    success(countryCode);
-                }
-            );
-        },
         utilsScript: $(".utilsScript").val(),
     });
 

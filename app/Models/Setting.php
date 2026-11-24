@@ -38,6 +38,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Setting extends Model implements HasMedia
 {
+    // website social links (setting key => Font Awesome brand icon)
+    const SOCIAL_ICONS = ['facebook_url' => 'fa-facebook-f', 'twitter_url' => 'fa-x-twitter', 'instagram_url' => 'fa-instagram', 'linkedIn_url' => 'fa-linkedin-in'];
+
     use InteractsWithMedia, QueryCacheable;
 
     protected $cacheFor = 3600; // 1 hour

@@ -817,6 +817,50 @@ function defaultSetLanguage()
 /**
  * @return mixed
  */
+/** All front settings once per request. */
+function frontSetting($key = null, $default = null)
+{
+    static $all;
+    $all ??= FrontSetting::pluck('value', 'key')->toArray();
+
+    if ($key === null) {
+        return $all;
+    }
+
+    return ($all[$key] ?? '') !== '' ? $all[$key] : $default;
+}
+
+/** Uploaded website picture, or the theme picture until the hospital uploads its own. */
+function frontImage($key, $themeFile)
+{
+    return frontSetting($key) ?: asset('web_front/kliniko/img/'.$themeFile);
+}
+
+/** CSS variables of the website colours (admin controlled). */
+function frontThemeCss(): string
+{
+    $map = [
+        'theme_color_primary' => ['--vs-theme-color1', '--vs-theme-color3', '--vs-theme-color4'],
+        'theme_color_secondary' => ['--vs-theme-color2'],
+        'theme_color_dark' => ['--vs-theme-color5'],
+        'theme_color_accent' => ['--vs-yellow-color'],
+        'theme_color_title' => ['--vs-title-color'],
+    ];
+    $css = '';
+    foreach ($map as $key => $vars) {
+        $hex = frontSetting($key);
+        if (! preg_match('/^#[0-9a-fA-F]{6}$/', (string) $hex)) {
+            continue;
+        }
+        $rgb = implode(', ', array_map('hexdec', str_split(substr($hex, 1), 2)));
+        foreach ($vars as $var) {
+            $css .= "$var: $hex; $var-rgb: $rgb; ";
+        }
+    }
+
+    return ':root { '.$css.'}';
+}
+
 function getFrontSettingValue($type, $key)
 {
     return FrontSetting::whereType($type)->where('key', $key)->value('value');

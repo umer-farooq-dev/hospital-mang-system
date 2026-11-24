@@ -1,20 +1,60 @@
-@import "../scss/home";
-@import "../scss/about";
-@import "../scss/appointment";
-@import "../scss/bootstrap";
-@import "../scss/contact";
-@import "../scss/custom";
-@import "../scss/doctors";
-@import "../scss/layout";
-@import "../scss/testimonials";
+// Website = Kliniko theme (public/web_front/kliniko/css/style.css) + these overrides.
+// Colours always come from the theme variables, which the admin sets in Front CMS.
 @import "../scss/variables";
-@import "../scss/working-hours";
+@import "../scss/appointment";
 
+.title-icon { color: var(--vs-theme-color1); margin-right: 4px; }
+.lang-flag { width: 18px; height: 12px; object-fit: cover; margin-right: 6px; }
 
+// service / process icons drawn with Font Awesome when no picture is uploaded
+.ser_icon > i { font-size: 34px; line-height: 1; color: var(--vs-theme-color1); }
+.vs-service.style3 .ser_icon > i, .vs-process .ser_icon > i { color: var(--vs-white-color); }
 
+// inner pages: header sits on a solid band
+.vs-header.inner-page .sticky-wrapper { background-color: var(--vs-title-color); }
 
+.vs-appoint__form .appoint_form select,
+.vs-appoint__form .appoint_form input { color: var(--vs-title-color); }
+.appoint-note { color: var(--vs-white-color); margin: 16px 0 0; opacity: .85; }
+.hours-form { background: var(--vs-smoke-color); padding: 30px; border-radius: 20px; }
+.hours-form .appoint_form { display: grid; gap: 15px; }
+.hours-list { list-style: none; padding: 0; margin: 30px 0 0; }
+.hours-list li { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(var(--vs-title-color-rgb), .1); }
 
+.about-counter { position: relative; border-radius: 20px; overflow: hidden; }
+.about-step { background: var(--vs-smoke-color); border-radius: 16px; padding: 22px; height: 100%; }
+.about-step .ser_number { color: var(--vs-theme-color1); font-weight: 700; font-size: 22px; }
+.about-step h3 { font-size: 20px; margin: 8px 0; }
+.about-step p { margin: 0; }
 
+.content-meta { display: flex; gap: 20px; color: var(--vs-theme-color1); margin-bottom: 10px; }
+.services-nav a.nav-item { display: block; }
+.newsletter-widget .vsBtn { margin-top: 10px; }
+.case_txt .case-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 600; color: var(--vs-title-color); }
+.case_txt .case-link i { color: var(--vs-theme-color1); }
+.blog-meta span { margin-right: 15px; }
 
+.doctor-card { border-radius: 20px; overflow: hidden; background: var(--vs-smoke-color); }
+.doctor-card img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.doctor-card__body { padding: 24px; text-align: center; }
+.doctor-card__body h2 { font-size: 24px; margin-bottom: 4px; }
+.doctor-facts { list-style: none; padding: 0; margin: 0; }
+.doctor-facts li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(var(--vs-title-color-rgb), .1); }
+.doctor-facts li span { min-width: 160px; font-weight: 600; color: var(--vs-title-color); }
+.schedule-table th { background: var(--vs-theme-color1); color: var(--vs-white-color); }
 
+// enquiry form (existing fields) in the theme look
+.vs-contact .contact-form .form-control,
+.vs-contact .contact-form .selectize-input { min-height: 56px; border-radius: 12px; background: var(--vs-smoke-color); border: 1px solid transparent; }
+.vs-contact .contact-form textarea.form-control { min-height: 140px; }
+.vs-contact .contact-form__input-block { margin-bottom: 20px; }
+.vs-contact .iti { width: 100%; }
+.contact-map iframe { width: 100%; height: 450px; border: 0; display: block; }
 
+.legal-text { max-width: 900px; margin: 0 auto; }
+
+// French (and other languages) are written in sentence case: undo the theme's word capitalising
+.vs-main, .vs-footer, .vs-header, .vs-menu-wrapper {
+    h1, h2, h3, h4, h5, h6, p, li, span, label, input, select, textarea, .vs-title__sub { text-transform: none !important; }
+}
+.vs-service__wrap .ser_icon > i, .vs-process .ser_icon > i { font-size: 30px; }

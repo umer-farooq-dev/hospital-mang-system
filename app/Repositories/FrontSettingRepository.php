@@ -25,32 +25,23 @@ class FrontSettingRepository extends BaseRepository
 
     public function updateFrontSetting($input)
     {
-        if (isset($input['about_us_image']) && ! empty($input['about_us_image'])) {
-
-            $frontSetting = FrontSetting::where('key', '=', 'about_us_image')->first();
-            $frontSetting->clearMediaCollection(FrontSetting::PATH);
-            $frontSetting->addMedia($input['about_us_image'])->toMediaCollection(FrontSetting::PATH,
-                config('app.media_disc'));
-            $frontSetting = $frontSetting->refresh();
-            $frontSetting->update(['value' => $frontSetting->logo_url]);
+        foreach (FrontSetting::IMAGE_KEYS as $key => $collection) {
+            if (empty($input[$key])) {
+                continue;
+            }
+            $frontSetting = FrontSetting::firstOrCreate(['key' => $key], ['value' => '', 'type' => FrontSetting::HOME_PAGE]);
+            $frontSetting->clearMediaCollection($collection);
+            $frontSetting->addMedia($input[$key])->toMediaCollection($collection, config('app.media_disc'));
+            $frontSetting->update(['value' => $frontSetting->getFirstMediaUrl($collection)]);
         }
-        if (isset($input['home_page_image']) && ! empty($input['home_page_image'])) {
 
-            $frontSetting = FrontSetting::where('key', '=', 'home_page_image')->first();
-            $frontSetting->clearMediaCollection(FrontSetting::HOME_IMAGE_PATH);
-            $frontSetting->addMedia($input['home_page_image'])->toMediaCollection(FrontSetting::HOME_IMAGE_PATH,
-                config('app.media_disc'));
-            $frontSetting = $frontSetting->refresh();
-            $frontSetting->update(['value' => $frontSetting->logo_url]);
-        }
-        if (isset($input['home_page_certified_doctor_image']) && ! empty($input['home_page_certified_doctor_image'])) {
-
-            $frontSetting = FrontSetting::where('key', '=', 'home_page_certified_doctor_image')->first();
-            $frontSetting->clearMediaCollection(FrontSetting::HOME_IMAGE_PATH);
-            $frontSetting->addMedia($input['home_page_certified_doctor_image'])->toMediaCollection(FrontSetting::HOME_IMAGE_PATH,
-                config('app.media_disc'));
-            $frontSetting = $frontSetting->refresh();
-            $frontSetting->update(['value' => $frontSetting->logo_url]);
+        if (isset($input['home_sections']) && is_array($input['home_sections'])) {
+            $known = array_column(FrontSetting::HOME_SECTIONS, 'key');
+            $sections = collect($input['home_sections'])
+                ->filter(fn ($s, $key) => in_array($key, $known, true))
+                ->map(fn ($s, $key) => ['key' => $key, 'on' => empty($s['on']) ? 0 : 1, 'order' => (int) ($s['order'] ?? 0)])
+                ->sortBy('order')->values()->map(fn ($s) => ['key' => $s['key'], 'on' => $s['on']])->all();
+            $input['home_sections'] = json_encode($sections);
         }
 
         $frontSettingInputArray = Arr::only($input, [
@@ -64,12 +55,18 @@ class FrontSettingRepository extends BaseRepository
             'home_page_step_1_description', 'home_page_step_2_description', 'home_page_step_3_description',
             'home_page_step_4_description',
             'appointment_title', 'appointment_description', 'location_map',
+            'home_page_subtitle', 'home_page_video_url', 'home_page_experience_label', 'home_page_circle_text',
+            'home_page_about_points', 'home_sections', 'section_process_text', 'section_appointment_sub',
+            'section_services_sub', 'section_services_title', 'section_process_sub', 'section_process_title',
+            'section_doctors_sub', 'section_doctors_title', 'section_cases_sub', 'section_cases_title',
+            'section_testimonials_sub', 'section_testimonials_title', 'section_blog_sub', 'section_blog_title',
+            ...FrontSetting::COLOR_KEYS,
         ]);
 
         foreach ($frontSettingInputArray as $key => $value) {
             FrontSetting::updateOrCreate(
                 ['key' => $key],
-                ['value' => $value]
+                ['value' => $value ?? '', 'type' => FrontSetting::where('key', $key)->value('type') ?? FrontSetting::HOME_PAGE]
             );
         }
     }

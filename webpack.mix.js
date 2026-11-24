@@ -531,13 +531,8 @@ mix.sass(
 
 mix.styles(
     [
-        "public/web_front/css/slick.css",
-        "public/web_front/css/slick-theme.css",
+        // the website design itself comes from the Kliniko theme (public/web_front/kliniko)
         "public/web_front/css/jquery-ui.min.css",
-        "public/web_front/css/style.css",
-        "resources/assets/front/scss/bootstrap.scss",
-        "public/assets/css/all.min.css",
-        "public/web_front/css/remixicon.css",
         "public/web_front/css/selectize.min.css",
         "resources/assets/sass/selectize-input.scss",
         "node_modules/intl-tel-input/build/css/intlTelInput.css",
@@ -860,19 +855,9 @@ mix.scripts(
         "node_modules/intl-tel-input/build/js/intlTelInput.js",
         "node_modules/intl-tel-input/build/js/utils.js",
         "node_modules/moment/min/moment-with-locales.js",
-        "node_modules/@fortawesome/fontawesome-free/js/all.min.js",
-        "public/web_front/js/slick.min.js",
-        "public/web_front/js/jquery.meanmenu.js",
-        "public/web_front/js/owl.carousel.min.js",
-        "public/web_front/js/jquery.appear.js",
-        "public/web_front/js/jquery.magnific-popup.min.js",
         "public/web_front/js/selectize.min.js",
         "public/web_front/js/jquery-ui.js",
         "public/web_front/js/jquery-ui-i18n.min.js",
-        "public/web_front/js/aos.js",
-        "public/web_front/js/jquery.ajaxchimp.min.js",
-        "public/web_front/js/form-validator.min.js",
-        "public/web_front/js/main.js",
     ],
     "public/js/front-third-party.js",
 ).version();

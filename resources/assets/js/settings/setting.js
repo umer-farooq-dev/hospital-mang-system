@@ -48,16 +48,8 @@ function initializeDefaultCountryCode() {
     ];
     // initialise plugin
     let intl = window.intlTelInput(input, {
-        initialCountry: "IN",
+        initialCountry: $("#countryName").val() || $(".getISOCode").val() || "bf",
         separateDialCode: true,
-        geoIpLookup: function (success, failure) {
-            $.get("https://ipinfo.io", function () {}, "jsonp").always(
-                function (resp) {
-                    let countryCode = resp && resp.country ? resp.country : "";
-                    success(countryCode);
-                },
-            );
-        },
         utilsScript: "../../public/assets/js/inttel/js/utils.min.js",
     });
     let getCode =

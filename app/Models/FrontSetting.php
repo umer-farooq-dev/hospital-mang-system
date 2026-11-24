@@ -51,6 +51,37 @@ class FrontSetting extends Model implements HasMedia
 
     const APPOINTMENT = 3;
 
+    // home page blocks in their default order; the admin can hide or reorder them
+    const HOME_SECTIONS = [
+        ['key' => 'about', 'on' => 1], ['key' => 'services', 'on' => 1], ['key' => 'video', 'on' => 1],
+        ['key' => 'process', 'on' => 1], ['key' => 'appointment', 'on' => 1], ['key' => 'doctors', 'on' => 1],
+        ['key' => 'cases', 'on' => 1], ['key' => 'testimonials', 'on' => 1], ['key' => 'blog', 'on' => 1],
+    ];
+
+    // every uploadable website picture (key => media collection)
+    const IMAGE_KEYS = [
+        'about_us_image' => self::PATH, 'home_page_image' => self::HOME_IMAGE_PATH,
+        'home_page_certified_doctor_image' => self::HOME_IMAGE_PATH, 'home_page_video_image' => self::HOME_IMAGE_PATH,
+        'home_page_step_1_image' => self::HOME_IMAGE_PATH, 'home_page_step_2_image' => self::HOME_IMAGE_PATH,
+        'home_page_step_3_image' => self::HOME_IMAGE_PATH, 'home_page_step_4_image' => self::HOME_IMAGE_PATH,
+        'page_banner_image' => self::HOME_IMAGE_PATH,
+    ];
+
+    const COLOR_KEYS = ['theme_color_primary', 'theme_color_secondary', 'theme_color_accent', 'theme_color_dark', 'theme_color_title'];
+
+    /** Enabled home sections in the admin's order. */
+    public static function homeSections(array $settings): array
+    {
+        $saved = json_decode($settings['home_sections'] ?? '', true) ?: self::HOME_SECTIONS;
+        $known = array_column(self::HOME_SECTIONS, 'key');
+        $saved = array_values(array_filter($saved, fn ($s) => in_array($s['key'] ?? null, $known, true)));
+        foreach (array_diff($known, array_column($saved, 'key')) as $missing) {
+            $saved[] = ['key' => $missing, 'on' => 1];
+        }
+
+        return $saved;
+    }
+
     const STATUS_ARR = [
         self::ABOUT_US => 'About Us',
     ];
