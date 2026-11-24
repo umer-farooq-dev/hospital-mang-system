@@ -21,12 +21,7 @@
     foreach (websiteLanguages() as $key) {
         $languages[] = ['key' => $key, 'label' => getLanguages()[$key], 'flag' => \App\Models\User::LANGUAGES_IMAGE[$key] ?? null];
     }
-    // where each role lands after login
-    $home = ['Admin' => route('dashboard'), 'Patient' => url('patient-dashboard'), 'Doctor' => url('employee/doctor'),
-        'Nurse' => url('bed-types'), 'Receptionist' => url('appointments'), 'Pharmacist' => url('employee/doctor'),
-        'Accountant' => url('accounts'), 'Case Manager' => url('employee/doctor')];
     $social = collect(\App\Models\Setting::SOCIAL_ICONS)->filter(fn ($icon, $key) => ! empty($settingValue[$key]['value'] ?? null));
-    $dashboard = Auth::check() ? ($home[Auth::user()->getRoleNames()->first()] ?? route('dashboard')) : null;
 @endphp
 
 <div class="vs-menu-wrapper">
@@ -61,7 +56,6 @@
                     </ul>
                 </li>
                 @endif
-                <li><a href="{{ $dashboard ?? route('login') }}">{{ $dashboard ? __('messages.dashboard.dashboard') : __('messages.web_menu.login') }}</a></li>
             </ul>
         </div>
         <div class="mt-50 pt-50">
@@ -123,11 +117,6 @@
                     </div>
                     <div class="col-auto">
                         <div class="vs-header__action">
-                            <div class="d-none d-md-inline">
-                                <a href="{{ $dashboard ?? route('login') }}" class="searchBoxTggler style2" title="{{ $dashboard ? __('messages.dashboard.dashboard') : __('messages.web_menu.login') }}">
-                                    <i class="far {{ $dashboard ? 'fa-gauge' : 'fa-user' }}"></i>
-                                </a>
-                            </div>
                             <div class="d-none d-sm-inline-flex">
                                 <a href="{{ route('appointment') }}" class="vsBtn">{{ __('messages.web_home.book_appointment') }}<span></span></a>
                             </div>
