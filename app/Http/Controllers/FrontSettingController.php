@@ -33,7 +33,8 @@ class FrontSettingController extends AppBaseController
         $request->validate(array_merge(
             array_fill_keys(array_keys(FrontSetting::IMAGE_KEYS), $image),
             array_fill_keys(FrontSetting::COLOR_KEYS, ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/']),
-            ['home_page_video_url' => 'nullable|url|max:255', 'home_sections' => 'nullable|array'],
+            ['home_page_video_url' => 'nullable|url|max:255', 'home_sections' => 'nullable|array',
+                'website_default_lang' => 'nullable|in:'.implode(',', array_keys(getLanguages())), 'website_languages' => 'nullable|array'],
         ));
         $this->frontSettingRepository->updateFrontSetting($request->all());
 

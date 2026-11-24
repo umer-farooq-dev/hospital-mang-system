@@ -830,6 +830,16 @@ function frontSetting($key = null, $default = null)
     return ($all[$key] ?? '') !== '' ? $all[$key] : $default;
 }
 
+/** Website languages (codes), the default one first. */
+function websiteLanguages(): array
+{
+    $known = array_keys(getLanguages());
+    $default = in_array(frontSetting('website_default_lang'), $known, true) ? frontSetting('website_default_lang') : 'fr';
+    $others = array_intersect(explode(',', (string) frontSetting('website_languages', 'fr,en')), $known);
+
+    return array_values(array_unique(array_merge([$default], $others)));
+}
+
 /** Uploaded website picture, or the theme picture until the hospital uploads its own. */
 function frontImage($key, $themeFile)
 {

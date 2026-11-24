@@ -35,6 +35,10 @@ class FrontSettingRepository extends BaseRepository
             $frontSetting->update(['value' => $frontSetting->getFirstMediaUrl($collection)]);
         }
 
+        if (isset($input['website_languages']) && is_array($input['website_languages'])) {
+            $input['website_languages'] = implode(',', array_intersect($input['website_languages'], array_keys(getLanguages())));
+        }
+
         if (isset($input['home_sections']) && is_array($input['home_sections'])) {
             $known = array_column(FrontSetting::HOME_SECTIONS, 'key');
             $sections = collect($input['home_sections'])
@@ -60,6 +64,7 @@ class FrontSettingRepository extends BaseRepository
             'section_services_sub', 'section_services_title', 'section_process_sub', 'section_process_title',
             'section_doctors_sub', 'section_doctors_title', 'section_cases_sub', 'section_cases_title',
             'section_testimonials_sub', 'section_testimonials_title', 'section_blog_sub', 'section_blog_title',
+            'website_default_lang', 'website_languages',
             ...FrontSetting::COLOR_KEYS,
         ]);
 

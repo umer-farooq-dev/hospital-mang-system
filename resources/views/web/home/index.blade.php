@@ -11,7 +11,7 @@
         $video = $f('home_page_video_url');
         $serviceImages = ['service/ser-img-h3.jpg', 'service/ser-img1-h3.jpg', 'service/ser-img2-h3.jpg'];
         $serviceIcons = ['fa-stethoscope', 'fa-truck-medical', 'fa-person-pregnant', 'fa-flask-vial', 'fa-x-ray', 'fa-syringe'];
-        $hasContent = ['services' => $frontServices->isNotEmpty(), 'video' => (bool) $video, 'doctors' => $doctors->isNotEmpty(),
+        $hasContent = ['services' => $frontServices->isNotEmpty(), 'doctors' => $doctors->isNotEmpty(),
             'cases' => $cases->isNotEmpty(), 'testimonials' => $testimonials->isNotEmpty(), 'blog' => $posts->isNotEmpty()];
         $stepIcons = ['fa-calendar-check', 'fa-user-doctor', 'fa-microscope', 'fa-heart-pulse'];
         $title = fn ($sub, $main, $center = false) => '<div class="vs-title animation-style2 '.($center ? 'text-center' : '').'"><p class="vs-title__sub"><i class="fa-solid fa-staff-snake title-icon"></i> '.e($sub).'</p><h2 class="vs-title__main title-anime '.($center ? 'm-auto' : '').'">'.e($main).'</h2></div>';
@@ -157,7 +157,12 @@
                 <div class="vs-video space bg-fixed" data-bg-src="{{ frontImage('home_page_video_image', 'bg/video-h3-bg.jpg') }}">
                     <div class="container">
                         <div class="video_btn text-center">
-                            <a href="{{ $video }}" class="play-btn popup-video" aria-label="video"><i class="fa-solid fa-play"></i></a>
+                            @if ($video)
+                                <a href="{{ $video }}" class="play-btn popup-video" aria-label="video"><i class="fa-solid fa-play"></i></a>
+                            @else
+                                <h2 class="video-banner-title">{{ $f('home_page_subtitle') }}</h2>
+                                <a href="{{ route('appointment') }}" class="vsBtn mt-3">{{ __('messages.web_home.book_appointment') }}<span></span></a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -332,6 +337,7 @@
                                         </div>
                                     </div>
                                     <div class="test_txt">
+                                        <span class="star"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
                                         <p>“{{ $testimonial->description }}”</p>
                                         <div class="test-admin"><h3>{{ $testimonial->name }}</h3></div>
                                         <div class="test-icon">

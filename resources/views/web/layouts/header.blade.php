@@ -18,8 +18,8 @@
         ['url' => route('contact'), 'label' => __('messages.web_home.contact'), 'active' => Request::is('contact-us')],
     ];
     $languages = [];
-    foreach (getLanguages() as $key => $value) {
-        $languages[] = ['key' => $key, 'label' => $value, 'flag' => \App\Models\User::LANGUAGES_IMAGE[$key] ?? null];
+    foreach (websiteLanguages() as $key) {
+        $languages[] = ['key' => $key, 'label' => getLanguages()[$key], 'flag' => \App\Models\User::LANGUAGES_IMAGE[$key] ?? null];
     }
     // where each role lands after login
     $home = ['Admin' => route('dashboard'), 'Patient' => url('patient-dashboard'), 'Doctor' => url('employee/doctor'),
@@ -51,14 +51,16 @@
                         @endisset
                     </li>
                 @endforeach
+                @if (count($languages) > 1)
                 <li class="menu-item-has-children">
-                    <a href="javascript:void(0)">{{ __('messages.language.' . getCurrentLanguageName()) }}</a>
+                    <a href="javascript:void(0)">{{ getLanguages()[App::getLocale()] ?? strtoupper(App::getLocale()) }}</a>
                     <ul class="sub-menu">
                         @foreach ($languages as $language)
                             <li class="languageSelection" data-prefix-value="{{ $language['key'] }}"><a href="javascript:void(0)">{{ $language['label'] }}</a></li>
                         @endforeach
                     </ul>
                 </li>
+                @endif
                 <li><a href="{{ $dashboard ?? route('login') }}">{{ $dashboard ? __('messages.dashboard.dashboard') : __('messages.web_menu.login') }}</a></li>
             </ul>
         </div>
@@ -101,8 +103,9 @@
                                         @endisset
                                     </li>
                                 @endforeach
+                                @if (count($languages) > 1)
                                 <li class="menu-item-has-children">
-                                    <a href="javascript:void(0)"><i class="fa-solid fa-globe"></i> {{ strtoupper(getCurrentLanguageName()) }}</a>
+                                    <a href="javascript:void(0)"><i class="fa-solid fa-globe"></i> {{ strtoupper(App::getLocale()) }}</a>
                                     <ul class="sub-menu">
                                         @foreach ($languages as $language)
                                             <li class="languageSelection" data-prefix-value="{{ $language['key'] }}">
@@ -114,6 +117,7 @@
                                         @endforeach
                                     </ul>
                                 </li>
+                                @endif
                             </ul>
                         </nav>
                     </div>

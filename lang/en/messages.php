@@ -4347,6 +4347,9 @@ return [
         'restore_hint' => 'Restore (by the IT person, application stopped): gunzip -c file.sql.gz | mysql -u user -p database.',
     ],
     'front_web' => [
+        'website_languages' => 'Website languages',
+        'default_language' => 'Default language',
+        'other_languages' => 'Other languages',
         'type_1' => 'Services',
         'type_2' => 'Case studies',
         'type_3' => 'News',

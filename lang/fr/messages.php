@@ -38,7 +38,7 @@ return [
     'beds' => 'Des lits',
     'bed_assigns' => 'Attributions de lit',
     'packages' => 'Paquets',
-    'schedules' => 'Des horaires',
+    'schedules' => 'Horaires',
     'schedule_label' => 'Horaire',
     'services' => 'Prestations de service',
     'complaint' => 'Plainte',
@@ -917,7 +917,7 @@ return [
         'doctor_name' => 'Nom du docteur',
         'department_name' => 'Nom du département',
         'date' => 'Date',
-        'doctor_department' => 'Département de docteur',
+        'doctor_department' => 'Service médical',
         'doctor_department_name' => 'Nom du département de médecin',
         'doctor' => 'Médecin',
         'description' => 'La description',
@@ -1992,7 +1992,7 @@ return [
 
     'web_home' => [
         'home' => 'Accueil',
-        'services' => 'Prestations de service',
+        'services' => 'Services',
         'doctors' => 'Médecins',
         'about_us' => 'À propos de nous',
         'contact' => 'Contact',
@@ -2012,7 +2012,7 @@ return [
         '4_easy_step_and_get_the_world_best_treatment' => '4 étapes faciles et obtenez le meilleur traitement au monde',
         'book_an_appointment' => 'Prenez rendez-vous',
         'select_doctor' => 'Sélectionnez un médecin',
-        'book_now' => 'Reserve maintenant',
+        'book_now' => 'Réserver',
         'patients_beds' => 'Lits de patients',
         'doctors_nurses' => 'Médecins et infirmières',
         'happy_patients' => 'Patients heureux',
@@ -2051,12 +2051,12 @@ return [
     ],
 
     'web_menu' => [
-        'about' => 'Sur',
+        'about' => 'À propos',
         'our_features' => 'Nos fonctionnalités',
         'appointment' => 'Rendez-vous',
         'working_hours' => 'Heures d\'ouverture',
         'login' => 'Connexion',
-        'useful_link' => 'Lien utile',
+        'useful_link' => 'Liens utiles',
         'contact_information' => 'Coordonnées',
         'copyright' => 'droits d\'auteur',
         'all_rights_reserved_by' => 'Tous droits réservés par',
@@ -2072,7 +2072,7 @@ return [
         'select_department' => 'Sélectionnez le département',
         'select_doctor' => 'Sélectionnez un médecin',
         'enter_description' => 'Entrez la description',
-        'select_time' => 'Sélectionnez l\'heure',
+        'select_time' => 'Choisir une date',
     ],
 
     'web_working_hours' => [
@@ -4359,6 +4359,9 @@ return [
         'restore_hint' => "Restauration (par l'informaticien, application arrêtée) : gunzip -c fichier.sql.gz | mysql -u utilisateur -p base.",
     ],
     'front_web' => [
+        'website_languages' => 'Langues du site',
+        'default_language' => 'Langue par défaut',
+        'other_languages' => 'Autres langues',
         'type_1' => 'Services',
         'type_2' => 'Études de cas',
         'type_3' => 'Actualités',
