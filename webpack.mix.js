@@ -849,12 +849,12 @@ mix.sass(
 // front third-party js
 mix.scripts(
     [
-        "resources/assets/theme/js/vendor.js",
-        "resources/assets/theme/js/plugins.js",
+        // website only: the admin vendor bundle (Metronic) is not loaded here, the theme brings Bootstrap
         "public/web_front/js/jquery.min.js",
         "node_modules/intl-tel-input/build/js/intlTelInput.js",
         "node_modules/intl-tel-input/build/js/utils.js",
-        "node_modules/moment/min/moment-with-locales.js",
+        "node_modules/moment/min/moment.min.js",
+        "node_modules/moment/locale/fr.js",
         "public/web_front/js/selectize.min.js",
         "public/web_front/js/jquery-ui.js",
         "public/web_front/js/jquery-ui-i18n.min.js",

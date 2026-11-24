@@ -18,8 +18,8 @@ function initAllComponents() {
     alertInitialize();
     modalInputFocus();
     inputFocus();
-    IOInitImageComponent();
-    IOInitSidebar();
+    if (typeof IOInitImageComponent === "function") IOInitImageComponent();
+    if (typeof IOInitSidebar === "function") IOInitSidebar();
     if(userCurrentLanguage == 'ar'){
         toastr.options = {
             closeButton: true,
@@ -63,6 +63,7 @@ function initAllComponents() {
 let firstTime = true;
 
 function select2initialize() {
+    if (!$.fn.select2) return;
     $('[data-control="select2"]').each(function () {
         $(this).select2();
     });

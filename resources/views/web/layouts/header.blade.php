@@ -19,7 +19,7 @@
     ];
     $languages = [];
     foreach (websiteLanguages() as $key) {
-        $languages[] = ['key' => $key, 'label' => getLanguages()[$key], 'flag' => \App\Models\User::LANGUAGES_IMAGE[$key] ?? null];
+        $languages[] = ['key' => $key, 'label' => __('messages.language.'.getLanguages()[$key]), 'flag' => \App\Models\User::LANGUAGES_IMAGE[$key] ?? null];
     }
     $social = collect(\App\Models\Setting::SOCIAL_ICONS)->filter(fn ($icon, $key) => ! empty($settingValue[$key]['value'] ?? null));
 @endphp
@@ -48,7 +48,7 @@
                 @endforeach
                 @if (count($languages) > 1)
                 <li class="menu-item-has-children">
-                    <a href="javascript:void(0)">{{ getLanguages()[App::getLocale()] ?? strtoupper(App::getLocale()) }}</a>
+                    <a href="javascript:void(0)">{{ __('messages.language.'.(getLanguages()[App::getLocale()] ?? 'French')) }}</a>
                     <ul class="sub-menu">
                         @foreach ($languages as $language)
                             <li class="languageSelection" data-prefix-value="{{ $language['key'] }}"><a href="javascript:void(0)">{{ $language['label'] }}</a></li>
@@ -76,7 +76,7 @@
                 <div class="row justify-content-between align-items-center">
                     <div class="col">
                         <div class="d-flex align-items-center justify-content-start position-relative">
-                            <button class="vs-menu-toggle d-inline-block d-xl-none" aria-label="Menu"><i class="fal fa-bars"></i></button>
+                            <button class="vs-menu-toggle d-inline-block d-xl-none" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
                             <div class="vs-header__logo">
                                 <a href="{{ route('front') }}"><img src="{{ asset(getLogoUrl()) }}" alt="{{ getAppName() }}" class="logo"></a>
                             </div>
