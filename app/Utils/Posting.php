@@ -193,7 +193,8 @@ class Posting
         foreach (EmployeePayroll::where('status', EmployeePayroll::PAID)->whereBetween('updated_at', [$from, $to])->get() as $p) {
             $net = (float) $p->net_salary;
             $deductions = max(0, (float) $p->deductions);
-            $lines = [['salaries', $net + $deductions, 0], ['finance_cash', 0, $net]];
+            // Paid in cash or by bank transfer: the payment method's account (the register's cash account rule does not apply).
+            $lines = [['salaries', $net + $deductions, 0], [$p->payment_method ? 'method.'.$p->payment_method : 'finance_cash', 0, $net]];
             if ($deductions > 0) {
                 $lines[] = ['payroll_deductions', 0, $deductions];
             }

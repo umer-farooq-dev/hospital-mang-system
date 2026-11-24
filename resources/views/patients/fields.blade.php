@@ -134,6 +134,13 @@
                 </button>
                 <input type="file" name="id_card_image" class="d-none id-card-image" accept="image/jpeg">
             @endif
+            @if (\App\Models\Patient::registrationSettings()['mrz_scanner'])
+                <input type="text" class="form-control form-control-sm mt-3 mrz-scanner-input" autocomplete="off" spellcheck="false"
+                    placeholder="{{ __('messages.reception.mrz_scanner_placeholder') }}" title="{{ __('messages.reception.mrz_scanner_hint') }}"
+                    data-id-type="{{ \App\Models\Patient::registrationSettings()['id_scan_document_type'] }}"
+                    data-done="{{ __('messages.reception.id_scan_done') }}" data-expired="{{ __('messages.reception.id_scan_expired') }}"
+                    data-invalid="{{ __('messages.reception.mrz_scanner_invalid') }}">
+            @endif
         </div>
     </div>
     <hr>

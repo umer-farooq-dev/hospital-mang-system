@@ -243,14 +243,12 @@ function titleCase(text) {
     return text.toLowerCase().replace(/(^|[\s-])\S/g, (c) => c.toUpperCase());
 }
 
-function fillFromCard(modal, video, card) {
-    idScan.running = false;
-    let form = idScan.form;
+// Fills the patient form from a card read by the webcam or typed by a desk MRZ scanner.
+function applyCard(form, card, idType) {
     let set = (name, value) => value && form.find("[name=" + name + "]").val(value).trigger("change");
     set("last_name", card.lastName);
     set("first_name", titleCase(card.firstNames));
     set("id_document_number", card.documentNumber);
-    let idType = modal.data("id-type");
     if (idType) {
         set("id_document_type", String(idType));
     }
@@ -265,6 +263,20 @@ function fillFromCard(modal, video, card) {
             set("dob", card.birthDate);
         }
     }
+}
+
+function cardExpired(card) {
+    return card.expiryDate && card.expiryDate < new Date().toISOString().slice(0, 10);
+}
+
+function expiredText(template, card) {
+    return String(template).replace(":date", card.expiryDate.split("-").reverse().join("/"));
+}
+
+function fillFromCard(modal, video, card) {
+    idScan.running = false;
+    let form = idScan.form;
+    applyCard(form, card, modal.data("id-type"));
     // Keep a picture of the whole card for the patient's documents.
     let canvas = modal.find(".id-scan-canvas")[0];
     canvas.width = video.videoWidth;
@@ -285,13 +297,45 @@ function fillFromCard(modal, video, card) {
         0.85
     );
     let messages = $(".id-scan-messages");
-    let expired = card.expiryDate && card.expiryDate < new Date().toISOString().slice(0, 10);
     modal.modal("hide");
     displaySuccessMessage(messages.data("done"));
-    if (expired) {
-        displayErrorMessage(String(messages.data("expired")).replace(":date", card.expiryDate.split("-").reverse().join("/")));
+    if (cardExpired(card)) {
+        displayErrorMessage(expiredText(messages.data("expired"), card));
     }
 }
+
+// Desk MRZ scanner: it types the 90 characters (often followed by Enter) into the scanner field.
+function readScannerField(input, typedEnter) {
+    let field = $(input);
+    let card = window.parseMrz(field.val());
+    if (!card) {
+        if (typedEnter && field.val().trim() !== "") {
+            displayErrorMessage(field.data("invalid"));
+            field.val("");
+        }
+        return;
+    }
+    applyCard(field.closest("form"), card, field.data("id-type"));
+    field.val("");
+    displaySuccessMessage(field.data("done"));
+    if (cardExpired(card)) {
+        displayErrorMessage(expiredText(field.data("expired"), card));
+    }
+}
+
+$(document).on("keydown", ".mrz-scanner-input", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault(); // the scanner's Enter must not submit the patient form
+        readScannerField(this, true);
+    }
+});
+
+let scannerTimer = null;
+$(document).on("input", ".mrz-scanner-input", function () {
+    // Scanners without Enter: read once the typing stops.
+    clearTimeout(scannerTimer);
+    scannerTimer = setTimeout(() => readScannerField(this, false), 300);
+});
 
 listenHiddenBsModal("#idCardScanModal", function () {
     idScan.running = false;

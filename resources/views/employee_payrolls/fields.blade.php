@@ -36,6 +36,10 @@
         {{ Form::select('status', $status, null, ['id' => 'status', 'class' => 'form-select', 'required', 'data-control' => 'select2','placeholder' => __('messages.common.status')]) }}
     </div>
     <div class="col-lg-3 col-md-4 col-sm-12 mb-5">
+        {{ Form::label('payment_method', __('messages.employee_payroll.payment_method') . ':', ['class' => 'form-label']) }}
+        {{ Form::select('payment_method', \App\Models\PaymentMethod::options([], $employeePayroll->payment_method ?? null), $employeePayroll->payment_method ?? null, ['class' => 'form-select', 'data-control' => 'select2', 'placeholder' => __('messages.employee_payroll.payment_method_default')]) }}
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-12 mb-5">
         {{ Form::label('basic_salary', __('messages.employee_payroll.basic_salary') . ':', ['class' => 'form-label']) }}
         <span class="required"></span>
         {{ Form::hidden('currency_symbol', getCurrentCurrency(), ['class' => 'currencySymbol']) }}

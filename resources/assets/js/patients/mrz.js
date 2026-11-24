@@ -64,8 +64,16 @@
     }
 
 
+    // A desk MRZ scanner types the three lines as one line of 90 characters (no line break).
+    function oneLine(text) {
+        const compact = clean(String(text).replace(/\s+/g, ""));
+        if (compact.length < 86 || compact.length > 94) return null;
+        const lines = [fit(compact.slice(0, 30)), fit(compact.slice(30, 60)), fit(compact.slice(60, 90))];
+        return /^\d{7}[MFX<]/.test(fix(lines[1].slice(0, 7), DIGIT_FIX) + lines[1].slice(7)) ? lines : null;
+    }
+
     function parseMrz(text) {
-        const lines = findLines(text);
+        const lines = findLines(text) || oneLine(text);
         if (!lines) return null;
         let [l1, l2, l3] = lines;
         l1 = l1.replace(/^[T1L]/, "I");

@@ -67,6 +67,16 @@
             </div>
             <div class="text-muted fs-7">{{ __('messages.reception.id_scan_hint') }}</div>
         </div>
+        <div class="col-md-12 mb-3">
+            <div class="d-flex align-items-center">
+                <span class="form-label mb-0">{{ __('messages.reception.mrz_scanner') }}:</span>
+                <label class="form-check form-switch form-switch-sm ms-3">
+                    <input type="checkbox" name="reception_mrz_scanner" class="form-check-input" value="1" {{ $reception['mrz_scanner'] ? 'checked' : '' }}>
+                    <span class="custom-switch-indicator"></span>
+                </label>
+            </div>
+            <div class="text-muted fs-7">{{ __('messages.reception.mrz_scanner_hint') }}</div>
+        </div>
         <div class="col-md-4 mb-3">
             {{ Form::label('default_payer', __('messages.reception.default_payer') . ':', ['class' => 'form-label']) }}
             {{ Form::select('default_payer', ['self' => __('messages.reception.default_payers.self'), 'policy' => __('messages.reception.default_payers.policy')], $reception['default_payer'], ['class' => 'form-select']) }}

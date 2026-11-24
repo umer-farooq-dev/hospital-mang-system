@@ -86,6 +86,8 @@ class Insurance extends Model
             'address' => 'nullable|max:1000',
             'billing_option' => ['required', Rule::in(self::BILLING_OPTIONS)],
             'credit_days' => 'nullable|integer|min:0|max:365',
+            'contract_from' => 'nullable|date',
+            'contract_to' => 'nullable|date|after_or_equal:contract_from',
             'claim_note' => 'nullable|string|max:2000',
             'claim_title' => 'nullable|string|max:100',
             'claim_columns' => 'nullable|array',
@@ -129,6 +131,8 @@ class Insurance extends Model
         'address',
         'billing_option',
         'credit_days',
+        'contract_from',
+        'contract_to',
         'claim_note',
         'claim_title',
         'claim_columns',
@@ -150,6 +154,8 @@ class Insurance extends Model
 
     protected $casts = [
         'claim_columns' => 'array',
+        'contract_from' => 'date',
+        'contract_to' => 'date',
         'id' => 'integer',
         'payer_type' => 'integer',
         'coverage_percent' => 'float',
@@ -206,9 +212,23 @@ class Insurance extends Model
     }
 
     /** Active payers for a dropdown, keeping a current (possibly deactivated) one. */
+    /** Active payers whose contract has not ended (insurers change every year), plus the one already chosen. */
     public static function options($currentId = null): array
     {
-        return self::where('status', self::ACTIVE)->when($currentId, fn ($q) => $q->orWhere('id', $currentId))
-            ->orderBy('name')->pluck('name', 'id')->all();
+        $today = now()->toDateString();
+
+        return self::where(fn ($q) => $q->where('status', self::ACTIVE)->where(fn ($c) => $c->whereNull('contract_to')->orWhereDate('contract_to', '>=', $today)))
+            ->when($currentId, fn ($q) => $q->orWhere('id', $currentId))->orderBy('name')->pluck('name', 'id')->all();
+    }
+
+    /** 'ended', 'not_started' or null when the contract covers the day. */
+    public function contractStatusOn($date = null): ?string
+    {
+        $day = \Illuminate\Support\Carbon::parse($date ?? now())->startOfDay();
+        if ($this->contract_to && $this->contract_to->lt($day)) {
+            return 'ended';
+        }
+
+        return $this->contract_from && $this->contract_from->gt($day) ? 'not_started' : null;
     }
 }

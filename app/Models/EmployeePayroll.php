@@ -137,6 +137,7 @@ class EmployeePayroll extends Model
         'allowance',
         'deductions',
         'currency_symbol',
+        'payment_method',
     ];
 
     protected $casts = [
