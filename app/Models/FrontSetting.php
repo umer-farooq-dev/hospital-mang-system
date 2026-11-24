@@ -67,6 +67,11 @@ class FrontSetting extends Model implements HasMedia
         'page_banner_image' => self::HOME_IMAGE_PATH,
     ];
 
+    // uploaded background video of the home page video block
+    const VIDEO_KEY = 'home_page_video_file';
+
+    const VIDEO_PATH = 'homepage-video';
+
     const COLOR_KEYS = ['theme_color_primary', 'theme_color_secondary', 'theme_color_accent', 'theme_color_dark', 'theme_color_title'];
 
     /** Enabled home sections in the admin's order. */

@@ -35,6 +35,15 @@ class FrontSettingRepository extends BaseRepository
             $frontSetting->update(['value' => $frontSetting->getFirstMediaUrl($collection)]);
         }
 
+        if (! empty($input[FrontSetting::VIDEO_KEY]) || ! empty($input['home_page_video_remove'])) {
+            $video = FrontSetting::firstOrCreate(['key' => FrontSetting::VIDEO_KEY], ['value' => '', 'type' => FrontSetting::HOME_PAGE]);
+            $video->clearMediaCollection(FrontSetting::VIDEO_PATH);
+            if (! empty($input[FrontSetting::VIDEO_KEY])) {
+                $video->addMedia($input[FrontSetting::VIDEO_KEY])->toMediaCollection(FrontSetting::VIDEO_PATH, config('app.media_disc'));
+            }
+            $video->update(['value' => $video->getFirstMediaUrl(FrontSetting::VIDEO_PATH)]);
+        }
+
         if (isset($input['website_languages']) && is_array($input['website_languages'])) {
             $input['website_languages'] = implode(',', array_intersect($input['website_languages'], array_keys(getLanguages())));
         }

@@ -4347,6 +4347,9 @@ return [
         'restore_hint' => 'Restore (by the IT person, application stopped): gunzip -c file.sql.gz | mysql -u user -p database.',
     ],
     'front_web' => [
+        'background_video' => 'Background video (plays by itself, muted)',
+        'remove_video' => 'Remove the video',
+        'video_hint' => 'MP4 or WEBM, max 10 MB. A short clip (15–30 s, no sound) loads fast. Without a video the background picture is shown.',
         'website_languages' => 'Website languages',
         'default_language' => 'Default language',
         'other_languages' => 'Other languages',

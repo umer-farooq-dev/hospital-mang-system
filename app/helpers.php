@@ -840,16 +840,22 @@ function websiteLanguages(): array
     return array_values(array_unique(array_merge([$default], $others)));
 }
 
-/** Uploaded website picture, or the theme picture until the hospital uploads its own. */
-function frontImage($key, $themeFile)
+/** URL of a file uploaded in Front CMS, or null. */
+function frontFile($key)
 {
     $value = frontSetting($key);
     if (! $value) {
-        return asset('web_front/kliniko/img/'.$themeFile);
+        return null;
     }
 
     // uploads are saved with the domain of the day; keep only the path so a new domain still works
     return str_starts_with($value, 'http') ? asset(ltrim(parse_url($value, PHP_URL_PATH), '/')) : $value;
+}
+
+/** Uploaded website picture, or the theme picture until the hospital uploads its own. */
+function frontImage($key, $themeFile)
+{
+    return frontFile($key) ?: asset('web_front/kliniko/img/'.$themeFile);
 }
 
 /** CSS variables of the website colours (admin controlled). */

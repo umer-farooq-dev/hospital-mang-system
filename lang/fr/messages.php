@@ -4359,6 +4359,9 @@ return [
         'restore_hint' => "Restauration (par l'informaticien, application arrêtée) : gunzip -c fichier.sql.gz | mysql -u utilisateur -p base.",
     ],
     'front_web' => [
+        'background_video' => 'Vidéo de fond (lecture automatique, sans son)',
+        'remove_video' => 'Supprimer la vidéo',
+        'video_hint' => 'MP4 ou WEBM, 10 Mo max. Un court extrait (15–30 s, sans son) se charge vite. Sans vidéo, l\'image de fond s\'affiche.',
         'website_languages' => 'Langues du site',
         'default_language' => 'Langue par défaut',
         'other_languages' => 'Autres langues',
