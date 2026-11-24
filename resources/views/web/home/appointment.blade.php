@@ -11,38 +11,9 @@
     @endphp
 
     <div class="appointment-page">
-        <!-- start hero section -->
-        <section
-            class="hero-section position-relative p-t-60 border-bottom-right-rounded border-bottom-left-rounded bg-gray overflow-hidden">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6 {{ App::getLocale() == 'ar' ? 'text-lg-end' : 'text-lg-start' }} text-center">
-                        <div class="hero-content">
-                            <h1 class="mb-3 pb-1">
-                                {{ __('messages.web_home.make_appointment') }}
-                            </h1>
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb justify-content-lg-start justify-content-center mb-lg-0 mb-5">
-                                    <li class="breadcrumb-item">
-                                        <a href="{{ route('front') }}">{{ __('messages.web_home.home') }}</a>
-                                    </li>
-                                    <li class="breadcrumb-item active" aria-current="page">
-                                        {{ __('messages.web_home.make_appointment') }}
-                                    </li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 text-lg-end text-center">
-                        <img src="{{ asset('web_front/images/page-banner/make-appointment.png') }}" alt="Infy Care"
-                            class="img-fluid" />
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- end hero section -->
+        
 
-        <section class="appointment-section p-t-120 position-relative">
+        <section class="appointment-section space-top position-relative">
             <div class="container">
                 @include('flash::message')
                 <div class="alert alert-danger" id="validationErrorsBox" style="display: none"></div>
@@ -56,7 +27,7 @@
         <!-- end appointment-form section -->
 
         <!-- start contact section -->
-        <section class="contact-details-section p-t-120 p-b-120">
+        <section class="contact-details-section space">
             <div class="container">
                 <div class="row mt-xl-5">
                     <div class="col-lg-6">
@@ -97,7 +68,7 @@
                                             class="text-decoration-none fs-5 text-success my-2">
                                             {{ $settingValue['hospital_email']['value'] }}
                                         </a>
-                                        <span class="text-secondary fw-light">Contact Hospital</span>
+                                        <span class="text-secondary fw-light">{{ __('messages.web_front.email_us') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -186,7 +157,7 @@
                 'payment_mode': '',
             },
             'theme': {
-                'color': '#FF8E4B',
+                'color': "{{ frontSetting('theme_color_primary', '#009E49') }}",
             },
             'modal': {
                 'ondismiss': function() {

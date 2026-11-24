@@ -82,3 +82,15 @@ php artisan data:import opening_balances balances.csv --date=2027-01-01 --commit
 6. Open the cash registers and start working. Keep the old program read-only for look-ups.
 
 If the go-live must be stopped, keep working in the old program. Nothing in the old data was changed.
+
+## Website theme (Kliniko)
+
+The public website uses the purchased Kliniko theme. Its files are paid (they include Font Awesome Pro), so they are
+**not in git** (`.gitignore`: `public/web_front/kliniko/`). On every new server copy them once from the theme package:
+
+```
+cp -r "kliniko_theme/download version/assets/"{css,js,fonts,img} public/web_front/kliniko/
+```
+
+Everything shown on the site (texts, pictures, colours, sections and their order, services, case studies, news)
+is managed in **Front CMS**; the theme pictures are only shown until the hospital uploads its own.

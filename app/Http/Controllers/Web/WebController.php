@@ -67,13 +67,18 @@ class WebController extends AppBaseController
             ->distinct()->take(6)->orderByDesc('appointments_count')->get();
         $todayNotice = NoticeBoard::whereDate('created_at', Carbon::today()->toDateTimeString())->latest()->first();
         $testimonials = Testimonial::with('media')->get();
-        $doctors = Doctor::with('doctorUser')->get();
-        $frontSetting = FrontSetting::whereType(FrontSetting::HOME_PAGE)->pluck('value', 'key')->toArray();
-        $frontServices = FrontService::all()->take(8);
+        $doctors = Doctor::with('doctorUser')->whereHas('doctorUser', fn (Builder $q) => $q->where('status', 1))->get();
+        $frontSetting = frontSetting();
+        $sections = FrontSetting::homeSections($frontSetting);
+        $frontServices = FrontService::with('media')->ofType(FrontService::SERVICE)->take(8)->get();
+        $cases = FrontService::with('media')->ofType(FrontService::CASE_STUDY)->take(3)->get();
+        $posts = FrontService::with('media')->ofType(FrontService::POST)->take(6)->get();
+        $departments = DoctorDepartment::orderBy('title')->pluck('title', 'id');
 
         return view('web.home.index',
             compact('doctorsDepartments', 'doctors', 'todayNotice', 'testimonials', 'totalbeds',
-                'totalDoctorNurses', 'totalPatient', 'doctorAppointments', 'frontSetting', 'frontServices'));
+                'totalDoctorNurses', 'totalPatient', 'doctorAppointments', 'frontSetting', 'frontServices',
+                'sections', 'cases', 'posts', 'departments'));
     }
 
     public function demo()
@@ -131,11 +136,29 @@ class WebController extends AppBaseController
         return view('web.home.appointment', compact('departments', 'doctors','customField'));
     }
 
-    public function services()
+    public function services($id = null)
     {
-        $frontServices = FrontService::paginate(8);
+        return $this->content(FrontService::SERVICE, $id);
+    }
 
-        return view('web.home.services', compact('frontServices'));
+    public function cases($id = null)
+    {
+        return $this->content(FrontService::CASE_STUDY, $id);
+    }
+
+    public function news($id = null)
+    {
+        return $this->content(FrontService::POST, $id);
+    }
+
+    /** One page for the three kinds of website content: the list, or one item with the others beside it. */
+    private function content(int $type, $id)
+    {
+        $item = $id ? FrontService::with('media')->where('type', $type)->findOrFail($id) : null;
+        $items = FrontService::with('media')->ofType($type)->paginate(9);
+        $others = $item ? FrontService::ofType($type)->whereKeyNot($item->id)->take(8)->get() : collect();
+
+        return view('web.home.services', ['frontServices' => $items, 'item' => $item, 'others' => $others, 'type' => $type]);
     }
 
     public function doctors()
@@ -220,7 +243,7 @@ class WebController extends AppBaseController
     }
 
     public function doctorDetails($id){
-        $doctorDetails = Doctor::find($id);
+        $doctorDetails = Doctor::with(['doctorUser', 'department', 'schedules'])->whereHas('doctorUser', fn (Builder $q) => $q->where('status', 1))->findOrFail($id);
         $doctorSchedule = $doctorDetails->schedules;
         return view('web.home.doctor-details',compact('doctorDetails','doctorSchedule'));
     }

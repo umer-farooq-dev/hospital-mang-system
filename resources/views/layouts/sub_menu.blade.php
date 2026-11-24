@@ -1367,11 +1367,19 @@
             @canroute('front.cms.services.index')
             <li
                 class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('front-settings*', 'notice-boards*', 'testimonials*', 'front-cms-services*', 'terms-and-conditions*','complaints*') ? 'd-none' : '' }}">
-                <a class="nav-link p-0  {{ Request::is('front-cms-services*') ? 'active' : '' }}"
+                <a class="nav-link p-0  {{ Request::is('front-cms-services*') && (int) request('type', 1) === 1 ? 'active' : '' }}"
                     href="{{ route('front.cms.services.index') }}">
                     {{ __('messages.front_cms_services') }}
                 </a>
             </li>
+            @foreach ([\App\Models\FrontService::CASE_STUDY, \App\Models\FrontService::POST] as $contentType)
+                <li class="nav-item position-relative mx-xl-3 mb-3 mb-xl-0 {{ !Request::is('front-settings*', 'notice-boards*', 'testimonials*', 'front-cms-services*', 'terms-and-conditions*','complaints*') ? 'd-none' : '' }}">
+                    <a class="nav-link p-0 {{ Request::is('front-cms-services*') && (int) request('type') === $contentType ? 'active' : '' }}"
+                        href="{{ route('front.cms.services.index', ['type' => $contentType]) }}">
+                        {{ __('messages.front_web.type_'.$contentType) }}
+                    </a>
+                </li>
+            @endforeach
             @endcanroute
             @module('Notice Boards', $modules)
                 @canroute('noticeboard')

@@ -192,6 +192,201 @@
                     {{ Form::textarea('home_page_step_4_description', $frontSettings['home_page_step_4_description'], ['placeholder' => __('messages.front_setting.home_page_step_4_description'),'class' => 'form-control', 'required', 'rows' => 5, 'onkeypress' => 'return avoidSpace(event);', 'id' => 'homePageStep4Des']) }}
                 </div>
             </div>
+            {{-- Website design (Kliniko): colours, sections, headings and pictures --}}
+            @php
+                $themeImages = ['page_banner_image' => 'bg/breadcrumb-bg.jpg', 'home_page_video_image' => 'bg/video-h3-bg.jpg',
+                    'home_page_step_1_image' => 'service/proces-h3-img1.jpg', 'home_page_step_2_image' => 'service/proces-h3-img2.jpg',
+                    'home_page_step_3_image' => 'service/proces-h3-img1.jpg', 'home_page_step_4_image' => 'service/proces-h3-img2.jpg'];
+                $homeSections = \App\Models\FrontSetting::homeSections($frontSettings);
+            @endphp
+            <h3 class="mt-3 mb-5">{{ __('messages.front_web.appearance') }}</h3>
+            <div class="row mb-5">
+                @foreach (\App\Models\FrontSetting::COLOR_KEYS as $colorKey)
+                    <div class="form-group col-6 col-md mb-5">
+                        {{ Form::label($colorKey, __('messages.front_web.'.$colorKey).':', ['class' => 'form-label']) }}
+                        <input type="color" name="{{ $colorKey }}" id="{{ $colorKey }}" value="{{ $frontSettings[$colorKey] ?? '#009E49' }}" class="form-control form-control-color w-100">
+                    </div>
+                @endforeach
+                <div class="col-12 form-text mt-n3">{{ __('messages.front_web.colors_hint') }}</div>
+            </div>
+
+            <h3 class="mb-5">{{ __('messages.front_web.home_sections') }}</h3>
+            <div class="table-responsive mb-5">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>{{ __('messages.front_web.section') }}</th>
+                            <th class="w-100px">{{ __('messages.front_web.show') }}</th>
+                            <th class="w-100px">{{ __('messages.front_web.sort_order') }}</th>
+                            <th>{{ __('messages.front_web.section_sub') }}</th>
+                            <th>{{ __('messages.front_web.section_title') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($homeSections as $index => $homeSection)
+                            @php($sectionKey = $homeSection['key'])
+                            <tr>
+                                <td class="fw-bold">{{ __('messages.front_web.section_'.$sectionKey) }}</td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input type="hidden" name="home_sections[{{ $sectionKey }}][on]" value="0">
+                                        <input class="form-check-input" type="checkbox" name="home_sections[{{ $sectionKey }}][on]" value="1" {{ $homeSection['on'] ? 'checked' : '' }}>
+                                    </div>
+                                </td>
+                                <td><input type="number" min="0" class="form-control" name="home_sections[{{ $sectionKey }}][order]" value="{{ $index + 1 }}"></td>
+                                <td>
+                                    @if (array_key_exists('section_'.$sectionKey.'_sub', $frontSettings))
+                                        {{ Form::text('section_'.$sectionKey.'_sub', $frontSettings['section_'.$sectionKey.'_sub'], ['class' => 'form-control', 'maxlength' => 255]) }}
+                                    @endif
+                                </td>
+                                <td>
+                                    @if (array_key_exists('section_'.$sectionKey.'_title', $frontSettings))
+                                        {{ Form::text('section_'.$sectionKey.'_title', $frontSettings['section_'.$sectionKey.'_title'], ['class' => 'form-control', 'maxlength' => 255]) }}
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="form-text">{{ __('messages.front_web.sections_hint') }}</div>
+            </div>
+
+            <h3 class="mb-5">{{ __('messages.front_web.home_extras') }}</h3>
+            <div class="row mb-5">
+                    <div class="form-group col-sm-6 mb-5">
+                        {{ Form::label('home_page_subtitle', __('messages.front_web.hero_subtitle').':', ['class' => 'form-label']) }}
+                        {{ Form::text('home_page_subtitle', $frontSettings['home_page_subtitle'] ?? '', ['class' => 'form-control', 'maxlength' => 255]) }}
+                    </div>
+                    <div class="form-group col-sm-6 mb-5">
+                        {{ Form::label('home_page_video_url', __('messages.front_web.video_url').':', ['class' => 'form-label']) }}
+                        {{ Form::text('home_page_video_url', $frontSettings['home_page_video_url'] ?? '', ['class' => 'form-control', 'maxlength' => 255]) }}
+                    </div>
+                    <div class="form-group col-sm-6 mb-5">
+                        {{ Form::label('home_page_experience_label', __('messages.front_web.experience_label').':', ['class' => 'form-label']) }}
+                        {{ Form::text('home_page_experience_label', $frontSettings['home_page_experience_label'] ?? '', ['class' => 'form-control', 'maxlength' => 255]) }}
+                    </div>
+                    <div class="form-group col-sm-6 mb-5">
+                        {{ Form::label('home_page_circle_text', __('messages.front_web.circle_text').':', ['class' => 'form-label']) }}
+                        {{ Form::text('home_page_circle_text', $frontSettings['home_page_circle_text'] ?? '', ['class' => 'form-control', 'maxlength' => 255]) }}
+                    </div>
+                    <div class="form-group col-sm-6 mb-5">
+                        {{ Form::label('home_page_about_points', __('messages.front_web.about_points').':', ['class' => 'form-label']) }}
+                        {{ Form::textarea('home_page_about_points', $frontSettings['home_page_about_points'] ?? '', ['class' => 'form-control', 'rows' => 4]) }}
+                    </div>
+                    <div class="form-group col-sm-6 mb-5">
+                        {{ Form::label('section_process_text', __('messages.front_web.process_text').':', ['class' => 'form-label']) }}
+                        {{ Form::textarea('section_process_text', $frontSettings['section_process_text'] ?? '', ['class' => 'form-control', 'rows' => 4]) }}
+                    </div>
+                    <div class="form-group col-sm-6 mb-5">
+                        {{ Form::label('section_appointment_sub', __('messages.front_web.appointment_sub').':', ['class' => 'form-label']) }}
+                        {{ Form::text('section_appointment_sub', $frontSettings['section_appointment_sub'] ?? '', ['class' => 'form-control', 'maxlength' => 255]) }}
+                    </div>
+            </div>
+            <div class="row mb-5">
+                    <div class="form-group col-sm-6 col-lg-3 mb-5">
+                        <div class="row2" io-image-input="true">
+                            {{ Form::label('page_banner_image', __('messages.front_web.page_banner_image').':', ['class' => 'form-label']) }}
+                            <div class="d-block">
+                                <div class="image-picker">
+                                    <div class="image previewImage" style="background-image: url({{ frontImage('page_banner_image', $themeImages['page_banner_image']) }})">
+                                        <span class="picker-edit rounded-circle text-gray-500 fs-small" title="{{ __('messages.common.change') }}">
+                                            <label>
+                                                <i class="fa-solid fa-pen"></i>
+                                                {{ Form::file('page_banner_image', ['class' => 'image-upload d-none', 'accept' => '.png, .jpg, .jpeg, .webp']) }}
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-6 col-lg-3 mb-5">
+                        <div class="row2" io-image-input="true">
+                            {{ Form::label('home_page_video_image', __('messages.front_web.video_image').':', ['class' => 'form-label']) }}
+                            <div class="d-block">
+                                <div class="image-picker">
+                                    <div class="image previewImage" style="background-image: url({{ frontImage('home_page_video_image', $themeImages['home_page_video_image']) }})">
+                                        <span class="picker-edit rounded-circle text-gray-500 fs-small" title="{{ __('messages.common.change') }}">
+                                            <label>
+                                                <i class="fa-solid fa-pen"></i>
+                                                {{ Form::file('home_page_video_image', ['class' => 'image-upload d-none', 'accept' => '.png, .jpg, .jpeg, .webp']) }}
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-6 col-lg-3 mb-5">
+                        <div class="row2" io-image-input="true">
+                            {{ Form::label('home_page_step_1_image', __('messages.front_web.step_1_image').':', ['class' => 'form-label']) }}
+                            <div class="d-block">
+                                <div class="image-picker">
+                                    <div class="image previewImage" style="background-image: url({{ frontImage('home_page_step_1_image', $themeImages['home_page_step_1_image']) }})">
+                                        <span class="picker-edit rounded-circle text-gray-500 fs-small" title="{{ __('messages.common.change') }}">
+                                            <label>
+                                                <i class="fa-solid fa-pen"></i>
+                                                {{ Form::file('home_page_step_1_image', ['class' => 'image-upload d-none', 'accept' => '.png, .jpg, .jpeg, .webp']) }}
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-6 col-lg-3 mb-5">
+                        <div class="row2" io-image-input="true">
+                            {{ Form::label('home_page_step_2_image', __('messages.front_web.step_2_image').':', ['class' => 'form-label']) }}
+                            <div class="d-block">
+                                <div class="image-picker">
+                                    <div class="image previewImage" style="background-image: url({{ frontImage('home_page_step_2_image', $themeImages['home_page_step_2_image']) }})">
+                                        <span class="picker-edit rounded-circle text-gray-500 fs-small" title="{{ __('messages.common.change') }}">
+                                            <label>
+                                                <i class="fa-solid fa-pen"></i>
+                                                {{ Form::file('home_page_step_2_image', ['class' => 'image-upload d-none', 'accept' => '.png, .jpg, .jpeg, .webp']) }}
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-6 col-lg-3 mb-5">
+                        <div class="row2" io-image-input="true">
+                            {{ Form::label('home_page_step_3_image', __('messages.front_web.step_3_image').':', ['class' => 'form-label']) }}
+                            <div class="d-block">
+                                <div class="image-picker">
+                                    <div class="image previewImage" style="background-image: url({{ frontImage('home_page_step_3_image', $themeImages['home_page_step_3_image']) }})">
+                                        <span class="picker-edit rounded-circle text-gray-500 fs-small" title="{{ __('messages.common.change') }}">
+                                            <label>
+                                                <i class="fa-solid fa-pen"></i>
+                                                {{ Form::file('home_page_step_3_image', ['class' => 'image-upload d-none', 'accept' => '.png, .jpg, .jpeg, .webp']) }}
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-6 col-lg-3 mb-5">
+                        <div class="row2" io-image-input="true">
+                            {{ Form::label('home_page_step_4_image', __('messages.front_web.step_4_image').':', ['class' => 'form-label']) }}
+                            <div class="d-block">
+                                <div class="image-picker">
+                                    <div class="image previewImage" style="background-image: url({{ frontImage('home_page_step_4_image', $themeImages['home_page_step_4_image']) }})">
+                                        <span class="picker-edit rounded-circle text-gray-500 fs-small" title="{{ __('messages.common.change') }}">
+                                            <label>
+                                                <i class="fa-solid fa-pen"></i>
+                                                {{ Form::file('home_page_step_4_image', ['class' => 'image-upload d-none', 'accept' => '.png, .jpg, .jpeg, .webp']) }}
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="col-12 form-text">{{ __('messages.front_web.image_hint') }}</div>
+            </div>
             <div class="clearfix"></div>
             <div class="row">
                 {{ Form::hidden('termConditionData', $frontSettings['terms_conditions'], ['class' => 'TermConditionData']) }}

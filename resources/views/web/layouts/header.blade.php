@@ -1,171 +1,136 @@
-<!-- Start Navbar Area -->
 @php
     $settingValue = getSettingValue();
+    $menu = [
+        ['url' => route('front'), 'label' => __('messages.web_home.home'), 'active' => Request::is('/')],
+        ['url' => route('aboutUs'), 'label' => __('messages.web_menu.about'), 'active' => Request::is('about-us')],
+        ['url' => route('our-services'), 'label' => __('messages.web_home.services'), 'active' => Request::is('our-services*')],
+        ['url' => route('our-doctors'), 'label' => __('messages.web_home.doctors'), 'active' => Request::is('our-doctors', 'doctor-details*')],
+        ['url' => 'javascript:void(0)', 'label' => __('messages.web_front.pages'), 'active' => Request::is('case-studies*', 'testimonial', 'working-hours', 'terms-of-service', 'privacy-policy', 'appointment'),
+            'children' => [
+                ['url' => route('case-studies'), 'label' => __('messages.front_web.type_2')],
+                ['url' => route('appointment'), 'label' => __('messages.web_menu.appointment')],
+                ['url' => route('working-hours'), 'label' => __('messages.web_menu.working_hours')],
+                ['url' => route('testimonials'), 'label' => __('messages.web_home.testimonials')],
+                ['url' => route('terms-of-service'), 'label' => __('messages.web_home.terms_of_service')],
+                ['url' => route('privacy-policy'), 'label' => __('messages.web_home.privacy_policy')],
+            ]],
+        ['url' => route('news'), 'label' => __('messages.front_web.type_3'), 'active' => Request::is('news*')],
+        ['url' => route('contact'), 'label' => __('messages.web_home.contact'), 'active' => Request::is('contact-us')],
+    ];
+    $languages = [];
+    foreach (getLanguages() as $key => $value) {
+        $languages[] = ['key' => $key, 'label' => $value, 'flag' => \App\Models\User::LANGUAGES_IMAGE[$key] ?? null];
+    }
+    // where each role lands after login
+    $home = ['Admin' => route('dashboard'), 'Patient' => url('patient-dashboard'), 'Doctor' => url('employee/doctor'),
+        'Nurse' => url('bed-types'), 'Receptionist' => url('appointments'), 'Pharmacist' => url('employee/doctor'),
+        'Accountant' => url('accounts'), 'Case Manager' => url('employee/doctor')];
+    $social = collect(\App\Models\Setting::SOCIAL_ICONS)->filter(fn ($icon, $key) => ! empty($settingValue[$key]['value'] ?? null));
+    $dashboard = Auth::check() ? ($home[Auth::user()->getRoleNames()->first()] ?? route('dashboard')) : null;
 @endphp
-<header class="position-relative">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-1 col-4">
-                <a href="{{ url('/') }}" class="header-logo">
-                    <img src="{{ asset(getLogoUrl()) }}" alt="Infy HMS" class="img-fluid" />
-                </a>
+
+<div class="vs-menu-wrapper">
+    <div class="vs-menu-area text-center">
+        <div class="vs-header__right pt-4">
+            <button class="vs-menu-toggle" aria-label="{{ __('messages.common.close') }}"><i class="fa-solid fa-xmark"></i></button>
+            <div class="mobile-logo">
+                <a href="{{ route('front') }}"><img src="{{ asset(getLogoUrl()) }}" alt="{{ getAppName() }}"></a>
             </div>
-            <div class="col-lg-11 col-8 ps-0">
-                <nav class="navbar navbar-expand-xl navbar-light justify-content-end py-0">
-                    <button class="navbar-toggler border-0 p-0" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                        <ul class="navbar-nav align-items-center py-2 py-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link {{ Request::is('/') ? 'active' : '' }}" aria-current="page"
-                                    href="{{ url('/') }}">
-                                    {{ __('messages.web_home.home') }}
-                                </a>
-                            </li>
+        </div>
+        <div class="vs-mobile-menu">
+            <ul>
+                @foreach ($menu as $item)
+                    <li class="{{ isset($item['children']) ? 'menu-item-has-children' : '' }} {{ $item['active'] ? 'active' : '' }}">
+                        <a href="{{ $item['url'] }}">{{ $item['label'] }}</a>
+                        @isset($item['children'])
+                            <ul class="sub-menu">
+                                @foreach ($item['children'] as $child)
+                                    <li><a href="{{ $child['url'] }}">{{ $child['label'] }}</a></li>
+                                @endforeach
+                            </ul>
+                        @endisset
+                    </li>
+                @endforeach
+                <li class="menu-item-has-children">
+                    <a href="javascript:void(0)">{{ __('messages.language.' . getCurrentLanguageName()) }}</a>
+                    <ul class="sub-menu">
+                        @foreach ($languages as $language)
+                            <li class="languageSelection" data-prefix-value="{{ $language['key'] }}"><a href="javascript:void(0)">{{ $language['label'] }}</a></li>
+                        @endforeach
+                    </ul>
+                </li>
+                <li><a href="{{ $dashboard ?? route('login') }}">{{ $dashboard ? __('messages.dashboard.dashboard') : __('messages.web_menu.login') }}</a></li>
+            </ul>
+        </div>
+        <div class="mt-50 pt-50">
+            <div class="social-style mobileMenu mb-30">
+                @foreach ($social as $key => $icon)
+                    <a href="{{ $settingValue[$key]['value'] }}" target="_blank" rel="noopener" aria-label="{{ $key }}"><i class="fa-brands {{ $icon }}"></i></a>
+                @endforeach
+            </div>
+            <p class="sidemenu-text sidemenu-text--footer text-center mb-0">© {{ date('Y') }} <a class="vs-theme-color" href="{{ route('front') }}">{{ getAppName() }}</a>.</p>
+        </div>
+    </div>
+</div>
 
-                            <li class="nav-item">
-                                <a class="nav-link {{ Request::is('our-services') ? 'active' : '' }}"
-                                    href="{{ route('our-services') }}">
-                                    {{ __('messages.web_home.services') }}
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="{{ route('our-doctors') }}"
-                                    class="nav-link {{ Request::is('our-doctors', 'doctor-details*') ? 'active' : '' }}">{{ __('messages.web_home.doctors') }}</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="{{ route('aboutUs') }}"
-                                    class="nav-link {{ Request::is('about-us') ? 'active' : '' }}">{{ __('messages.web_menu.about') }}</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="{{ route('contact') }}"
-                                    class="nav-link {{ Request::is('contact-us') ? 'active' : '' }}">{{ __('messages.web_home.contact') }}</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link" href="#"
-                                    {{ Request::is('terms-of-service', 'privacy-policy') ? 'active' : '' }}>
-                                    {{ __('messages.web_menu.our_features') }}
-                                    <i
-                                        class="fa-solid fa-angle-down {{ App::getLocale() == 'ar' ? 'me-2' : 'ms-1' }}"></i>
-                                </a>
-                                <ul class="nav submenu">
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ Request::is('appointment') ? 'active' : '' }}"
-                                            href="{{ route('appointment') }}">
-                                            {{ __('messages.web_menu.appointment') }}
-                                        </a>
-                                    </li>
-                                    <li class="nav-item ">
-                                        <a class="nav-link {{ Request::is('working-hours') ? 'active' : '' }}"
-                                            href="{{ route('working-hours') }}">
-                                            {{ __('messages.web_menu.working_hours') }}
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ Request::is('testimonial') ? 'active' : '' }}"
-                                            href="{{ route('testimonials') }}">
-                                            {{ __('messages.web_home.testimonials') }}
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ Request::is('terms-of-service') ? 'active' : '' }}"
-                                            href="{{ route('terms-of-service') }}">
-                                            {{ __('messages.web_home.terms_of_service') }}
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ Request::is('privacy-policy') ? 'active' : '' }}"
-                                            href="{{ route('privacy-policy') }}">
-                                            {{ __('messages.web_home.privacy_policy') }}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                {{--                                <a class="nav-link" href="javascript:void(0)"> {{getCurrentLanguageName()}}</a> --}}
-                                <a class="nav-link dropdown-link" href="javascript:void(0)">
-                                    {{ __('messages.language.' . getCurrentLanguageName()) }}</a>
-                                <ul class="nav submenu language-menu">
-                                    @foreach (getLanguages() as $key => $value)
-                                        @foreach (\App\Models\User::LANGUAGES_IMAGE as $imageKey => $imageValue)
-                                            @if ($imageKey == $key)
-                                                <li class="nav-item languageSelection"
-                                                    data-prefix-value="{{ $key }}">
-                                                    <a href="javascript:void(0)"
-                                                        class="nav-link d-flex align-items-center pe-0">
-                                                        <img class="{{ App::getLocale() == 'ar' ? 'ms-2 ' : '' }} country-flag me-2"
-                                                            src="{{ asset($imageValue) }}" />
-                                                        {{ $value }}</a>
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    @endforeach
-                                </ul>
-                            </li>
-                        </ul>
-                        <div class="text-xl-end header-btn-grp ms-xl-3">
-                            @if (Auth::user())
-                                @role('Admin')
-                                    <a href="{{ route('dashboard') }}"
-                                        class="btn btn-success {{ App::getLocale() == 'ar' ? 'ms-2' : 'me-2' }} mb-3 mb-xl-0">{{ __('messages.dashboard.dashboard') }}
-                                    </a>
-                                @endrole
-                                @role('Patient')
-                                    <a href="{{ url('patient-dashboard') }}"
-                                        class="btn btn-success {{ App::getLocale() == 'ar' ? 'ms-2' : 'me-2' }} mb-3 mb-xl-0">{{ __('messages.dashboard.dashboard') }}
-                                    </a>
-                                @endrole
-                                @role('Doctor')
-                                    <a href="{{ url('employee/doctor') }}"
-                                        class="btn btn-success {{ App::getLocale() == 'ar' ? 'ms-2' : 'me-2' }} mb-3 mb-xl-0">{{ __('messages.dashboard.dashboard') }}
-                                    </a>
-                                @endrole
-                                @role('Nurse')
-                                    <a href="{{ url('bed-types') }}"
-                                        class="btn btn-success {{ App::getLocale() == 'ar' ? 'ms-2' : 'me-2' }} mb-3 mb-xl-0">{{ __('messages.dashboard.dashboard') }}
-                                    </a>
-                                @endrole
-                                @role('Receptionist')
-                                    <a href="{{ url('appointments') }}"
-                                        class="btn btn-success {{ App::getLocale() == 'ar' ? 'ms-2' : 'me-2' }} mb-3 mb-xl-0">{{ __('messages.dashboard.dashboard') }}
-                                    </a>
-                                @endrole
-                                @role('Pharmacist')
-                                    <a href="{{ url('employee/doctor') }}"
-                                        class="btn btn-success {{ App::getLocale() == 'ar' ? 'ms-2' : 'me-2' }} mb-3 mb-xl-0">{{ __('messages.dashboard.dashboard') }}
-                                    </a>
-                                @endrole
-                                @role('Accountant')
-                                    <a href="{{ url('accounts') }}"
-                                        class="btn btn-success {{ App::getLocale() == 'ar' ? 'ms-2' : 'me-2' }} mb-3 mb-xl-0">{{ __('messages.dashboard.dashboard') }}
-                                    </a>
-                                @endrole
-                                @role('Case Manager')
-                                    <a href="{{ url('employee/doctor') }}"
-                                        class="btn btn-success {{ App::getLocale() == 'ar' ? 'ms-2' : 'me-2' }} mb-3 mb-xl-0">{{ __('messages.dashboard.dashboard') }}
-                                    </a>
-                                @endrole
-                            @else
-                                <a href="{{ route('login') }}"
-                                    class="btn btn-success {{ App::getLocale() == 'ar' ? 'ms-2' : 'me-2' }} mb-3 mb-xl-0">
-                                    {{ __('messages.web_menu.login') }}
-                                </a>
-                            @endif
-                            <a href="{{ route('appointment') }}" class="btn btn-primary mb-3 mb-xl-0">
-                                {{ __('messages.web_home.book_appointment') }}
-                            </a>
+<header class="vs-header home-three bg-fixed {{ Request::is('/') ? '' : 'inner-page' }}">
+    <div class="sticky-wrapper">
+        <div class="sticky-active">
+            <div class="container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col">
+                        <div class="d-flex align-items-center justify-content-start position-relative">
+                            <button class="vs-menu-toggle d-inline-block d-xl-none" aria-label="Menu"><i class="fal fa-bars"></i></button>
+                            <div class="vs-header__logo">
+                                <a href="{{ route('front') }}"><img src="{{ asset(getLogoUrl()) }}" alt="{{ getAppName() }}" class="logo"></a>
+                            </div>
                         </div>
                     </div>
-                </nav>
+                    <div class="col-auto">
+                        <nav class="main-menu d-none d-xl-block">
+                            <ul>
+                                @foreach ($menu as $item)
+                                    <li class="{{ isset($item['children']) ? 'menu-item-has-children' : '' }} {{ $item['active'] ? 'active' : '' }}">
+                                        <a href="{{ $item['url'] }}">{{ $item['label'] }}</a>
+                                        @isset($item['children'])
+                                            <ul class="sub-menu">
+                                                @foreach ($item['children'] as $child)
+                                                    <li><a href="{{ $child['url'] }}">{{ $child['label'] }}</a></li>
+                                                @endforeach
+                                            </ul>
+                                        @endisset
+                                    </li>
+                                @endforeach
+                                <li class="menu-item-has-children">
+                                    <a href="javascript:void(0)"><i class="fa-solid fa-globe"></i> {{ strtoupper(getCurrentLanguageName()) }}</a>
+                                    <ul class="sub-menu">
+                                        @foreach ($languages as $language)
+                                            <li class="languageSelection" data-prefix-value="{{ $language['key'] }}">
+                                                <a href="javascript:void(0)">
+                                                    @if ($language['flag'])<img src="{{ asset($language['flag']) }}" alt="" class="lang-flag">@endif
+                                                    {{ $language['label'] }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="col-auto">
+                        <div class="vs-header__action">
+                            <div class="d-none d-md-inline">
+                                <a href="{{ $dashboard ?? route('login') }}" class="searchBoxTggler style2" title="{{ $dashboard ? __('messages.dashboard.dashboard') : __('messages.web_menu.login') }}">
+                                    <i class="far {{ $dashboard ? 'fa-gauge' : 'fa-user' }}"></i>
+                                </a>
+                            </div>
+                            <div class="d-none d-sm-inline-flex">
+                                <a href="{{ route('appointment') }}" class="vsBtn">{{ __('messages.web_home.book_appointment') }}<span></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </header>
-<!-- End Navbar Area -->

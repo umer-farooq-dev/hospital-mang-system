@@ -1,107 +1,38 @@
 @extends('web.layouts.front')
 @section('title')
-    {{ __('messages.doctor.doctor_details') }}
-@endsection
-@section('page_css')
-    {{--    <link rel="stylesheet" href="{{ mix('web_front/css/doctors.css') }}"> --}}
+    {{ $doctorDetails->doctorUser->full_name }}
 @endsection
 @section('content')
-    <!-- start hero section -->
-    <section
-        class="hero-section position-relative p-t-60 border-bottom-right-rounded border-bottom-left-rounded bg-gray overflow-hidden">
+    @php($photo = $doctorDetails->doctorUser->getFirstMediaUrl(\App\Models\User::COLLECTION_PROFILE_PICTURES))
+    <section class="space doctor-profile">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 {{App::getLocale() == 'ar' ? 'text-lg-end' : 'text-lg-start'}} text-center">
-                    <div class="hero-content">
-                        <h1 class="mb-3 pb-1">
-                            {{ __('messages.doctor.doctor_details') }}
-                        </h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb justify-content-lg-start justify-content-center mb-lg-0 mb-5">
-                                <li class="breadcrumb-item">
-                                    <a href="{{ url('/') }}">{{ __('messages.web_home.home') }}</a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page">
-                                    {{ __('messages.doctor.doctor_details') }}
-                                </li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-                <div class="col-lg-6 text-lg-end text-center">
-                    <img src="{{ asset('web_front/images/page-banner/Doctors.png') }}" alt="Infy Care" class="img-fluid" />
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end hero section -->
-
-    {{-- Start Doctor details seciton --}}
-    <section class="container p-sm-5 p-3">
-        <div class="card mb-3 p-lg-5 p-md-4 p-3">
-            <div class="row justify-content-center m-0">
-                <div class="col-md-3">
-                    <img src="{{ $doctorDetails->doctorUser->image_url }}" style="height:250px" class="img-fluid rounded"
-                        alt="Doctor Details">
-                </div>
-                <div class="col-md-9">
-                    <div class="card-body">
-                        <div class="row">
-                            <div>
-                                <h4>{{ $doctorDetails->doctorUser->fullname }}</h4>
-                                <h5>{{ __('messages.user.email') }}</h5>
-                                <p>
-                                    <i class="fa-solid fa-envelope text-success px-2"></i>
-                                    {{ $doctorDetails->doctorUser->email }}
-                                </p>
-                                <h5> {{ __('messages.user.qualification') }}</h5>
-                                <p>
-                                    @if (!empty($doctorDetails->doctorUser->qualification))
-                                        <i class="fa-solid fa-graduation-cap text-success px-2"></i>
-                                        {{ $doctorDetails->doctorUser->qualification }}
-                                    @else
-                                        {{ __('messages.common.n/a') }}
-                                    @endif
-                                </p>
-                                <h5>{{ __('messages.doctor.specialist') }}</h5>
-                                <p>
-                                    <i class="fas fa-user-md text-success px-2"></i>
-                                    {{ $doctorDetails->specialist }}
-                                </p>
-                            </div>
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <div class="doctor-card wow animate__fadeInUp" data-wow-delay="0.2s">
+                        <img src="{{ $photo ?: asset('web_front/kliniko/img/doctors/dr-h3-img1.jpg') }}" alt="{{ $doctorDetails->doctorUser->full_name }}">
+                        <div class="doctor-card__body">
+                            <h2>{{ $doctorDetails->doctorUser->full_name }}</h2>
+                            <p>{{ $doctorDetails->specialist }}</p>
+                            <a href="{{ route('appointment') }}" class="vsBtn w-100 justify-content-center">{{ __('messages.web_home.book_appointment') }}<span></span></a>
                         </div>
                     </div>
                 </div>
-                <div class="row text-center container bg-white shadow-lg rounded mt-sm-5 mt-4 ">
-                    <nav class="pt-lg-5 pt-4  ">
-                        <ul class="nav nav-pills mb-1 border-0 flex-nowrap overflow-auto">
-                            @if (!empty($doctorDetails->description))
-                                <li class="nav-item text-nowrap mb-2">
-                                    <a class="nav-link active" data-bs-toggle="tab" data-bs-target="#overview"
-                                        type="button">{{ __('messages.about_us') }}</a>
-                                </li>
-                            @endif
-                            <li class="nav-item text-nowrap mb-2">
-                                <a class="nav-link {{ empty($doctorDetails->description) ? 'active' : '' }}"
-                                    data-bs-toggle="tab" data-bs-target="#schedule"
-                                    type="button">{{ __('messages.schedules') }}</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <div class="tab-content text-start p-3">
-                        <div class="tab-pane fade active show" id="overview" role="tabpanel">
-                            <div class="row">
-                                @if (!empty($doctorDetails->description))
-                                    <div class="col-md-12">
-                                        <h5>{{ __('messages.common.description') }}</h5>
-                                        <p class="fw-normal pb-3 text-break">{{ $doctorDetails->description }}</p>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="tab-pane fade overflow-auto {{ empty($doctorDetails->description) ? 'active show' : '' }}"
-                            id="schedule" role="tabpanel">
-                            <table class="table table-striped">
+                <div class="col-lg-8">
+                    <div class="vs-title animation-style2 mb-4">
+                        <p class="vs-title__sub"><i class="fa-solid fa-staff-snake title-icon"></i> {{ optional($doctorDetails->department)->title }}</p>
+                        <h2 class="vs-title__main title-anime">{{ $doctorDetails->doctorUser->full_name }}</h2>
+                    </div>
+                    <ul class="doctor-facts">
+                        <li><span>{{ __('messages.doctor.specialist') }}</span>{{ $doctorDetails->specialist ?: __('messages.common.n/a') }}</li>
+                        <li><span>{{ __('messages.user.qualification') }}</span>{{ $doctorDetails->doctorUser->qualification ?: __('messages.common.n/a') }}</li>
+                    </ul>
+                    @if (!empty($doctorDetails->description))
+                        <p class="mt-4">{!! nl2br(e($doctorDetails->description)) !!}</p>
+                    @endif
+                    @if ($doctorSchedule->isNotEmpty())
+                        <h3 class="mt-5 mb-3">{{ __('messages.schedules') }}</h3>
+                        <div class="table-responsive">
+                            <table class="table schedule-table">
                                 <thead>
                                     <tr>
                                         <th>{{ __('messages.schedule.available_on') }}</th>
@@ -113,19 +44,16 @@
                                     @foreach ($doctorSchedule as $schedule)
                                         <tr>
                                             <td>{{ __('messages.schedule_weekday.'.$schedule->available_on) }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($schedule->available_from)->format('h:i A') }}
-                                            </td>
-                                            <td>{{ \Carbon\Carbon::parse($schedule->available_to)->format('h:i A') }}
-                                            </td>
+                                            <td>{{ \Carbon\Carbon::parse($schedule->available_from)->format('H:i') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($schedule->available_to)->format('H:i') }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>
     </section>
-    {{-- End Doctor details section --}}
 @endsection
