@@ -16,18 +16,10 @@ class SetLanguage
      */
     public function handle(Request $request, Closure $next): Response
     {
-
-        $localeLanguage = \Session::get('languageName');
-         $settings = App::make(SettingRepository::class)->getSyncList();
-        if (!isset($localeLanguage)) {
-            if(!empty($settings['default_lang'])){
-                \App::setLocale($settings['default_lang']);
-            }else{
-                \App::setLocale('en');
-            }
-        } else {
-            \App::setLocale($localeLanguage);
-        }
+        // the public website speaks the languages chosen in Front CMS (default first)
+        $languages = websiteLanguages();
+        $chosen = \Session::get('languageName');
+        \App::setLocale(in_array($chosen, $languages, true) ? $chosen : $languages[0]);
 
         return $next($request);
     }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', getCurrentLanguageName()) }}"
+<html lang="{{ App::getLocale() }}"
     @if (App::getLocale() == 'ar') dir="rtl" @endif>
 
 <head>
@@ -34,7 +34,7 @@
 
 <body>
     @include('web.layouts.header')
-    {{ Form::hidden('userCurrentLanguage', checkLanguageSession(), ['class' => 'userCurrentLanguage']) }}
+    {{ Form::hidden('userCurrentLanguage', App::getLocale(), ['class' => 'userCurrentLanguage']) }}
     {{ Form::hidden('invalidNumber', __('messages.common.invalid_number'), ['class' => 'invalidNumber']) }}
     {{ Form::hidden('invalidCountryNumber', __('messages.common.invalid_country_code'), ['class' => 'invalidCountryNumber']) }}
     {{ Form::hidden('tooShort', __('messages.common.too_short'), ['class' => 'tooShort']) }}

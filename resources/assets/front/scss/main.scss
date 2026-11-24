@@ -55,7 +55,7 @@
 
 // French (and other languages) are written in sentence case: undo the theme's word capitalising
 .vs-main, .vs-footer, .vs-header, .vs-menu-wrapper {
-    h1, h2, h3, h4, h5, h6, p, li, span, label, input, select, textarea, .vs-title__sub { text-transform: none !important; }
+    h1, h2, h3, h4, h5, h6, p, li, span, a, button, label, input, select, textarea, .vs-title__sub { text-transform: none !important; }
 }
 .vs-service__wrap .ser_icon > i, .vs-process .ser_icon > i { font-size: 30px; }
 
@@ -71,3 +71,21 @@
 // footer contact band in the admin's main colour (the theme drew it in a teal picture)
 .vs-footer__contact { background: var(--vs-theme-color1) !important; }
 .vs-footer__contact .con-txt a, .vs-footer__contact .con-txt h3 { color: var(--vs-white-color); }
+
+// jQuery UI date picker in the theme look
+.ui-datepicker { z-index: 1000 !important; width: 300px; padding: 12px; border: 0 !important; border-radius: 16px;
+    background: var(--vs-white-color); box-shadow: 0 15px 40px rgba(var(--vs-title-color-rgb), .18); font-family: var(--vs-body-font); }
+.ui-datepicker .ui-datepicker-header { background: var(--vs-theme-color1); border: 0; border-radius: 10px; color: var(--vs-white-color); padding: 8px 0; }
+.ui-datepicker .ui-datepicker-title { font-family: var(--vs-title-font); text-transform: capitalize; }
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next { top: 8px; cursor: pointer; filter: brightness(0) invert(1); }
+.ui-datepicker th { color: var(--vs-title-color); font-weight: 600; font-size: 13px; padding: 8px 0 4px; }
+.ui-datepicker td { padding: 2px; }
+.ui-datepicker td a, .ui-datepicker td span { text-align: center !important; border: 0 !important; border-radius: 8px; background: transparent !important; padding: 6px 0 !important; color: var(--vs-title-color) !important; }
+.ui-datepicker td a:hover { background: rgba(var(--vs-theme-color1-rgb), .12) !important; }
+.ui-datepicker td.ui-datepicker-today a { background: rgba(var(--vs-yellow-color-rgb, 252, 209, 22), .35) !important; font-weight: 700; }
+.ui-datepicker td .ui-state-active { background: var(--vs-theme-color1) !important; color: var(--vs-white-color) !important; }
+.ui-datepicker td.ui-state-disabled span { opacity: .35; }
+.video-banner-title { color: var(--vs-white-color); font-size: 40px; max-width: 760px; margin: 0 auto; }
+.vs-video { position: relative; isolation: isolate; }
+.vs-video::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(var(--vs-title-color-rgb), .55), rgba(var(--vs-theme-color5-rgb), .8)); }
+.vs-video .video_btn { flex-direction: column; align-items: center; gap: 20px; }

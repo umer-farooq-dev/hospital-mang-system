@@ -210,6 +210,24 @@
                 <div class="col-12 form-text mt-n3">{{ __('messages.front_web.colors_hint') }}</div>
             </div>
 
+            <h3 class="mb-5">{{ __('messages.front_web.website_languages') }}</h3>
+            <div class="row mb-5">
+                <div class="form-group col-md-4 mb-5">
+                    {{ Form::label('website_default_lang', __('messages.front_web.default_language').':', ['class' => 'form-label']) }}
+                    {{ Form::select('website_default_lang', getLanguages(), $frontSettings['website_default_lang'] ?? 'fr', ['class' => 'form-select']) }}
+                </div>
+                <div class="form-group col-md-8 mb-5">
+                    {{ Form::label('website_languages', __('messages.front_web.other_languages').':', ['class' => 'form-label d-block']) }}
+                    <input type="hidden" name="website_languages[]" value="">
+                    @foreach (getLanguages() as $code => $language)
+                        <label class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="website_languages[]" value="{{ $code }}" {{ in_array($code, explode(',', $frontSettings['website_languages'] ?? 'fr,en')) ? 'checked' : '' }}>
+                            <span class="form-check-label">{{ $language }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
             <h3 class="mb-5">{{ __('messages.front_web.home_sections') }}</h3>
             <div class="table-responsive mb-5">
                 <table class="table align-middle">
