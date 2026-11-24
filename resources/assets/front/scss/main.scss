@@ -7,14 +7,14 @@
 .lang-flag { width: 18px; height: 12px; object-fit: cover; margin-right: 6px; }
 
 // service / process icons drawn with Font Awesome when no picture is uploaded
-.ser_icon > i { font-size: 34px; line-height: 1; color: var(--vs-theme-color1); }
+.ser_icon > i { font-size: 34px; line-height: 1; color: var(--vs-white-color); }
 .vs-service.style3 .ser_icon > i, .vs-process .ser_icon > i { color: var(--vs-white-color); }
 
 // inner pages: header sits on a solid band
 .vs-header.inner-page .sticky-wrapper { background-color: var(--vs-title-color); }
 
-.vs-appoint__form .appoint_form select,
-.vs-appoint__form .appoint_form input { color: var(--vs-title-color); }
+.vs-appoint__form .appoint_form select option { color: var(--vs-title-color); }
+.hours-form .appoint_form select, .hours-form .appoint_form input { color: var(--vs-title-color); }
 .appoint-note { color: var(--vs-white-color); margin: 16px 0 0; opacity: .85; }
 .hours-form { background: var(--vs-smoke-color); padding: 30px; border-radius: 20px; }
 .hours-form .appoint_form { display: grid; gap: 15px; }
@@ -58,3 +58,16 @@
     h1, h2, h3, h4, h5, h6, p, li, span, label, input, select, textarea, .vs-title__sub { text-transform: none !important; }
 }
 .vs-service__wrap .ser_icon > i, .vs-process .ser_icon > i { font-size: 30px; }
+
+// banner photo: keep the text readable whatever picture the admin uploads
+.vs-hero__bg::after { content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(var(--vs-title-color-rgb), .88) 0%, rgba(var(--vs-title-color-rgb), .6) 45%, rgba(var(--vs-title-color-rgb), 0) 75%); }
+.vs-hero__title--main, .vs-hero__title--para { color: var(--vs-white-color); }
+@media (max-width: 991px) { .vs-hero__bg::after { background: rgba(var(--vs-title-color-rgb), .7); } }
+.vs-appoint.style3 { isolation: isolate; }
+.vs-appoint.style3::before { content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(90deg, rgba(var(--vs-title-color-rgb), .9) 0%, rgba(var(--vs-title-color-rgb), .7) 60%, rgba(var(--vs-title-color-rgb), .35) 100%); }
+
+// footer contact band in the admin's main colour (the theme drew it in a teal picture)
+.vs-footer__contact { background: var(--vs-theme-color1) !important; }
+.vs-footer__contact .con-txt a, .vs-footer__contact .con-txt h3 { color: var(--vs-white-color); }
