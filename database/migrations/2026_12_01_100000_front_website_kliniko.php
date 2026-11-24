@@ -94,6 +94,21 @@ return new class extends Migration
             }
         }
 
+        // InfyHMS demo hospital details -> neutral French placeholders until the hospital enters its own
+        $hospital = [
+            'about_us' => ['Over past', 'Hôpital moderne au service de la population : consultations, urgences 24h/24, maternité, laboratoire, imagerie et chirurgie, avec des équipes qualifiées et attentionnées.'],
+            'hospital_address' => ['16/A', 'Ouagadougou, Burkina Faso'],
+            'hospital_phone' => ['+++91', '+226 25 00 00 00'],
+            'hospital_from_day' => ['Mon to Fri', 'Lundi - Samedi (urgences 7j/7)'],
+            'hospital_from_time' => ['9 AM', '07h00 - 19h00'],
+        ];
+        foreach ($hospital as $key => [$demoStart, $value]) {
+            $row = Setting::where('key', $key)->first();
+            if ($row && str_starts_with((string) $row->value, $demoStart)) {
+                $row->update(['value' => $value]);
+            }
+        }
+
         // phone fields start on Burkina Faso (+226) unless the hospital already chose a country
         $code = Setting::where('key', 'country_code')->first();
         if ($code && $code->value === '+91') {

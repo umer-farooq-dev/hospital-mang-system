@@ -7,7 +7,7 @@
 <footer class="vs-footer bg-title" data-bg-src="{{ asset('web_front/kliniko/img/bg/footer-bg-h1.png') }}">
     <div class="vs-footer__top z-index-common space space-extra-bottom">
         <div class="container">
-            <div class="vs-footer__contact" data-bg-src="{{ asset('web_front/kliniko/img/bg/footer-contactBG-h1.jpg') }}">
+            <div class="vs-footer__contact">
                 <div class="contact_box">
                     <div class="con-icon"><i class="fa-solid fa-map-location"></i></div>
                     <div class="con-txt">

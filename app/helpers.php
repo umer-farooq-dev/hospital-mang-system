@@ -833,7 +833,13 @@ function frontSetting($key = null, $default = null)
 /** Uploaded website picture, or the theme picture until the hospital uploads its own. */
 function frontImage($key, $themeFile)
 {
-    return frontSetting($key) ?: asset('web_front/kliniko/img/'.$themeFile);
+    $value = frontSetting($key);
+    if (! $value) {
+        return asset('web_front/kliniko/img/'.$themeFile);
+    }
+
+    // uploads are saved with the domain of the day; keep only the path so a new domain still works
+    return str_starts_with($value, 'http') ? asset(ltrim(parse_url($value, PHP_URL_PATH), '/')) : $value;
 }
 
 /** CSS variables of the website colours (admin controlled). */
