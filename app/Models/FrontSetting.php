@@ -55,7 +55,7 @@ class FrontSetting extends Model implements HasMedia
     const HOME_SECTIONS = [
         ['key' => 'about', 'on' => 1], ['key' => 'services', 'on' => 1], ['key' => 'video', 'on' => 1],
         ['key' => 'process', 'on' => 1], ['key' => 'appointment', 'on' => 1], ['key' => 'doctors', 'on' => 1],
-        ['key' => 'cases', 'on' => 1], ['key' => 'testimonials', 'on' => 1], ['key' => 'blog', 'on' => 1],
+        ['key' => 'cases', 'on' => 1], ['key' => 'testimonials', 'on' => 1], ['key' => 'partners', 'on' => 1], ['key' => 'blog', 'on' => 1],
     ];
 
     // every uploadable website picture (key => media collection)

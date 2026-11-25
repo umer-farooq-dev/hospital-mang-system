@@ -12,7 +12,7 @@
         $serviceImages = ['service/ser-img-h3.jpg', 'service/ser-img1-h3.jpg', 'service/ser-img2-h3.jpg'];
         $serviceIcons = ['fa-stethoscope', 'fa-truck-medical', 'fa-person-pregnant', 'fa-flask-vial', 'fa-x-ray', 'fa-syringe'];
         $hasContent = ['services' => $frontServices->isNotEmpty(), 'doctors' => $doctors->isNotEmpty(),
-            'cases' => $cases->isNotEmpty(), 'testimonials' => $testimonials->isNotEmpty(), 'blog' => $posts->isNotEmpty()];
+            'cases' => $cases->isNotEmpty(), 'testimonials' => $testimonials->isNotEmpty(), 'blog' => $posts->isNotEmpty(), 'partners' => $partners->isNotEmpty()];
         $stepIcons = ['fa-calendar-check', 'fa-user-doctor', 'fa-microscope', 'fa-heart-pulse'];
         $title = fn ($sub, $main, $center = false) => '<div class="vs-title animation-style2 '.($center ? 'text-center' : '').'"><p class="vs-title__sub"><i class="fa-solid fa-staff-snake title-icon"></i> '.e($sub).'</p><h2 class="vs-title__main title-anime '.($center ? 'm-auto' : '').'">'.e($main).'</h2></div>';
     @endphp
@@ -352,6 +352,25 @@
                                     </div>
                                 </div>
                             @endforeach
+                        </div>
+                    </div>
+                </section>
+                @break
+
+            @case('partners')
+                <section class="vs-partners space-bottom">
+                    <div class="container">
+                        {!! $title($f('section_partners_sub'), $f('section_partners_title'), true) !!}
+                        <div class="swiper partners-slider" data-swiper data-xs="2" data-sm="3" data-md="4" data-lg="5" data-xl="6">
+                            <div class="swiper-wrapper align-items-center">
+                                @foreach ($partners as $partner)
+                                    <div class="swiper-slide">
+                                        <div class="partner-logo" title="{{ $partner->name }}">
+                                            <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}" loading="lazy">
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </section>

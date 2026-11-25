@@ -58,6 +58,8 @@ class InsuranceController extends AppBaseController
         $input['hospital_rate'] = $input['hospital_rate'] ?? 0;
         $input['total'] = $input['total'] ?? 0;
         $input['status'] = isset($input['status']) ? 1 : 0;
+        $input['show_on_website'] = $request->boolean('show_on_website');
+        $request->validate(['website_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048']);
         $input['claim_columns'] = $request->has('claim_layout_sent') ? array_values((array) $request->input('claim_columns', [])) : null;
         try {
             DB::beginTransaction();
@@ -95,6 +97,8 @@ class InsuranceController extends AppBaseController
         $input['hospital_rate'] = $input['hospital_rate'] ?? 0;
         $input['total'] = $input['total'] ?? 0;
         $input['status'] = isset($input['status']) ? 1 : 0;
+        $input['show_on_website'] = $request->boolean('show_on_website');
+        $request->validate(['website_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048']);
         $input['claim_columns'] = $request->has('claim_layout_sent') ? array_values((array) $request->input('claim_columns', [])) : null;
         try {
             DB::beginTransaction();

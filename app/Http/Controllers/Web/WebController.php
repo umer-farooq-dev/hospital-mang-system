@@ -74,11 +74,12 @@ class WebController extends AppBaseController
         $cases = FrontService::with('media')->ofType(FrontService::CASE_STUDY)->take(3)->get();
         $posts = FrontService::with('media')->ofType(FrontService::POST)->take(6)->get();
         $departments = DoctorDepartment::orderBy('title')->pluck('title', 'id');
+        $partners = \App\Models\Insurance::websitePartners();
 
         return view('web.home.index',
             compact('doctorsDepartments', 'doctors', 'todayNotice', 'testimonials', 'totalbeds',
                 'totalDoctorNurses', 'totalPatient', 'doctorAppointments', 'frontSetting', 'frontServices',
-                'sections', 'cases', 'posts', 'departments'));
+                'sections', 'cases', 'posts', 'departments', 'partners'));
     }
 
     public function demo()

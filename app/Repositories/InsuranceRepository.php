@@ -38,7 +38,8 @@ class InsuranceRepository extends BaseRepository
     {
         $diseaseItemInputArray = Arr::only($input, ['disease_name', 'disease_charge']);
 
-        $insurance = Insurance::create(Arr::except($input, ['disease_name', 'disease_charge', 'coverage']));
+        $insurance = Insurance::create(Arr::except($input, ['disease_name', 'disease_charge', 'coverage', 'website_logo']));
+        $this->saveLogo($insurance, $input);
         $this->syncCoverageRules($insurance, $input['coverage'] ?? []);
 
         $diseaseItemInput = $this->prepareInputForDiseaseItem($diseaseItemInputArray);
@@ -55,6 +56,14 @@ class InsuranceRepository extends BaseRepository
         }
 
         return true;
+    }
+
+    private function saveLogo(Insurance $insurance, array $input): void
+    {
+        if (! empty($input['website_logo'])) {
+            $insurance->clearMediaCollection(Insurance::LOGO_PATH);
+            $insurance->addMedia($input['website_logo'])->toMediaCollection(Insurance::LOGO_PATH, config('app.media_disc'));
+        }
     }
 
     /** Replace the payer's coverage rules with the rows of the form. */
@@ -112,7 +121,8 @@ class InsuranceRepository extends BaseRepository
     {
         $diseaseItemInputArray = Arr::only($input, ['disease_name', 'disease_charge']);
 
-        $insurance->update(Arr::except($input, ['coverage']));
+        $insurance->update(Arr::except($input, ['coverage', 'website_logo']));
+        $this->saveLogo($insurance, $input);
         $this->syncCoverageRules($insurance, $input['coverage'] ?? []);
 
         $disease = InsuranceDisease::whereInsuranceId($insurance->id);

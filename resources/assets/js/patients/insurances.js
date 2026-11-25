@@ -1,5 +1,5 @@
 // Patient file > Insurance tab: add, edit and delete the patient's policies.
-const patientInsuranceFields = ['insurance_id', 'plan_name', 'policy_number', 'member_number', 'valid_from', 'valid_to',
+const patientInsuranceFields = ['insurance_id', 'plan_name', 'group_name', 'policy_number', 'member_number', 'valid_from', 'valid_to',
     'coverage_percent', 'annual_limit', 'visit_limit', 'priority', 'notes'];
 
 function openPatientInsuranceModal (url, policy) {
@@ -36,7 +36,9 @@ listenSubmit('#patientInsuranceForm', function (event) {
     $.ajax({
         url: $(this).data('url'),
         type: 'POST',
-        data: $(this).serialize(),
+        data: new FormData(this),
+        processData: false,
+        contentType: false,
         success: function (result) {
             $('#patientInsuranceList').html(result.data.html);
             $('#patientInsuranceModal').modal('hide');

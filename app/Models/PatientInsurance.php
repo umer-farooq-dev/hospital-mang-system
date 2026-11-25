@@ -37,6 +37,7 @@ class PatientInsurance extends Model
         'patient_id',
         'insurance_id',
         'plan_name',
+        'group_name',
         'policy_number',
         'member_number',
         'valid_from',
@@ -47,6 +48,7 @@ class PatientInsurance extends Model
         'priority',
         'is_active',
         'notes',
+        'card_document_id',
     ];
 
     protected $casts = [
@@ -66,6 +68,8 @@ class PatientInsurance extends Model
         return [
             'insurance_id' => 'required|integer|exists:insurances,id',
             'plan_name' => 'nullable|max:160',
+            'group_name' => 'nullable|max:160',
+            'card_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'policy_number' => 'nullable|max:100',
             'member_number' => 'nullable|max:100',
             'valid_from' => 'nullable|date',
@@ -81,7 +85,7 @@ class PatientInsurance extends Model
     /** Values that fill the edit form. */
     public function formValues(): array
     {
-        return $this->only(['insurance_id', 'plan_name', 'policy_number', 'member_number', 'coverage_percent', 'annual_limit', 'visit_limit', 'priority', 'is_active', 'notes'])
+        return $this->only(['insurance_id', 'plan_name', 'group_name', 'policy_number', 'member_number', 'coverage_percent', 'annual_limit', 'visit_limit', 'priority', 'is_active', 'notes'])
             + ['valid_from' => $this->valid_from?->toDateString(), 'valid_to' => $this->valid_to?->toDateString()];
     }
 
@@ -163,5 +167,10 @@ class PatientInsurance extends Model
         }
 
         return collect($policies)->filter(fn ($p) => $p->is_active && $p->isValidOn())->sortBy('priority')->first();
+    }
+
+    public function cardDocument()
+    {
+        return $this->belongsTo(Document::class, 'card_document_id');
     }
 }
