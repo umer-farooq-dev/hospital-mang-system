@@ -1,24 +1,11 @@
+# Hosting where the domain points at the project folder (not at /public), e.g. a cPanel subdomain:
+# every request is served from /public, so .env, storage, vendor etc. are never reachable from the web.
 <IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
     RewriteEngine On
-
-    # Handle Authorization MemberHeader
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
-    
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteRule ^(.*)$ /public/$1 [L,QSA]
-
-    # Handle Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
+
+# Fallback if mod_rewrite is missing: refuse hidden files such as .env
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
