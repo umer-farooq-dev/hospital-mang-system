@@ -77,7 +77,19 @@
     background: var(--vs-white-color); box-shadow: 0 15px 40px rgba(var(--vs-title-color-rgb), .18); font-family: var(--vs-body-font); }
 .ui-datepicker .ui-datepicker-header { background: var(--vs-theme-color1); border: 0; border-radius: 10px; color: var(--vs-white-color); padding: 8px 0; }
 .ui-datepicker .ui-datepicker-title { font-family: var(--vs-title-font); text-transform: capitalize; }
-.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next { top: 8px; cursor: pointer; filter: brightness(0) invert(1); }
+// month arrows drawn with the theme icon font (the jQuery UI sprite image path breaks once the CSS is bundled)
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next { top: 50% !important; transform: translateY(-50%); width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; border: 0 !important; border-radius: 8px;
+    background: rgba(var(--vs-white-color-rgb), .18) !important; transition: .2s; }
+.ui-datepicker .ui-datepicker-prev { left: 8px !important; }
+.ui-datepicker .ui-datepicker-next { right: 8px !important; }
+.ui-datepicker .ui-datepicker-prev:hover, .ui-datepicker .ui-datepicker-next:hover { background: rgba(var(--vs-white-color-rgb), .32) !important; }
+.ui-datepicker .ui-datepicker-prev .ui-icon, .ui-datepicker .ui-datepicker-next .ui-icon { display: none; }
+.ui-datepicker .ui-datepicker-prev::before, .ui-datepicker .ui-datepicker-next::before { font-family: var(--vs-icon-font); font-weight: 900; font-size: 14px; color: var(--vs-white-color); }
+.ui-datepicker .ui-datepicker-prev::before { content: "\f053"; }
+.ui-datepicker .ui-datepicker-next::before { content: "\f054"; }
+.ui-datepicker .ui-datepicker-header { position: relative; }
+.ui-datepicker .ui-state-disabled.ui-datepicker-prev { opacity: .35; cursor: default; }
 .ui-datepicker th { color: var(--vs-title-color); font-weight: 600; font-size: 13px; padding: 8px 0 4px; }
 .ui-datepicker td { padding: 2px; }
 .ui-datepicker td a, .ui-datepicker td span { text-align: center !important; border: 0 !important; border-radius: 8px; background: transparent !important; padding: 6px 0 !important; color: var(--vs-title-color) !important; }
