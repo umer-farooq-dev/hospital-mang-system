@@ -14,7 +14,8 @@ class PatientInsuranceController extends AppBaseController
 {
     public function store(PatientInsuranceRequest $request, Patient $patient)
     {
-        $patient->insurances()->create($this->input($request));
+        $policy = $patient->insurances()->create($this->input($request));
+        $this->saveCard($request, $policy);
 
         return $this->listResponse($patient, __('messages.patient_insurance.policy').' '.__('messages.common.saved_successfully'));
     }
@@ -22,6 +23,7 @@ class PatientInsuranceController extends AppBaseController
     public function update(PatientInsuranceRequest $request, PatientInsurance $patientInsurance)
     {
         $patientInsurance->update($this->input($request));
+        $this->saveCard($request, $patientInsurance);
 
         return $this->listResponse($patientInsurance->patient, __('messages.patient_insurance.policy').' '.__('messages.common.updated_successfully'));
     }
@@ -36,7 +38,21 @@ class PatientInsuranceController extends AppBaseController
 
     private function input(PatientInsuranceRequest $request): array
     {
-        return array_merge($request->validated(), ['is_active' => $request->boolean('is_active')]);
+        return array_merge(\Illuminate\Support\Arr::except($request->validated(), ['card_photo']), ['is_active' => $request->boolean('is_active')]);
+    }
+
+    /** The card has no barcode: its photo is kept in the patient's documents and linked to the policy. */
+    private function saveCard(PatientInsuranceRequest $request, PatientInsurance $policy): void
+    {
+        if (! $request->hasFile('card_photo')) {
+            return;
+        }
+        $typeId = \App\Models\Patient::registrationSettings()['id_scan_save_as']
+            ?: \App\Models\DocumentType::firstOrCreate(['name' => __('messages.patient_insurance.card_photo')])->id;
+        $document = \App\Models\Document::create(['title' => __('messages.patient_insurance.card_title', ['payer' => $policy->insurance->name]),
+            'document_type_id' => $typeId, 'patient_id' => $policy->patient_id, 'uploaded_by' => auth()->id()]);
+        $document->addMedia($request->file('card_photo'))->toMediaCollection(\App\Models\Document::PATH, config('app.media_disc'));
+        $policy->update(['card_document_id' => $document->id]);
     }
 
     private function listResponse(Patient $patient, string $message)

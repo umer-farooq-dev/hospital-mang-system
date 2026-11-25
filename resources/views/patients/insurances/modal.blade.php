@@ -6,7 +6,7 @@
                     data-edit="{{ __('messages.patient_insurance.edit_policy') }}">{{ __('messages.patient_insurance.new_policy') }}</h2>
                 <button type="button" aria-label="Close" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            {{ Form::open(['id' => 'patientInsuranceForm', 'data-store-url' => route('patient-insurances.store', $data->id)]) }}
+            {{ Form::open(['id' => 'patientInsuranceForm', 'files' => true, 'data-store-url' => route('patient-insurances.store', $data->id)]) }}
             <div class="modal-body">
                 <div class="alert alert-danger d-none hide" id="patientInsuranceErrorsBox"></div>
                 <div class="row">
@@ -18,6 +18,10 @@
                     <div class="form-group col-sm-6 mb-5">
                         {{ Form::label('plan_name', __('messages.patient_insurance.plan_name') . ':', ['class' => 'form-label']) }}
                         {{ Form::text('plan_name', null, ['class' => 'form-control', 'maxlength' => 160]) }}
+                    </div>
+                    <div class="form-group col-sm-6 mb-5">
+                        {{ Form::label('group_name', __('messages.patient_insurance.group_name') . ':', ['class' => 'form-label']) }}
+                        {{ Form::text('group_name', null, ['class' => 'form-control', 'maxlength' => 160, 'placeholder' => __('messages.patient_insurance.group_hint')]) }}
                     </div>
                     <div class="form-group col-sm-6 mb-5">
                         {{ Form::label('policy_number', __('messages.patient_insurance.policy_number') . ':', ['class' => 'form-label']) }}
@@ -58,6 +62,11 @@
                     <div class="form-group col-sm-8 mb-5">
                         {{ Form::label('notes', __('messages.patient_insurance.notes') . ':', ['class' => 'form-label']) }}
                         {{ Form::textarea('notes', null, ['class' => 'form-control', 'rows' => 2, 'maxlength' => 1000]) }}
+                    </div>
+                    <div class="form-group col-sm-12 mb-5">
+                        {{ Form::label('card_photo', __('messages.patient_insurance.card_photo') . ':', ['class' => 'form-label']) }}
+                        <input type="file" name="card_photo" class="form-control" accept="image/*" capture="environment">
+                        <div class="form-text">{{ __('messages.patient_insurance.card_photo_hint') }}</div>
                     </div>
                     <div class="form-group col-sm-12 mb-5">
                         <div class="form-check form-switch">

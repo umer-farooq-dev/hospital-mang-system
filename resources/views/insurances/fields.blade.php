@@ -59,6 +59,19 @@
         {{ Form::date('contract_to', isset($insurance) ? $insurance->contract_to?->toDateString() : null, ['class' => 'form-control']) }}
         <div class="form-text">{{ __('messages.insurance.contract_hint') }}</div>
     </div>
+    <div class="form-group col-sm-6 mb-5">
+        {{ Form::label('website_logo', __('messages.insurance.website_logo') . ':', ['class' => 'form-label']) }}
+        @if (isset($insurance) && $insurance->logo_url)
+            <div class="mb-2"><img src="{{ $insurance->logo_url }}" alt="" style="max-height:48px"></div>
+        @endif
+        <input type="file" name="website_logo" class="form-control" accept=".png,.jpg,.jpeg,.webp">
+    </div>
+    <div class="form-group col-sm-6 mb-5 d-flex align-items-end">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" name="show_on_website" value="1" id="insuranceShowOnWebsite" {{ isset($insurance) && $insurance->show_on_website ? 'checked' : '' }}>
+            <label class="form-check-label" for="insuranceShowOnWebsite">{{ __('messages.insurance.show_on_website') }}</label>
+        </div>
+    </div>
     <div class="form-group col-sm-12 mb-5">
         {{ Form::label('claim_note', __('messages.claims.claim_note') . ':', ['class' => 'form-label']) }}
         {{ Form::textarea('claim_note', null, ['class' => 'form-control', 'rows' => 2, 'maxlength' => 2000]) }}

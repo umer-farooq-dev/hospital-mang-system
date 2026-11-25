@@ -25,7 +25,7 @@
                 {{Form::hidden('uniqueId',$diseases->count() + 1,['id'=>'editInsuranceUniqueId','class'=>'insuranceUniqueId'])}}
                 {{Form::hidden('discount',$insurance->discount,['id'=>'editInsuranceDiscount','class'=>'insuranceDiscount'])}}
                 <div class="card-body p-12">
-                    {{ Form::model($insurance, ['id'=>'editInsuranceForm','class'=>'insuranceForm', 'method'=>'POST', 'route'=>['insurances.update', $insurance->id]]) }}
+                    {{ Form::model($insurance, ['id'=>'editInsuranceForm','class'=>'insuranceForm', 'method'=>'POST', 'route'=>['insurances.update', $insurance->id], 'files' => true]) }}
 
                     @include('insurances.fields')
 

@@ -25,7 +25,7 @@
                 {{Form::hidden('uniqueId',2,['id'=>'insuranceUniqueId','class'=>'insuranceUniqueId'])}}
                 {{Form::hidden('discount',-1,['id'=>'insuranceDiscount','class'=>'insuranceDiscount'])}}
                 <div class="card-body p-12">
-                    {{ Form::open(['route' => 'insurances.store', 'class'=>'insuranceForm', 'method'=>'POST']) }}
+                    {{ Form::open(['route' => 'insurances.store', 'class'=>'insuranceForm', 'method'=>'POST', 'files' => true]) }}
 
                     @include('insurances.fields')
 

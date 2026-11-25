@@ -29,6 +29,9 @@
                                 @if ($policy->plan_name)
                                     · {{ $policy->plan_name }}
                                 @endif
+                                @if ($policy->group_name)
+                                    · {{ $policy->group_name }}
+                                @endif
                             </div>
                             @if ($policy->notes)
                                 <div class="text-muted fs-7 fst-italic">{{ $policy->notes }}</div>
@@ -38,6 +41,9 @@
                             {{ $policy->policy_number ?? __('messages.common.n/a') }}
                             @if ($policy->member_number)
                                 <div class="text-muted fs-7">{{ __('messages.patient_insurance.member_number') }}: {{ $policy->member_number }}</div>
+                            @endif
+                            @if ($policy->card_document_id)
+                                <a href="{{ url('document-download/'.$policy->card_document_id) }}" target="_blank" class="fs-7"><i class="fa-solid fa-id-card me-1"></i>{{ __('messages.patient_insurance.card_photo') }}</a>
                             @endif
                         </td>
                         <td class="text-nowrap">

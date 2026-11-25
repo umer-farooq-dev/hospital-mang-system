@@ -432,6 +432,8 @@ return [
 
     // insurance keys
     'insurance' => [
+        'website_logo' => 'Logo (site web)',
+        'show_on_website' => 'Afficher dans « Nos assurances partenaires » sur le site',
         'contract_from' => 'Contrat du',
         'contract_to' => "Contrat jusqu'au",
         'contract_hint' => "Après cette date, le payeur n'est plus proposé et ses patients paient eux-mêmes.",
@@ -2822,6 +2824,11 @@ return [
         'example' => 'Exemple',
     ],
     'patient_insurance' => [
+        'group_name' => 'Groupe / employeur',
+        'group_hint' => 'ex. INDIVIDUEL ou l\'entreprise',
+        'card_photo' => 'Photo de la carte d\'assurance',
+        'card_photo_hint' => 'La carte n\'a pas de code-barres : prenez ou joignez une photo, elle est gardée dans les documents du patient.',
+        'card_title' => 'Carte d\'assurance :payer',
         'tab' => 'Assurance',
         'policy' => 'Police',
         'new_policy' => 'Ajouter une police',
@@ -4359,6 +4366,7 @@ return [
         'restore_hint' => "Restauration (par l'informaticien, application arrêtée) : gunzip -c fichier.sql.gz | mysql -u utilisateur -p base.",
     ],
     'front_web' => [
+        'section_partners' => 'Assurances partenaires',
         'background_video' => 'Vidéo de fond (lecture automatique, sans son)',
         'remove_video' => 'Supprimer la vidéo',
         'video_hint' => 'MP4 ou WEBM, 10 Mo max. Un court extrait (15–30 s, sans son) se charge vite. Sans vidéo, l\'image de fond s\'affiche.',

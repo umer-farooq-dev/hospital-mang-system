@@ -51,8 +51,13 @@ use Illuminate\Validation\Rule;
  *
  * @method static Builder|Insurance whereIsDefault($value)
  */
-class Insurance extends Model
+class Insurance extends Model implements \Spatie\MediaLibrary\HasMedia
 {
+    use \Spatie\MediaLibrary\InteractsWithMedia;
+
+    // logo shown in the website block "Nos assurances partenaires"
+    const LOGO_PATH = 'insurer-logos';
+
     /** How the payer share is invoiced to the payer (used by the claims module). */
     const BILLING_OPTIONS = ['per_visit', 'per_admission', 'monthly'];
 
@@ -133,6 +138,7 @@ class Insurance extends Model
         'credit_days',
         'contract_from',
         'contract_to',
+        'show_on_website',
         'claim_note',
         'claim_title',
         'claim_columns',
@@ -230,5 +236,19 @@ class Insurance extends Model
         }
 
         return $this->contract_from && $this->contract_from->gt($day) ? 'not_started' : null;
+    }
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        $url = $this->getFirstMediaUrl(self::LOGO_PATH);
+
+        return $url ? asset(ltrim(parse_url($url, PHP_URL_PATH), '/')) : null;
+    }
+
+    /** Active partners with a logo, for the website. */
+    public static function websitePartners()
+    {
+        return self::with('media')->where('status', self::ACTIVE)->where('show_on_website', true)->orderBy('name')->get()
+            ->filter(fn (self $insurer) => $insurer->logo_url && $insurer->contractStatusOn(now()) === null)->values();
     }
 }

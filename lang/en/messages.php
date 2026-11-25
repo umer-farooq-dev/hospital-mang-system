@@ -436,6 +436,8 @@ return [
 
     // insurance keys
     'insurance' => [
+        'website_logo' => 'Logo (website)',
+        'show_on_website' => 'Show in "Our partner insurers" on the website',
         'contract_from' => 'Contract from',
         'contract_to' => 'Contract until',
         'contract_hint' => 'After this date the payer is no longer offered and its patients pay themselves.',
@@ -2812,6 +2814,11 @@ return [
         'example' => 'Example',
     ],
     'patient_insurance' => [
+        'group_name' => 'Group / employer',
+        'group_hint' => 'e.g. INDIVIDUEL or the company',
+        'card_photo' => 'Insurance card photo',
+        'card_photo_hint' => 'The card has no barcode: take or attach a photo, it is kept in the patient documents.',
+        'card_title' => 'Insurance card :payer',
         'tab' => 'Insurance',
         'policy' => 'Policy',
         'new_policy' => 'Add policy',
@@ -4347,6 +4354,7 @@ return [
         'restore_hint' => 'Restore (by the IT person, application stopped): gunzip -c file.sql.gz | mysql -u user -p database.',
     ],
     'front_web' => [
+        'section_partners' => 'Partner insurers',
         'background_video' => 'Background video (plays by itself, muted)',
         'remove_video' => 'Remove the video',
         'video_hint' => 'MP4 or WEBM, max 10 MB. A short clip (15–30 s, no sound) loads fast. Without a video the background picture is shown.',

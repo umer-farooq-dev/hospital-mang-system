@@ -98,3 +98,9 @@
 
 // one Font Awesome weight on the site (solid): the theme drew menu arrows with the regular font (416 KB)
 .main-menu ul.sub-menu li a::before, .vs-mean-expand::before, .vs-mobile-menu ul li a::before { font-weight: 900 !important; }
+
+// partner insurers
+.partner-logo { height: 110px; display: flex; align-items: center; justify-content: center; padding: 18px; border-radius: 16px;
+    background: var(--vs-white-color); border: 1px solid rgba(var(--vs-title-color-rgb), .08); }
+.partner-logo img { max-height: 70px; max-width: 100%; object-fit: contain; filter: grayscale(1); opacity: .75; transition: .3s; }
+.partner-logo:hover img { filter: none; opacity: 1; }
