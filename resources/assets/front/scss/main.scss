@@ -102,5 +102,6 @@
 // partner insurers
 .partner-logo { height: 110px; display: flex; align-items: center; justify-content: center; padding: 18px; border-radius: 16px;
     background: var(--vs-white-color); border: 1px solid rgba(var(--vs-title-color-rgb), .08); }
-.partner-logo img { max-height: 70px; max-width: 100%; object-fit: contain; filter: grayscale(1); opacity: .75; transition: .3s; }
-.partner-logo:hover img { filter: none; opacity: 1; }
+.partner-logo { transition: .3s; }
+.partner-logo img { max-height: 80px; max-width: 100%; object-fit: contain; }
+.partner-logo:hover { border-color: var(--vs-theme-color1); box-shadow: 0 10px 30px rgba(var(--vs-title-color-rgb), .08); transform: translateY(-3px); }
