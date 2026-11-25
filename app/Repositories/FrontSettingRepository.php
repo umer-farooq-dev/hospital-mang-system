@@ -45,7 +45,7 @@ class FrontSettingRepository extends BaseRepository
         }
 
         if (isset($input['website_languages']) && is_array($input['website_languages'])) {
-            $input['website_languages'] = implode(',', array_intersect($input['website_languages'], array_keys(getLanguages())));
+            $input['website_languages'] = implode(',', array_intersect($input['website_languages'], array_keys(\App\Models\User::LANGUAGES)));
         }
 
         if (isset($input['home_sections']) && is_array($input['home_sections'])) {

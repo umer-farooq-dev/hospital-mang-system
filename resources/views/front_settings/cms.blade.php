@@ -214,12 +214,12 @@
             <div class="row mb-5">
                 <div class="form-group col-md-4 mb-5">
                     {{ Form::label('website_default_lang', __('messages.front_web.default_language').':', ['class' => 'form-label']) }}
-                    {{ Form::select('website_default_lang', getLanguages(), $frontSettings['website_default_lang'] ?? 'fr', ['class' => 'form-select']) }}
+                    {{ Form::select('website_default_lang', \App\Models\User::LANGUAGES, $frontSettings['website_default_lang'] ?? 'fr', ['class' => 'form-select']) }}
                 </div>
                 <div class="form-group col-md-8 mb-5">
                     {{ Form::label('website_languages', __('messages.front_web.other_languages').':', ['class' => 'form-label d-block']) }}
                     <input type="hidden" name="website_languages[]" value="">
-                    @foreach (getLanguages() as $code => $language)
+                    @foreach (\App\Models\User::LANGUAGES as $code => $language)
                         <label class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" name="website_languages[]" value="{{ $code }}" {{ in_array($code, explode(',', $frontSettings['website_languages'] ?? 'fr,en')) ? 'checked' : '' }}>
                             <span class="form-check-label">{{ $language }}</span>

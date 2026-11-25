@@ -830,10 +830,10 @@ function frontSetting($key = null, $default = null)
     return ($all[$key] ?? '') !== '' ? $all[$key] : $default;
 }
 
-/** Website languages (codes), the default one first. */
+/** Languages of the whole system (website, login, admin), the default one first. Chosen in Front CMS > Languages. */
 function websiteLanguages(): array
 {
-    $known = array_keys(getLanguages());
+    $known = array_keys(User::LANGUAGES);
     $default = in_array(frontSetting('website_default_lang'), $known, true) ? frontSetting('website_default_lang') : 'fr';
     $others = array_intersect(explode(',', (string) frontSetting('website_languages', 'fr,en')), $known);
 
@@ -1008,7 +1008,8 @@ function getNotificationIcon($notificationFor)
  */
 function getLanguages()
 {
-    return User::LANGUAGES;
+    // only the languages the hospital switched on (default French + English); User::LANGUAGES is the full catalogue
+    return array_intersect_key(User::LANGUAGES, array_flip(websiteLanguages()));
 }
 
 /**
@@ -1017,15 +1018,14 @@ function getLanguages()
 function checkLanguageSession()
 {
 
-    if (Session::has('languageName')) {
-
+    $enabled = websiteLanguages();
+    if (Session::has('languageName') && in_array(Session::get('languageName'), $enabled, true)) {
         return Session::get('languageName');
-    } else {
-
-        $settings = App::make(SettingRepository::class)->getSyncList();
-
-        return $settings['default_lang'];
     }
+
+    $settings = App::make(SettingRepository::class)->getSyncList();
+
+    return in_array($settings['default_lang'] ?? null, $enabled, true) ? $settings['default_lang'] : $enabled[0];
 }
 
 /**
@@ -1041,7 +1041,7 @@ function getCurrentLoginUserLanguageName()
  */
 function getCurrentLanguageName()
 {
-    return getLanguages()[checkLanguageSession()];
+    return getLanguages()[checkLanguageSession()] ?? User::LANGUAGES[checkLanguageSession()] ?? 'French';
 }
 
 /*
