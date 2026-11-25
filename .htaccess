@@ -1,8 +1,12 @@
 # Hosting where the domain points at the project folder (not at /public), e.g. a cPanel subdomain:
 # every request is served from /public, so .env, storage, vendor etc. are never reachable from the web.
+<IfModule mod_negotiation.c>
+    Options -MultiViews -Indexes
+</IfModule>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^(.*)$ public/$1 [L]
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
 </IfModule>
 
 # Fallback if mod_rewrite is missing: refuse hidden files such as .env
