@@ -94,7 +94,7 @@
                     <div class="col-12">
                         {{ Form::label('language', __('messages.profile.language') . ':', ['class' => 'form-label']) }}
                         <span class="required"></span>
-                        {{ Form::select('language', \App\Models\User::LANGUAGES, Auth::user()->language, ['id' => 'language', 'class' => 'form-select', 'data-control' => 'select2', 'data-hide-search' => 'true', 'data-placeholder' => 'language', 'required']) }}
+                        {{ Form::select('language', getLanguages(), Auth::user()->language, ['id' => 'language', 'class' => 'form-select', 'data-control' => 'select2', 'data-hide-search' => 'true', 'data-placeholder' => 'language', 'required']) }}
                     </div>
                 </div>
             </div>

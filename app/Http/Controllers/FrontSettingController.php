@@ -34,7 +34,7 @@ class FrontSettingController extends AppBaseController
             array_fill_keys(array_keys(FrontSetting::IMAGE_KEYS), $image),
             array_fill_keys(FrontSetting::COLOR_KEYS, ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/']),
             ['home_page_video_url' => 'nullable|url|max:255', 'home_sections' => 'nullable|array',
-                'website_default_lang' => 'nullable|in:'.implode(',', array_keys(getLanguages())), 'website_languages' => 'nullable|array',
+                'website_default_lang' => 'nullable|in:'.implode(',', array_keys(\App\Models\User::LANGUAGES)), 'website_languages' => 'nullable|array',
                 FrontSetting::VIDEO_KEY => 'nullable|file|mimetypes:video/mp4,video/webm|max:10240'],
         ));
         $this->frontSettingRepository->updateFrontSetting($request->all());

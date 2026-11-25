@@ -17,7 +17,7 @@
                 @foreach (getLanguages() as $key => $value)
                     <li class="{{ checkLanguageSession() == $key ? 'active' : '' }}"><a
                             class="dropdown-item  px-5 language-select {{ checkLanguageSession() == $key ? 'bg-primary text-white' : 'text-dark' }}"
-                            data-id="{{ $key }}">{{ $value }}</a>
+                            data-id="{{ $key }}">{{ __('messages.language.'.$value) }}</a>
                     </li>
                 @endforeach
             </ul>

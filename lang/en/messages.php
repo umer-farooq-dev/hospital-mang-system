@@ -1042,7 +1042,7 @@ return [
         'favicon_validation' => 'The image must be 34 x 34 pixels.',
         'social_details' => 'Social Details',
         'country_code' => 'Country Code',
-        'default_language' => 'Default Language',
+        'default_language' => 'Default language',
     ],
 
     'currency' => [
@@ -4358,9 +4358,9 @@ return [
         'background_video' => 'Background video (plays by itself, muted)',
         'remove_video' => 'Remove the video',
         'video_hint' => 'MP4 or WEBM, max 10 MB. A short clip (15–30 s, no sound) loads fast. Without a video the background picture is shown.',
-        'website_languages' => 'Website languages',
+        'website_languages' => 'Languages of the system (website, login and admin)',
         'default_language' => 'Default language',
-        'other_languages' => 'Other languages',
+        'other_languages' => 'Languages offered',
         'type_1' => 'Services',
         'type_2' => 'Case studies',
         'type_3' => 'News',
