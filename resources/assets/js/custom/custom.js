@@ -92,7 +92,11 @@ const modalInputFocus = () => {
     });
 };
 
+// the public website (theme main .vs-main) must not jump to its first field on load
+const isPublicWebsite = () => document.querySelector(".vs-main") !== null;
+
 const inputFocus = () => {
+    if (isPublicWebsite()) return;
     $(
         'input:text:not([readonly="readonly"]):not([name="search"]):not(.front-input)'
     )
@@ -106,7 +110,9 @@ $(document).on("keydown", function (e) {
     }
 });
 
-$('input:text:not([readonly="readonly"])').first().focus();
+if (!isPublicWebsite()) {
+    $('input:text:not([readonly="readonly"])').first().focus();
+}
 
 $(document).on("select2:open", () => {
     let allFound = document.querySelectorAll(

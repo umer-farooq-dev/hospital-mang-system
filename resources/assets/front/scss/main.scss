@@ -105,3 +105,16 @@
 .partner-logo { transition: .3s; }
 .partner-logo img { max-height: 80px; max-width: 100%; object-fit: contain; }
 .partner-logo:hover { border-color: var(--vs-theme-color1); box-shadow: 0 10px 30px rgba(var(--vs-title-color-rgb), .08); transform: translateY(-3px); }
+
+// cards of one row are the same size whatever picture the admin uploads
+.vs-service.style3 .swiper-slide, .vs-blog .swiper-slide { height: auto; }
+.vs-service.style3 .vs-service__wrap, .vs-blog .vs-blog__wrap { height: 100%; display: flex; flex-direction: column; }
+.vs-service.style3 .vs-service__img .serImg { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.vs-service.style3 .vs-service__txt { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+.vs-service.style3 .vs-service__txt .ser_btn { margin-top: auto; }
+.vs-blog .blog_img img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.vs-blog .blog_content { flex: 1; display: flex; flex-direction: column; }
+.vs-blog .blog-txt { flex: 1; display: flex; flex-direction: column; }
+.vs-blog .blog-btn { margin-top: auto; }
+.service-page .row > [class*="col-"] { display: flex; }
+.service-page .vs-service__wrap { width: 100%; }

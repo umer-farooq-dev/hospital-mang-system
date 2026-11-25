@@ -157,8 +157,8 @@
                 @php($videoFile = frontFile(\App\Models\FrontSetting::VIDEO_KEY))
                 <div class="vs-video vs-video--bg space" @unless ($videoFile) data-bg-src="{{ frontImage('home_page_video_image', 'bg/video-h3-bg.jpg') }}" @endunless>
                     @if ($videoFile)
-                        <video class="vs-video__media" muted loop playsinline preload="none" data-lazy-video poster="{{ frontImage('home_page_video_image', 'bg/video-h3-bg.jpg') }}" aria-hidden="true">
-                            <source src="{{ $videoFile }}" type="{{ str_ends_with($videoFile, '.webm') ? 'video/webm' : 'video/mp4' }}">
+                        <video class="vs-video__media" autoplay muted loop playsinline preload="none" data-lazy-video poster="{{ frontImage('home_page_video_image', 'bg/video-h3-bg.jpg') }}" aria-hidden="true">
+                            <source data-src="{{ $videoFile }}" type="{{ str_ends_with($videoFile, '.webm') ? 'video/webm' : 'video/mp4' }}">
                         </video>
                     @endif
                     <div class="container">
@@ -422,16 +422,23 @@
 @endsection
 @section('scripts')
     <script>
-        // start the background video only when it is about to be seen (saves the download for visitors who never scroll there)
+        // the video file is attached only when its block comes near the screen (no download for visitors who never get there);
+        // "autoplay muted playsinline" then lets the browser start it by itself, play() is a second push
         document.querySelectorAll('video[data-lazy-video]').forEach(function (video) {
-            if (!('IntersectionObserver' in window)) { video.preload = 'auto'; video.play().catch(function () {}); return; }
+            var start = function () {
+                video.querySelectorAll('source[data-src]').forEach(function (source) { source.src = source.dataset.src; source.removeAttribute('data-src'); });
+                video.muted = true;
+                video.load();
+                var play = function () { var p = video.play(); if (p && p.catch) p.catch(function () {}); };
+                video.addEventListener('canplay', play, {once: true});
+                play();
+            };
+            if (!('IntersectionObserver' in window)) { start(); return; }
             new IntersectionObserver(function (entries, observer) {
                 if (!entries[0].isIntersecting) return;
                 observer.disconnect();
-                video.preload = 'auto';
-                video.load();
-                video.play().catch(function () {});
-            }, {rootMargin: '300px'}).observe(video);
+                start();
+            }, {rootMargin: '400px'}).observe(video);
         });
     </script>
 @endsection
