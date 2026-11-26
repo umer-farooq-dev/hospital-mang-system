@@ -11,6 +11,7 @@
                     <a class="btn btn-primary edit-btn"
                         href="{{route('medicine-bills.edit', ['medicine_bill' => $medicineBill->id]) }}">{{ __('messages.common.edit') }}</a>
                 @endif
+                @include('audit_logs.history_button', ['type' => 'medicine_bill', 'id' => $medicineBill->id])
                 <a href="{{route('medicine-bills.index')}}"
                     class="btn btn-outline-primary {{getCurrentLoginUserLanguageName() == 'ar' ? 'me-2' : 'ms-2'}}">{{ __('messages.common.back') }}</a>
             </div>

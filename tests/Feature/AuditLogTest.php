@@ -56,6 +56,24 @@ class AuditLogTest extends TestCase
         $this->assertSame('stripe_secret', $deleted->old_values['key']);
         $this->assertSame(AuditTestSetting::class, $deleted->auditable_type);
     }
+
+    public function test_history_of_a_receipt_includes_its_lines_even_deleted_ones(): void
+    {
+        $log = fn ($type, $id, $event, $old, $new) => AuditLog::create(['event' => $event, 'auditable_type' => $type, 'auditable_id' => $id,
+            'old_values' => $old, 'new_values' => $new]);
+        $log(\App\Models\Receipt::class, 8, 'created', [], ['amount' => 14850]);
+        $log(\App\Models\ReceiptLine::class, 3, 'created', [], ['receipt_id' => 8, 'amount' => 4500]);
+        $log(\App\Models\ReceiptLine::class, 4, 'deleted', ['receipt_id' => '8', 'amount' => 900], []);
+        $log(\App\Models\ReceiptLine::class, 5, 'created', [], ['receipt_id' => 9, 'amount' => 1]); // another receipt
+        $log(\App\Models\Receipt::class, 8, 'updated', ['payment_method' => 1, 'updated_at' => 'a'], ['payment_method' => 2, 'updated_at' => 'b']);
+
+        $history = AuditLog::historyFor('receipt', 8);
+        $this->assertCount(4, $history);
+        $this->assertNotContains(5, $history->pluck('auditable_id')->all());
+
+        $update = $history->firstWhere('event', 'updated');
+        $this->assertSame(['payment_method' => [1, 2]], $update->changes(), 'only real changes, no bookkeeping columns');
+    }
 }
 
 // Plain model on the settings table: same key/value shape as App\Models\Setting

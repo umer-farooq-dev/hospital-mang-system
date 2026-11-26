@@ -161,6 +161,7 @@
                                             <div class="text-muted fs-7">{{ $receipt->patient->patientUser->full_name ?? '' }} · {{ $receipt->created_at->format('H:i') }}</div>
                                         </div>
                                         <a href="{{ route('receipts.print', $receipt->id) }}" target="_blank" class="btn btn-sm btn-light" title="{{ __('messages.cashier.print') }}"><i class="fas fa-print"></i></a>
+                                        @include('audit_logs.history_button', ['type' => 'receipt', 'id' => $receipt->id, 'small' => true])
                                     </div>
                                 @empty
                                     <div class="text-muted">{{ __('messages.cashier.no_receipt_yet') }}</div>

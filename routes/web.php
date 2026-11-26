@@ -1779,6 +1779,8 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
         Route::get('audit-logs', [AuditLogController::class, 'index'])
             ->name('audit-logs.index')
             ->middleware('modules');
+        Route::get('audit-logs/history/{type}/{id}', [AuditLogController::class, 'history'])
+            ->whereNumber('id')->name('audit-logs.history');
         Route::get('audit-logs/{auditLog}', [AuditLogController::class, 'show'])
             ->name('audit-logs.show');
 
