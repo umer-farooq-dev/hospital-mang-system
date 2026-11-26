@@ -26,26 +26,29 @@ class Brand
 
     const SOURCES = ['assets/css/style.css', 'assets/css/plugins.css', 'assets/css/custom.css'];
 
+    const DARK_SOURCES = ['assets/css/style.dark.css', 'assets/css/plugins.dark.css', 'assets/css/custom.css'];
+
     const DEFAULT = '#6571ff';
 
-    /** URL of the stylesheet that recolours the software, or null when the stock colour is kept. */
-    public static function stylesheet(): ?string
+    /** URL of the stylesheet that recolours the software (light or dark mode), or null when the stock colour is kept. */
+    public static function stylesheet(bool $dark = false): ?string
     {
+        $sources = $dark ? self::DARK_SOURCES : self::SOURCES;
         $color = strtolower((string) frontSetting('theme_color_primary', self::DEFAULT));
         if (! preg_match('/^#[0-9a-f]{6}$/', $color) || $color === self::DEFAULT) {
             return null;
         }
-        $name = 'brand/admin-'.substr(md5($color.'|'.implode(',', array_map(fn ($f) => @filemtime(public_path($f)), self::SOURCES))), 0, 12).'.css';
+        $name = 'brand/admin-'.($dark ? 'dark-' : '').substr(md5($color.'|'.implode(',', array_map(fn ($f) => $f.@filemtime(public_path($f)), $sources))), 0, 12).'.css';
         if (! is_file(public_path($name))) {
             @mkdir(public_path('brand'), 0775, true);
-            file_put_contents(public_path($name), self::build($color), LOCK_EX);
+            file_put_contents(public_path($name), self::build($color, $sources), LOCK_EX);
         }
 
         return asset($name);
     }
 
     /** Rules of the stock stylesheets that use the palette, rewritten with the hospital's colour. */
-    public static function build(string $color): string
+    public static function build(string $color, array $sources = self::SOURCES): string
     {
         $map = [];
         foreach (self::PALETTE as $stock => [$how, $amount]) {
@@ -57,7 +60,7 @@ class Brand
         $pattern = '/'.implode('|', array_map(fn ($c) => preg_quote($c, '/'), array_keys($map))).'/i';
 
         $out = "/* generated from the stock theme for {$color}; delete the file to rebuild */\n";
-        foreach (self::SOURCES as $file) {
+        foreach ($sources as $file) {
             $css = preg_replace('/@(charset|import)[^;]*;/i', '', (string) @file_get_contents(public_path($file)));
             // keep media queries around their rules
             preg_match_all('/(@media[^{]+\{(?:[^{}]*\{[^{}]*\})*[^{}]*\})|([^{}@]+\{[^{}]*\})/', $css, $blocks);

@@ -4563,4 +4563,12 @@ return [
     'pwa' => [
         'install' => 'Installer l\'application',
     ],
+    'theme' => [
+        'to_dark' => 'Passer en mode sombre',
+        'to_light' => 'Passer en mode clair',
+    ],
+    'languages' => [
+        'fr' => 'Français',
+        'en' => 'English',
+    ],
 ];

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+@php $darkMode = (bool) getLoggedInUser()->thememode; @endphp
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ $darkMode ? 'dark' : 'light' }}"
     @if (getLoggedInUser()->language == 'ar') direction="rtl" dir="rtl" style="direction: rtl" @endif>
 
 <head>
@@ -23,16 +24,14 @@
     <link rel="stylesheet" type="text/css"
         href="{{ asset('vendor/rappasoft/livewire-tables/css/laravel-livewire-tables-thirdparty.min.css') }}">
 
-    @if (getLoggedInUser()->thememode)
-        <link href="{{ mix('assets/css/style.dark.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ mix('assets/css/plugins.dark.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ mix('assets/css/phone-number-dark.css') }}" rel="stylesheet" type="text/css" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    @else
-        <link href="{{ mix('assets/css/style.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ mix('assets/css/plugins.css') }}" rel="stylesheet" type="text/css" />
-    @endif
-    @include('layouts.brand_head')
+    {{-- light / dark mode: the header switch swaps these files in place (data-light / data-dark), no reload --}}
+    @foreach (['style', 'plugins'] as $themeFile)
+        <link href="{{ mix('assets/css/'.$themeFile.($darkMode ? '.dark' : '').'.css') }}" rel="stylesheet" type="text/css"
+            data-light="{{ mix('assets/css/'.$themeFile.'.css') }}" data-dark="{{ mix('assets/css/'.$themeFile.'.dark.css') }}" />
+    @endforeach
+    <link href="{{ mix('assets/css/phone-number-dark.css') }}" rel="stylesheet" type="text/css" data-dark-only media="{{ $darkMode ? 'all' : 'not all' }}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" data-dark-only media="{{ $darkMode ? 'all' : 'not all' }}">
+    @include('layouts.brand_head', ['inApp' => true])
     @if (getCurrentLoginUserLanguageName() == 'ar')
         <link href="{{ asset('assets/css/rtl.css') }}" rel="stylesheet" type="text/css" />
     @endif
@@ -45,6 +44,13 @@
 
     {{--    <link href="{{ asset('css/pages.css') }}" rel="stylesheet" type="text/css"/> --}}
     <link href="{{ mix('assets/css/custom.css') }}" rel="stylesheet" type="text/css" />
+    @php $brandLight = \App\Utils\Brand::stylesheet(); @endphp
+    @if ($brandLight)
+        {{-- hospital colour, after the stock files so it wins --}}
+        <link href="{{ $darkMode ? \App\Utils\Brand::stylesheet(true) : $brandLight }}" rel="stylesheet" type="text/css"
+            data-light="{{ $brandLight }}" data-dark="{{ \App\Utils\Brand::stylesheet(true) }}" />
+    @endif
+    @include('layouts.theme_style')
     {{--    <link rel="stylesheet" href="{{ asset('assets/css/livewire-table.css') }}"> --}}
     @routes
     @livewireScripts

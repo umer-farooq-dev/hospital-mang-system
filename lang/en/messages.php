@@ -4551,4 +4551,12 @@ return [
     'pwa' => [
         'install' => 'Install the app',
     ],
+    'theme' => [
+        'to_dark' => 'Switch to dark mode',
+        'to_light' => 'Switch to light mode',
+    ],
+    'languages' => [
+        'fr' => 'Français',
+        'en' => 'English',
+    ],
 ];

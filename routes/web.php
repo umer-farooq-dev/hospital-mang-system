@@ -219,7 +219,6 @@ Auth::routes(['verify' => true]);
 
 Route::get('/home', [HomeController::class, 'index'])->middleware('verified');
 
-Route::get('theme-mode', [UserController::class, 'changeThemeMode'])->name('user.mode');
 
 Route::get('2fa-verify', [TwofactorAuthenticationController::class, 'showVerifyForm'])->name('2fa.verify');
 Route::post('2fa-verify', [TwofactorAuthenticationController::class, 'verify'])->name('2fa.verify.post');
@@ -229,6 +228,7 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
     Route::post('change-password', [UserController::class, 'changePassword']);
     Route::post('profile-update', [UserController::class, 'profileUpdate']);
     Route::post('update-language', [UserController::class, 'updateLanguage']);
+    Route::match(['get', 'post'], 'theme-mode', [UserController::class, 'changeThemeMode'])->name('user.mode');
 
     // stripe payment
     Route::post('/stripe-charge', [StripeController::class, 'createSession']);
