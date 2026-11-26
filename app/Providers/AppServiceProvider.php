@@ -50,6 +50,9 @@ class AppServiceProvider extends ServiceProvider
         if (! $this->app->runningInConsole()) {
             try {
                 $this->app->setLocale(websiteLanguages()[0]);
+                // the hospital's name (Settings > General) everywhere config('app.name') is read: mails, titles
+                $name = getAppName();
+                config(['app.name' => $name, 'mail.from.name' => $name]);
             } catch (\Throwable $e) {
                 // no database yet (installation): keep config('app.locale')
             }

@@ -170,6 +170,10 @@ Route::middleware('setLanguage')->group(function () {
     Route::get('/doctor-details/{id}', [Web\WebController::class, 'doctorDetails'])->name('doctor-details');
 });
 
+// Installable app: manifest and icons (no login: the browser reads them on the login page)
+Route::get('manifest.webmanifest', [\App\Http\Controllers\PwaController::class, 'manifest'])->name('pwa.manifest');
+Route::get('pwa/icon-{size}.png', [\App\Http\Controllers\PwaController::class, 'icon'])->whereIn('size', ['192', '512'])->name('pwa.icon');
+
 //Change language
 Route::post('/change-language', [Web\WebController::class, 'changeLanguage']);
 Route::get('logout', [LoginController::class, 'logout'])->name('logout.user');

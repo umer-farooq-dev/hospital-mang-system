@@ -10,9 +10,8 @@
     <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags($settingValue['about_us']['value'] ?? getAppName()), 160) }}">
     <meta name="author" content="{{ getAppName() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="{{ frontSetting('theme_color_primary', '#009E49') }}">
     <title>@yield('title') | {{ getAppName() }}</title>
-    <link rel="icon" href="{{ $settingValue['favicon']['value'] }}" type="image/png">
+    @include('layouts.brand_head', ['website' => true])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">

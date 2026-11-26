@@ -4560,4 +4560,7 @@ return [
         'max_discount' => 'Remise maximale à l\'accueil',
         'max_discount_hint' => 'Réduction maximale qu\'un agent d\'accueil peut accorder sur une visite (0 = aucune remise).',
     ],
+    'pwa' => [
+        'install' => 'Installer l\'application',
+    ],
 ];

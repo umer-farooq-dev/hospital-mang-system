@@ -3,12 +3,7 @@
         <div class="text-muted">
             <span>{{__('messages.footer.all_rights_reserved')}}</span>
             <span class="text-muted fw-bold me-1">&copy {{ date('Y') }}</span>
-            <a  href="{{ url('/') }}" class="text-hover-primary">{{ config('app.name') }}</a>
-        </div>
-        <div class="text-muted order-2 order-md-1">
-            @if(env('VERSION_NUMBER'))
-                v{{ getCurrentVersion() }}
-            @endif
+            <a  href="{{ url('/') }}" class="text-hover-primary">{{ getAppName() }}</a>
         </div>
     </div>
 </div>

@@ -4548,4 +4548,7 @@ return [
         'max_discount' => 'Highest discount at the desk',
         'max_discount_hint' => 'Highest reduction a desk user may give on one visit (0 = no discount at the desk).',
     ],
+    'pwa' => [
+        'install' => 'Install the app',
+    ],
 ];

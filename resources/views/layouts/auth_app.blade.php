@@ -5,16 +5,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@yield('title') | {{ getAppName() }}</title>
-    <meta name="description" content="Hospital management system">
-    <meta name="keyword" content="hospital,doctor,patient,fever,MD,MS,MBBS">
-    <link rel="icon" href="{{ getSettingValue()['favicon']['value'] }}" type="image/png">
+    <meta name="description" content="{{ getAppName() }}">
     <link rel="canonical" href="{{ route('front') }}" />
-    <link rel="stylesheet" href="{{ asset('favicon.ico') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/third-party.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
     <link href="{{ mix('/assets/css/custom-auth.css') }}" rel="stylesheet" type="text/css" />
+    @include('layouts.brand_head')
     {{--    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/pages.css') }}"> --}}
     <!-- CSS Libraries -->
     @yield('css')
