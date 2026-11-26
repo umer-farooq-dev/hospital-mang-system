@@ -3,6 +3,7 @@
     $notificationCount = count($notifications);
 @endphp
 <header class='d-flex align-items-center justify-content-between flex-grow-1 header px-3 px-xl-0'>
+    @include('layouts.back_button', ['fallback' => url('/home'), 'class' => 'me-3'])
     <button type="button" class="btn px-0 aside-menu-container__aside-menubar d-block d-xl-none sidebar-btn ">
         <i class="fa-solid fa-bars fs-1"></i>
     </button>

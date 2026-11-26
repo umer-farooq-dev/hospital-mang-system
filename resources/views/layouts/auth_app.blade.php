@@ -46,6 +46,13 @@
 
 <body
     class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed toolbar-tablet-and-mobile-fixed aside-enabled aside-fixed">
+    <style>
+        .app-back-button { position: fixed; top: 16px; left: 16px; z-index: 1050; width: 42px; height: 42px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center; background: #fff; color: var(--bs-primary, #009e49);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .12); font-size: 18px; text-decoration: none; }
+        .app-back-button:hover { background: var(--bs-primary, #009e49); color: #fff; }
+    </style>
+    @include('layouts.back_button', ['fallback' => request()->routeIs('login') ? route('front') : route('login')])
     <div class="d-flex flex-column flex-root">
         <div
             class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed authImage">

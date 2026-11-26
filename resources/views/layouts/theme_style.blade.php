@@ -18,4 +18,9 @@
     html[data-theme=dark] .form-control.bg-white { background-color: #13151f !important; }
     html[data-theme=light] .form-control.bg-light { background-color: #fff !important; }
     .header-language .dropdown-item.active, .header-language .dropdown-item:active { background-color: var(--bs-primary); color: #fff; }
+    /* back arrow in the header: only in the installed app, the browser has its own */
+    .header .app-back-button { display: none; width: 38px; height: 38px; border-radius: 50%; align-items: center; justify-content: center;
+        flex-shrink: 0; color: var(--bs-primary); background: rgba(0, 0, 0, .04); font-size: 17px; text-decoration: none; }
+    .header .app-back-button:hover { background: var(--bs-primary); color: #fff; }
+    @media (display-mode: standalone) { .header .app-back-button { display: inline-flex; } }
 </style>
