@@ -54,6 +54,7 @@ class SettingController extends AppBaseController
             'id_scan_document_type' => ['nullable', 'integer', Rule::in(array_keys(\App\Models\MasterListItem::labels('id_document_type')))],
             'id_scan_save_as' => 'nullable|integer|exists:document_types,id',
             'default_payer' => 'nullable|in:self,policy',
+            'reception_max_discount' => 'nullable|numeric|min:0|max:100',
         ]);
 
         $values = [
@@ -68,6 +69,7 @@ class SettingController extends AppBaseController
             'id_scan_document_type' => (string) ($input['id_scan_document_type'] ?? ''),
             'id_scan_save_as' => (string) ($input['id_scan_save_as'] ?? ''),
             'default_payer' => $input['default_payer'] ?? 'self',
+            'reception_max_discount' => (string) ($input['reception_max_discount'] ?? 0),
         ];
         foreach ($values as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);

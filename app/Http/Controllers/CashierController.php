@@ -67,6 +67,10 @@ class CashierController extends AppBaseController
         $input = $request->validate(['opening_float' => 'nullable|numeric|min:0']);
         $this->cashierRepository->open(Auth::user(), (float) ($input['opening_float'] ?? 0));
         Flash::success(__('messages.cashier.session_opened'));
+        $back = (string) $request->input('back');
+        if ($back !== '' && str_starts_with($back, url('/').'/')) {
+            return redirect($back);
+        }
 
         return redirect(route('cashier.index', array_filter(['patient' => $request->input('patient')])));
     }

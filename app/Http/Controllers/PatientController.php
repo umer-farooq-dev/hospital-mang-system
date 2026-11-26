@@ -65,6 +65,10 @@ class PatientController extends AppBaseController
         $this->patientRepository->createNotification($input);
         Flash::success(__('messages.advanced_payment.patient') . ' ' . __('messages.common.saved_successfully'));
 
+        if (request('from') === 'reception-desk' && canAccessRoute('reception-desk.visit')) {
+            return redirect(route('reception-desk.visit', $patient->id));
+        }
+
         return redirect(afterSaveUrl(route('patients.index'), ['patient' => $patient->id]));
     }
 

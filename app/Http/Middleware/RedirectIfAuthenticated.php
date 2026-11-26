@@ -25,7 +25,10 @@ class RedirectIfAuthenticated
                 if($request->user()->hasRole('Patient')){
                     return redirect('patient-dashboard');
                 }
-                if ($request->user()->hasRole('Receptionist|Case Manager')) {
+                if ($request->user()->hasRole('Receptionist')) {
+                    return redirect('reception-desk');
+                }
+                if ($request->user()->hasRole('Case Manager')) {
                     return redirect('notice-boards');
                 }
 

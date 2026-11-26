@@ -18,6 +18,14 @@
     <div class="container-fluid">
         <div class="d-flex flex-column">
             @include('flash::message')
+            @if (request('printed'))
+                @php($printUrl = route('receipts.print', ['receipt' => request()->integer('printed'), 'autoprint' => 1]))
+                <div class="alert alert-success d-flex align-items-center justify-content-between">
+                    <span>{{ __('messages.reception_visit.receipt_ready') }}</span>
+                    <a href="{{ $printUrl }}" target="_blank" class="btn btn-success btn-sm" id="receptionPrintReceipt"><i class="fas fa-print me-1"></i>{{ __('messages.cashier.print') }}</a>
+                </div>
+                <script>window.addEventListener('load', function () { window.open(@json($printUrl), '_blank'); });</script>
+            @endif
             <div class="card mb-7">
                 <div class="card-body">
                     <div class="d-flex gap-3">

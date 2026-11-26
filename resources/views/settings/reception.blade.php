@@ -82,6 +82,11 @@
             {{ Form::select('default_payer', ['self' => __('messages.reception.default_payers.self'), 'policy' => __('messages.reception.default_payers.policy')], $reception['default_payer'], ['class' => 'form-select']) }}
         </div>
         <div class="col-md-4 mb-3">
+            {{ Form::label('reception_max_discount', __('messages.reception_visit.max_discount') . ' (%):', ['class' => 'form-label']) }}
+            {{ Form::number('reception_max_discount', \App\Repositories\ReceptionDeskRepository::maxDiscount(), ['class' => 'form-control', 'min' => 0, 'max' => 100, 'step' => '0.5']) }}
+            <div class="text-muted fs-7">{{ __('messages.reception_visit.max_discount_hint') }}</div>
+        </div>
+        <div class="col-md-4 mb-3">
             {{ Form::label('id_scan_document_type', __('messages.reception.id_scan_document_type') . ':', ['class' => 'form-label']) }}
             {{ Form::select('id_scan_document_type', \App\Models\MasterListItem::options('id_document_type', $reception['id_scan_document_type']), $reception['id_scan_document_type'], ['class' => 'form-select', 'placeholder' => __('messages.common.choose')]) }}
         </div>

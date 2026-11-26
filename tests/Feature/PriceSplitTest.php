@@ -178,4 +178,15 @@ class PriceSplitTest extends TestCase
         $this->assertSame(1125.0, PriceSplit::roundTo(1115, 25, 'nearest'));
         $this->assertSame(1100.0, PriceSplit::roundTo(1110, 25, 'down'));
     }
+
+    public function test_desk_discount_is_one_more_reduction(): void
+    {
+        $alone = PriceSplit::compute(10000, null, null, ['extra_discount' => 10]);
+        $this->assertSame(9000.0, $alone['patient_amount']);
+        $this->assertSame(1000.0, $alone['discount_amount']);
+
+        // with the department's 10 %: compounded by default (réduction sur réduction)
+        $this->assertSame(19.0, PriceSplit::compute(10000, null, 1, ['extra_discount' => 10])['discount_percent']);
+        $this->assertSame(0.0, PriceSplit::compute(10000, null, null, ['extra_discount' => null])['discount_amount']);
+    }
 }

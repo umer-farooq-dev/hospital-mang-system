@@ -528,6 +528,9 @@ Route::middleware('auth', 'verified', 'xss', 'checkUserStatus')->group(function 
             ->name('reception-desk.index')
             ->middleware('modules');
         Route::get('reception-desk/search', [ReceptionDeskController::class, 'getSearch'])->name('reception-desk.search');
+        Route::get('reception-desk/{patient}/visit', [ReceptionDeskController::class, 'visit'])->name('reception-desk.visit');
+        Route::get('reception-desk/{patient}/visit/quote', [ReceptionDeskController::class, 'visitQuote'])->name('reception-desk.visit.quote');
+        Route::post('reception-desk/{patient}/visit', [ReceptionDeskController::class, 'storeVisit'])->name('reception-desk.visit.store');
         Route::get('patient-registrations', [PatientRegistrationReportController::class, 'index'])
             ->name('patient-registrations.index')
             ->middleware('modules');

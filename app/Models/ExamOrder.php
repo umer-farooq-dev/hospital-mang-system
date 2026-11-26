@@ -100,10 +100,41 @@ class ExamOrder extends Model
                 'description' => $test->test_name ?? $test->name,
                 'split' => PriceSplit::compute($gross, $policy, $departmentId, [
                     'date' => $at, 'voucher_number' => $input['voucher_number'] ?? null, 'charge_category_id' => $test->charge_category_id,
+                    'extra_discount' => $input['extra_discount'] ?? null,
                 ]),
             ];
         }
 
         return $lines;
+    }
+
+    /** Save an order and its priced lines (from priceTests). Exams of an admitted patient go on the admission's bill. */
+    public static function place(array $input, array $lines, ?int $userId): self
+    {
+        $order = self::create([
+            'patient_id' => $input['patient_id'],
+            'ipd_patient_department_id' => IpdPatientDepartment::where('patient_id', $input['patient_id'])->where('discharge', 0)->latest('id')->value('id'),
+            'doctor_id' => $input['doctor_id'] ?? null,
+            // only a policy of this patient counts
+            'patient_insurance_id' => PatientInsurance::where('patient_id', $input['patient_id'])->find($input['patient_insurance_id'] ?? null)?->id,
+            'price_list_id' => $input['price_list_id'] ?? null,
+            'voucher_number' => $input['voucher_number'] ?? null,
+            'ordered_at' => now(),
+            'user_id' => $userId,
+            'notes' => $input['notes'] ?? null,
+        ]);
+        foreach ($lines as $line) {
+            $order->items()->create([
+                'testable_type' => $line['type'],
+                'testable_id' => $line['id'],
+                'description' => $line['description'],
+                'total' => $line['split']['gross'],
+                'discount_amount' => $line['split']['discount_amount'],
+                'payer_amount' => $line['split']['payer_amount'],
+                'patient_amount' => $line['split']['patient_amount'],
+            ]);
+        }
+
+        return $order;
     }
 }
