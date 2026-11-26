@@ -103,6 +103,24 @@
                 </div>
             </div>
         </li>
+        <li class="px-2 d-none" id="installAppItem">
+            <button type="button" class="btn btn-sm btn-light-primary my-4 text-nowrap" id="installAppButton">
+                <i class="fas fa-desktop me-1"></i>{{ __('messages.pwa.install') }}
+            </button>
+            <script>
+                // Chrome/Edge: "Install" puts the system on the desktop and opens it in its own window
+                window.addEventListener('beforeinstallprompt', function (event) {
+                    event.preventDefault();
+                    window.hmsInstall = event;
+                    document.getElementById('installAppItem').classList.remove('d-none');
+                });
+                document.getElementById('installAppButton').addEventListener('click', function () {
+                    if (!window.hmsInstall) return;
+                    window.hmsInstall.prompt();
+                    window.hmsInstall.userChoice.finally(function () { document.getElementById('installAppItem').classList.add('d-none'); });
+                });
+            </script>
+        </li>
         <li class="px-xxl-3 px-2">
             <div class="dropdown d-flex align-items-center py-4">
                 <div class="image image-circle image-mini">
@@ -116,8 +134,8 @@
                 <div class="dropdown-menu py-7 pb-4 my-2" aria-labelledby="dropdownMenuButton1">
                     <div class="text-center border-bottom pb-5">
                         <div class="image image-circle image-tiny mb-5">
-                            <img alt="InfyOm" src="{{ Auth::user()->image_url ?? '' }}" class="img-fluid"
-                                alt="profile image" id="loginUserImage">
+                            <img src="{{ Auth::user()->image_url ?? '' }}" class="img-fluid"
+                                alt="{{ Auth::user()->full_name ?? '' }}" id="loginUserImage">
                         </div>
                         <h3 class="text-gray-900">{{ Auth::user()->full_name ?? '' }}</h3>
                         <a href="javascript:void(0)"

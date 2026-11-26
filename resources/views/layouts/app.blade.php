@@ -15,7 +15,6 @@
     @endphp
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="icon" href="{{ $settingValue['favicon']['value'] }}" type="image/png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
     <link href="{{ asset('assets/css/third-party.css') }}" rel="stylesheet" type="text/css" />
     @livewireStyles
@@ -33,6 +32,7 @@
         <link href="{{ mix('assets/css/style.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ mix('assets/css/plugins.css') }}" rel="stylesheet" type="text/css" />
     @endif
+    @include('layouts.brand_head')
     @if (getCurrentLoginUserLanguageName() == 'ar')
         <link href="{{ asset('assets/css/rtl.css') }}" rel="stylesheet" type="text/css" />
     @endif

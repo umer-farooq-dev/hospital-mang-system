@@ -17,3 +17,6 @@ yarn-error.log
 /public/web_front/kliniko/
 
 # Built assets ARE committed (public/assets, public/fonts, mix-manifest.json) so a server can deploy with git pull only.
+
+# software colour generated from the hospital's colour (App\Utils\Brand)
+/public/brand/

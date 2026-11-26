@@ -840,6 +840,15 @@ function websiteLanguages(): array
     return array_values(array_unique(array_merge([$default], $others)));
 }
 
+/** Favicon of the hospital (Settings > General), on the current domain. */
+function brandFavicon(): string
+{
+    $value = (string) (Setting::where('key', 'favicon')->value('value') ?? '');
+    $path = ltrim((string) parse_url($value, PHP_URL_PATH), '/');
+
+    return asset($path !== '' && is_file(public_path($path)) ? $path : 'web/img/favicon.png');
+}
+
 /** URL of a file uploaded in Front CMS, or null. */
 function frontFile($key)
 {

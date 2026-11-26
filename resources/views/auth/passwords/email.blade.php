@@ -12,7 +12,7 @@
     <div class="d-flex flex-column flex-column-fluid align-items-center mt-12 p-4">
         <div class="col-12 text-center mt-0">
             <a href="{{ route('front') }}" class="image mb-7 mb-sm-10">
-                <img alt="Logo" src="{{ $settingValue['app_logo']['value'] }}" class="img-fluid logo-fix-size">
+                <img alt="{{ getAppName() }}" src="{{ asset($settingValue['app_logo']['value']) }}" class="img-fluid logo-fix-size">
             </a>
         </div>
         <div class="width-540">
