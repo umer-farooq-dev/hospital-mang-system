@@ -35,14 +35,77 @@
                 </li>
             @endif
         @endrole
+        @php $headerLanguages = getLanguages(); @endphp
+        @php $headerLanguage = getCurrentLoginUserLanguageName(); @endphp
+        @if (count($headerLanguages) > 1)
+            <li class="px-xxl-3 px-2 header-language">
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-light d-flex align-items-center gap-2 px-3" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false" title="{{ __('messages.profile.change_language') }}">
+                        @isset(\App\Models\User::LANGUAGES_IMAGE[$headerLanguage])
+                            <img src="{{ asset(\App\Models\User::LANGUAGES_IMAGE[$headerLanguage]) }}" alt="" width="20" height="14" class="rounded-1">
+                        @endisset
+                        <span class="fw-bold text-uppercase">{{ $headerLanguage }}</span>
+                        <i class="fa-solid fa-chevron-down fs-7"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end py-2">
+                        @foreach ($headerLanguages as $code => $label)
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 {{ $code == $headerLanguage ? 'active' : '' }}"
+                                    href="javascript:void(0)" data-header-language="{{ $code }}">
+                                    @isset(\App\Models\User::LANGUAGES_IMAGE[$code])
+                                        <img src="{{ asset(\App\Models\User::LANGUAGES_IMAGE[$code]) }}" alt="" width="20" height="14" class="rounded-1">
+                                    @endisset
+                                    {{ __('messages.languages.'.$code) !== 'messages.languages.'.$code ? __('messages.languages.'.$code) : $label }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </li>
+        @endif
         <li class="px-xxl-3 px-2">
-            <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-trigger="hover"
-                title=""
-                data-bs-original-title="{{ getLoggedInUser()->thememode ? 'Switch to Light Mode' : 'Switch to Dark Mode' }}">
-                <a href="{{ route('user.mode') }}">
-                    <i class="fas user-check-icon {{ getLoggedInUser()->thememode ? 'fa-sun' : 'fa-moon' }} fs-3"></i>
-                </a>
-            </div>
+            <button type="button" class="btn p-0 border-0 bg-transparent" id="themeModeSwitch"
+                data-light-title="{{ __('messages.theme.to_dark') }}" data-dark-title="{{ __('messages.theme.to_light') }}"
+                title="{{ getLoggedInUser()->thememode ? __('messages.theme.to_light') : __('messages.theme.to_dark') }}">
+                <i class="fas user-check-icon text-primary {{ getLoggedInUser()->thememode ? 'fa-sun' : 'fa-moon' }} fs-3"></i>
+            </button>
+            <script>
+                (function () {
+                    var token = document.querySelector('meta[name="csrf-token"]').content;
+                    // language: saved on the user, page reloads in the new language
+                    document.querySelectorAll('[data-header-language]').forEach(function (item) {
+                        item.addEventListener('click', function () {
+                            fetch('{{ url('update-language') }}', {
+                                method: 'POST',
+                                headers: {'X-CSRF-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded'},
+                                body: new URLSearchParams({language: item.dataset.headerLanguage})
+                            }).then(function () { location.reload(); });
+                        });
+                    });
+                    // light / dark: swap the stylesheets in place, then save the choice
+                    var button = document.getElementById('themeModeSwitch');
+                    button.addEventListener('click', function () {
+                        var dark = document.documentElement.dataset.theme !== 'dark';
+                        document.querySelectorAll('link[data-dark]').forEach(function (link) {
+                            var next = link.cloneNode();
+                            next.href = dark ? link.dataset.dark : link.dataset.light;
+                            next.onload = function () { link.remove(); };
+                            link.after(next);
+                        });
+                        document.querySelectorAll('link[data-dark-only]').forEach(function (link) { link.media = dark ? 'all' : 'not all'; });
+                        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+                        button.querySelector('i').classList.toggle('fa-sun', dark);
+                        button.querySelector('i').classList.toggle('fa-moon', !dark);
+                        button.title = dark ? button.dataset.darkTitle : button.dataset.lightTitle;
+                        fetch('{{ route('user.mode') }}', {
+                            method: 'POST',
+                            headers: {'X-CSRF-TOKEN': token, 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded'},
+                            body: new URLSearchParams({dark: dark ? 1 : 0})
+                        });
+                    });
+                })();
+            </script>
         </li>
         <li class="px-sm-3 px-2">
             <div class="dropdown custom-dropdown d-flex align-items-center py-4">

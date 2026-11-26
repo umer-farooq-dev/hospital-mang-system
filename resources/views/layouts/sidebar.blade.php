@@ -8,10 +8,9 @@
     <div class="aside-menu-container__aside-logo flex-column-auto">
         <a  href="{{ url('/') }}" data-toggle="tooltip" data-placement="right"
             class="text-decoration-none sidebar-logo" title="{{ getAppName() }}" target="_blank">
-            <img src="{{ asset($settingValue['app_logo']['value']) }}" alt="Logo" width="50px" height="50px"
+            <img src="{{ asset($settingValue['app_logo']['value']) }}" alt="{{ getAppName() }}" width="42" height="42"
                 class="image" />
-            <span
-                class="navbar-brand-name text-dark text-decoration-none logo ps-2 {{ getCurrentLoginUserLanguageName() == 'ar' ? 'pe-2' : 'ps-2' }}">{{ getAppName() }}</span>
+            <span class="navbar-brand-name text-dark text-decoration-none logo">{{ getAppName() }}</span>
         </a>
 
         <button type="button" class="btn px-0 aside-menu-container__aside-menubar d-lg-block d-none sidebar-btn">

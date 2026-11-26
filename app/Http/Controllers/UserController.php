@@ -169,18 +169,13 @@ class UserController extends AppBaseController
         return $this->sendSuccess(__('messages.user.email_verified_successfully'));
     }
 
-    public function changeThemeMode()
+    /** Light / dark mode: the header switch sends the chosen mode (no reload); a plain link toggles. */
+    public function changeThemeMode(Request $request)
     {
         $user = User::find(getLoggedInUser()->id);
+        $dark = $request->has('dark') ? $request->boolean('dark') : $user->thememode == User::THEME_LIGHT_MODE;
+        $user->forceFill(['thememode' => $dark ? User::THEME_DARK_MODE : User::THEME_LIGHT_MODE])->save();
 
-        if ($user->thememode == User::THEME_LIGHT_MODE) {
-            $user['thememode'] = User::THEME_DARK_MODE;
-        } else {
-            $user['thememode'] = User::THEME_LIGHT_MODE;
-        }
-
-        $user->update();
-
-        return redirect(URL::previous());
+        return $request->expectsJson() ? $this->sendSuccess('ok') : redirect(URL::previous());
     }
 }
