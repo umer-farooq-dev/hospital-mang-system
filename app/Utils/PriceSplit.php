@@ -68,6 +68,8 @@ class PriceSplit
         $discounts = array_filter([
             $policy?->insurance->discount,
             $departmentId ? DoctorDepartment::whereKey($departmentId)->value('discount_percent') : null,
+            // reduction granted at the desk (Reception: one visit), capped in Settings > Reception
+            $options['extra_discount'] ?? null,
         ]);
         $kept = $rules['combine'] === 'add'
             ? max(0, 1 - min(100, array_sum(array_map('floatval', $discounts))) / 100)

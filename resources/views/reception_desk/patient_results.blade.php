@@ -49,6 +49,11 @@
                 </div>
             </div>
             <div class="d-flex flex-wrap gap-2">
+                @canroute('reception-desk.visit')
+                    <a href="{{ route('reception-desk.visit', $patient->id) }}" class="btn btn-sm btn-success">
+                        <i class="fas fa-file-invoice-dollar me-1"></i>{{ __('messages.reception_visit.button') }}
+                    </a>
+                @endcanroute
                 @canroute('opd.patient.create')
                 <a href="{{ route('opd.patient.create', ['patient_id' => $patient->id, 'from' => 'reception-desk']) }}" class="btn btn-sm btn-primary">
                     <i class="fas fa-stethoscope me-1"></i>{{ __('messages.reception_desk.consultation') }}

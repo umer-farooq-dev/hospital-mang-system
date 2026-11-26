@@ -188,7 +188,7 @@ class TwofactorAuthenticationController extends AppBaseController
         if ($user->hasRole('Admin')) {
             return redirect()->intended('dashboard');
         } elseif ($user->hasRole(['Receptionist'])) {
-            return redirect()->intended('appointments');
+            return redirect()->intended('reception-desk');
         } elseif ($user->hasRole(['Doctor', 'Case Manager', 'Lab Technician', 'Pharmacist'])) {
             return redirect()->intended('employee/doctor');
         } elseif ($user->hasRole(['Patient'])) {

@@ -132,6 +132,7 @@ class OpdPatientDepartment extends Model
             'date' => $input['appointment_date'] ?? now(),
             'voucher_number' => $input['voucher_number'] ?? null,
             'ignore_visit_id' => $visitId,
+            'extra_discount' => $input['extra_discount'] ?? null,
         ]);
         if ($followup !== null) {
             $split['warnings'][] = $followup == 0 ? 'followup_free' : 'followup_reduced';

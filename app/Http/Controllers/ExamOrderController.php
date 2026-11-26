@@ -69,34 +69,7 @@ class ExamOrderController extends AppBaseController
         }
         \App\Utils\PriceSplit::assertPolicyAllowed($lines[0]['split']);
 
-        $order = DB::transaction(function () use ($input, $lines) {
-            $order = ExamOrder::create([
-                'patient_id' => $input['patient_id'],
-                // Exams of an admitted patient go on the admission's bill, not to the cashier.
-                'ipd_patient_department_id' => \App\Models\IpdPatientDepartment::where('patient_id', $input['patient_id'])->where('discharge', 0)->latest('id')->value('id'),
-                'doctor_id' => $input['doctor_id'] ?? null,
-                // only a policy of this patient counts
-                'patient_insurance_id' => \App\Models\PatientInsurance::where('patient_id', $input['patient_id'])->find($input['patient_insurance_id'] ?? null)?->id,
-                'price_list_id' => $input['price_list_id'] ?? null,
-                'voucher_number' => $input['voucher_number'] ?? null,
-                'ordered_at' => now(),
-                'user_id' => Auth::id(),
-                'notes' => $input['notes'] ?? null,
-            ]);
-            foreach ($lines as $line) {
-                $order->items()->create([
-                    'testable_type' => $line['type'],
-                    'testable_id' => $line['id'],
-                    'description' => $line['description'],
-                    'total' => $line['split']['gross'],
-                    'discount_amount' => $line['split']['discount_amount'],
-                    'payer_amount' => $line['split']['payer_amount'],
-                    'patient_amount' => $line['split']['patient_amount'],
-                ]);
-            }
-
-            return $order;
-        });
+        $order = DB::transaction(fn () => ExamOrder::place($input, $lines, Auth::id()));
 
         Flash::success(__('messages.exam_orders.saved', ['amount' => formatMoney($order->items()->sum('patient_amount'))]));
         if (canAccessRoute('cashier.index')) {
