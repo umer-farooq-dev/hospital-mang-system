@@ -16,6 +16,7 @@
                 <a class="btn btn-primary edit-btn"
                    href="{{ route('invoices.edit', ['invoice' => $invoice->id]) }}">{{ __('messages.common.edit') }}</a>
                 @endunless
+                @include('audit_logs.history_button', ['type' => 'invoice', 'id' => $invoice->id])
                 <a href="{{ url()->previous() }}"
                    class="btn btn-outline-primary {{getCurrentLoginUserLanguageName()=='ar' ? 'me-2' : 'ms-2'}}">{{ __('messages.common.back') }}</a>
             </div>

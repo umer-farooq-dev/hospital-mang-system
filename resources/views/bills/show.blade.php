@@ -9,6 +9,7 @@
             <div class="text-end mt-4 mt-md-0">
                 <a class="btn btn-primary edit-btn"
                    href="{{route('bills.edit', ['bill' => $bill->id]) }}">{{ __('messages.common.edit') }}</a>
+                @include('audit_logs.history_button', ['type' => 'bill', 'id' => $bill->id])
                 <a href="{{route('bills.index')}}"
                    class="btn btn-outline-primary {{getCurrentLoginUserLanguageName()=='ar' ? 'me-2' : 'ms-2'}}">{{ __('messages.common.back') }}</a>
             </div>

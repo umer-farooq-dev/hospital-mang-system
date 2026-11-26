@@ -11,6 +11,15 @@ class AuditLogController extends AppBaseController
         return view('audit_logs.index');
     }
 
+    /** History of one bill, receipt, visit... and of its lines. */
+    public function history(string $type, int $id)
+    {
+        abort_unless(array_key_exists($type, AuditLog::HISTORY), 404);
+        $logs = AuditLog::historyFor($type, $id);
+
+        return view('audit_logs.history', compact('type', 'id', 'logs'));
+    }
+
     public function show(AuditLog $auditLog)
     {
         $auditLog->load('user');

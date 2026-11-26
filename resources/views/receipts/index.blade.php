@@ -128,6 +128,7 @@
                                         </td>
                                         <td class="text-end text-nowrap">
                                             <a href="{{ route('receipts.print', [$receipt->id, 'duplicate' => 1]) }}" target="_blank" class="btn btn-sm btn-light" title="{{ __('messages.receipts.duplicate') }}"><i class="fas fa-copy"></i></a>
+                                            @include('audit_logs.history_button', ['type' => 'receipt', 'id' => $receipt->id, 'small' => true])
                                             @if ($open && $canMethod)
                                                 <button type="button" class="btn btn-sm btn-light-primary receipt-action" data-bs-toggle="modal" data-bs-target="#receiptMethodModal"
                                                         data-url="{{ route('receipts.method', $receipt->id) }}" data-number="{{ $receipt->receipt_number }}" title="{{ __('messages.receipts.change_method') }}"><i class="fas fa-exchange-alt"></i></button>
