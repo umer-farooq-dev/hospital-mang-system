@@ -4428,4 +4428,9 @@ return [
         'our_mission' => 'Our mission',
         'get_in_touch' => 'Write to us',
     ],
+    'errors' => [
+        'not_found_title' => 'Page not found',
+        'not_found_text' => 'The page you are looking for does not exist or is not available.',
+        'back' => 'Back to the previous page',
+    ],
 ];

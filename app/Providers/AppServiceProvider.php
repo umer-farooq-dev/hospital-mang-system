@@ -47,6 +47,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (! $this->app->runningInConsole()) {
+            try {
+                $this->app->setLocale(websiteLanguages()[0]);
+            } catch (\Throwable $e) {
+                // no database yet (installation): keep config('app.locale')
+            }
+        }
         if (config('app.force_https')) {
             app(UrlGenerator::class)->forceScheme('https');
         }
