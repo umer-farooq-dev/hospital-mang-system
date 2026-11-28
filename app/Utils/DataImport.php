@@ -20,8 +20,12 @@ use App\Models\Journal;
 use App\Models\JournalEntry;
 use App\Models\MasterListItem;
 use App\Models\Medicine;
+use App\Models\PathologyCategory;
+use App\Models\PathologyTest;
 use App\Models\Patient;
 use App\Models\PatientInsurance;
+use App\Models\RadiologyCategory;
+use App\Models\RadiologyTest;
 use App\Models\StockBatch;
 use App\Models\StockMovement;
 use App\Models\Store;
@@ -47,8 +51,8 @@ class DataImport
     const COLUMNS = [
         'departments' => ['name' => ['name', 'nom', 'department', 'service', 'specialite'], 'discount_percent' => ['discount', 'discount_percent', 'reduction', 'remise'],
             'description' => ['description']],
-        'tariff' => ['type' => ['type', 'nature'], 'act' => ['act', 'name', 'acte', 'libelle', 'designation', 'code', 'prestation'],
-            'category' => ['category', 'categorie', 'charge_category'], 'charge_type' => ['charge_type', 'type_de_charge'],
+        'tariff' => ['type' => ['type', 'nature'], 'act' => ['act', 'name', 'acte', 'libelle', 'designation', 'code', 'prestation', 'soin', 'examen'],
+            'category' => ['category', 'categorie', 'charge_category', 'specialite_soin', 'specialite', 'service'], 'charge_type' => ['charge_type', 'type_de_charge'],
             'price' => ['price', 'prix', 'tarif', 'comptant', 'cash', 'standard_charge'], 'doctor_share' => ['doctor_share', 'part_medecin'],
             'assistant_share' => ['assistant_share', 'part_assistant']],
         'surgical_acts' => ['name' => ['name', 'nom', 'acte', 'intervention'], 'category' => ['category', 'categorie'],
@@ -75,11 +79,14 @@ class DataImport
         'staff' => ['role' => ['role', 'profil', 'poste', 'categorie', 'category'], 'last_name' => ['last_name', 'nom'], 'first_name' => ['first_name', 'prenom', 'prenoms'],
             'email' => ['email', 'e_mail', 'mail'], 'gender' => ['gender', 'sex', 'sexe'], 'phone' => ['phone', 'telephone', 'tel', 'mobile'],
             'dob' => ['dob', 'birth_date', 'date_naissance'], 'designation' => ['designation', 'titre', 'fonction'], 'qualification' => ['qualification', 'diplome']],
-        'insurers' => ['name' => ['name', 'nom', 'raison_sociale'], 'code' => ['code', 'insurance_code'], 'payer_type' => ['payer_type', 'type'],
-            'coverage_percent' => ['coverage', 'coverage_percent', 'taux'], 'discount' => ['discount', 'reduction', 'remise'],
-            'contact_person' => ['contact_person', 'contact', 'interlocuteur'],
-            'phone' => ['phone', 'telephone', 'tel'], 'email' => ['email', 'e_mail', 'mail'], 'address' => ['address', 'adresse'],
-            'credit_days' => ['credit_days', 'delai', 'delai_paiement'], 'claim_note' => ['claim_note', 'note', 'observations']],
+        'insurers' => ['name' => ['name', 'nom', 'raison_sociale', 'nom_assureur'], 'code' => ['code', 'insurance_code'], 'payer_type' => ['payer_type', 'type'],
+            'coverage_percent' => ['coverage', 'coverage_percent', 'taux'], 'discount' => ['discount', 'reduction', 'remise', 'taux_reduction'],
+            'contact_person' => ['contact_person', 'contact', 'interlocuteur', 'personne_contact'],
+            'phone' => ['phone', 'telephone', 'tel'], 'email' => ['email', 'e_mail', 'mail'], 'address' => ['address', 'adresse', 'adresse_assureur'],
+            'credit_days' => ['credit_days', 'delai', 'delai_paiement'], 'claim_note' => ['claim_note', 'note', 'observations'],
+            'tax_id' => ['tax_id', 'ifu', 'n_ifu', 'nif'], 'trade_register' => ['trade_register', 'rccm'], 'tax_regime' => ['tax_regime', 'regime_d_imposition', 'regime_imposition'],
+            'tax_division' => ['tax_division', 'division_fiscale'], 'account_code' => ['account_code', 'compte_comptable', 'n_compte_comptable'],
+            'price_list' => ['price_list', 'liste_de_prix', 'tarif']],
         'suppliers' => ['name' => ['name', 'nom', 'raison_sociale'], 'contact_person' => ['contact_person', 'contact', 'interlocuteur'],
             'phone' => ['phone', 'telephone', 'tel'], 'email' => ['email', 'e_mail', 'mail'], 'address' => ['address', 'adresse'],
             'tax_number' => ['tax_number', 'ifu', 'nif', 'tax_id']],
@@ -93,7 +100,7 @@ class DataImport
         'opening_balances' => ['account' => ['account', 'code', 'compte', 'n_compte'], 'label' => ['label', 'libelle', 'intitule'], 'debit' => ['debit'], 'credit' => ['credit']],
     ];
 
-    const REQUIRED = ['departments' => ['name'], 'tariff' => ['type', 'act'], 'surgical_acts' => ['name'], 'coverage_rules' => ['insurer'], 'patients' => ['last_name', 'first_name', 'gender'], 'policies' => ['patient', 'insurer'], 'doctors' => ['last_name', 'first_name', 'email', 'gender', 'department'],
+    const REQUIRED = ['departments' => ['name'], 'tariff' => ['act'], 'surgical_acts' => ['name'], 'coverage_rules' => ['insurer'], 'patients' => ['last_name', 'first_name', 'gender'], 'policies' => ['patient', 'insurer'], 'doctors' => ['last_name', 'first_name', 'email', 'gender', 'department'],
         'staff' => ['role', 'last_name', 'first_name', 'email', 'gender'], 'insurers' => ['name'], 'suppliers' => ['name'], 'opening_stock' => ['quantity'], 'opening_balances' => ['account'],
         'patient_balances' => ['patient', 'amount'], 'payer_balances' => ['insurer', 'number', 'amount']];
 
@@ -111,7 +118,7 @@ class DataImport
         'charge' => ['charge', 'act', 'acte', 'prestation', 'service', 'soin'],
         'doctor_opd_charge' => ['doctor_opd_charge', 'consultation', 'doctor', 'medecin'],
         'pathology_test' => ['pathology_test', 'lab', 'laboratoire', 'analyse', 'biologie', 'examen_labo'],
-        'radiology_test' => ['radiology_test', 'imaging', 'imagerie', 'radiologie', 'radio', 'echographie'],
+        'radiology_test' => ['radiology_test', 'imaging', 'imagerie', 'radiologie', 'radio', 'radiodiagnostic', 'echographie', 'scanner'],
         'package' => ['package', 'forfait', 'bilan', 'check_up'],
         'bed' => ['bed', 'lit', 'chambre'],
     ];
@@ -190,6 +197,20 @@ class DataImport
     public static function template(string $kind): array
     {
         return array_map(fn ($f) => self::label($f), self::fields($kind));
+    }
+
+    /** Line (1-based) of the column titles: the first of the top 20 lines with at least two known titles. */
+    public static function headerRow(array $grid, string $kind): int
+    {
+        $known = array_merge(...array_values(self::titles($kind)));
+        foreach (array_slice(array_values($grid), 0, 20) as $i => $cells) {
+            $hits = count(array_filter((array) $cells, fn ($c) => trim((string) $c) !== '' && in_array(self::key((string) $c), $known, true)));
+            if ($hits >= 2) {
+                return $i + 1;
+            }
+        }
+
+        return 1;
     }
 
     /** File rows => [line number => fields], and the titles that matched nothing. */
@@ -600,9 +621,25 @@ class DataImport
             'email' => $this->email($data['email'] ?? null), 'address' => $data['address'] ?? null,
             'credit_days' => ($d = $this->number($data['credit_days'] ?? null, 'credit_days')) === null ? null : (int) $d,
             'claim_note' => $data['claim_note'] ?? null, 'billing_option' => Insurance::BILLING_OPTIONS[0],
+            'tax_id' => $data['tax_id'] ?? null, 'trade_register' => $data['trade_register'] ?? null, 'tax_regime' => $data['tax_regime'] ?? null,
+            'tax_division' => $data['tax_division'] ?? null, 'account_code' => $data['account_code'] ?? null,
+            'price_list_id' => isset($data['price_list']) ? ($this->priceListId($data['price_list']) ?? $this->fail('unknown_item', ['value' => $data['price_list'], 'list' => __('messages.price_list.price_lists')])) : null,
             'service_tax' => 0, 'hospital_rate' => 0, 'total' => 0, 'status' => 1];
 
         return ['create', fn () => Insurance::create($values)];
+    }
+
+    /** Price list by its name or its translated name. */
+    private function priceListId(string $name): ?int
+    {
+        $key = self::key($name);
+        foreach (PriceList::all() as $list) {
+            if (self::key($list->name) === $key || ($list->lang_key && self::key(__($list->lang_key)) === $key)) {
+                return $list->id;
+            }
+        }
+
+        return null;
     }
 
     private function prepareSuppliers(array $data): array
@@ -632,9 +669,16 @@ class DataImport
     /** Price of an act in every price list, with the doctor and assistant shares; a new act (charge) or consultation price is created. */
     private function prepareTariff(array $data): array
     {
-        $type = collect(self::TARIFF_TYPES)->search(fn ($words) => in_array(self::key($data['type']), $words, true));
-        if ($type === false) {
-            $this->fail('unknown_type', ['value' => $data['type'], 'types' => implode(', ', array_map(fn ($w) => $w[1], self::TARIFF_TYPES))]);
+        if (isset($data['type'])) {
+            $type = collect(self::TARIFF_TYPES)->search(fn ($words) => in_array(self::key($data['type']), $words, true));
+            if ($type === false) {
+                $this->fail('unknown_type', ['value' => $data['type'], 'types' => implode(', ', array_map(fn ($w) => $w[1], self::TARIFF_TYPES))]);
+            }
+        } else {
+            $category = self::key($data['category'] ?? '');
+            $type = in_array($category, self::TARIFF_TYPES['pathology_test'], true) ? 'pathology_test'
+                : (in_array($category, self::TARIFF_TYPES['radiology_test'], true) ? 'radiology_test' : 'charge');
+            $data['type'] = $type;
         }
         [$class, $nameColumn, $baseColumn] = ItemPrice::ITEM_TYPES[$type];
         $doctorId = null;
@@ -643,6 +687,10 @@ class DataImport
                 ->orWhereRaw("CONCAT(last_name, ' ', first_name) = ?", [$data['act']])->orWhere('email', mb_strtolower($data['act'])))->value('id')
                 ?? $this->fail('unknown_doctor', ['value' => $data['act']]);
             $item = DoctorOPDCharge::where('doctor_id', $doctorId)->first();
+        } elseif ($type === 'charge' && isset($data['category'])) {
+            $item = Charge::where('code', $data['act'])
+                ->whereIn('charge_category_id', ChargeCategory::where('name', $data['category'])->pluck('id'))->first()
+                ?? Charge::where('code', $data['act'])->whereDoesntHave('chargeCategory', fn ($q) => $q->where('name', '!=', $data['category']))->first();
         } else {
             $item = $class::where($nameColumn, $data['act'])->first();
         }
@@ -661,19 +709,23 @@ class DataImport
             if ($base === null) {
                 $this->fail('missing', ['field' => self::label('price')]);
             }
-            if ($type === 'charge') {
-                $categoryId = isset($data['category']) ? ChargeCategory::where('name', $data['category'])->value('id') : null;
+            if (in_array($type, ['charge', 'pathology_test', 'radiology_test'], true)) {
+                // new act or test: its category (speciality) is found or created; its charge type is the given one, else the first of the list
+                if (! isset($data['category'])) {
+                    $this->fail('no_category');
+                }
+                $categoryId = ChargeCategory::where('name', $data['category'])->value('id');
                 if (! $categoryId) {
-                    if (! isset($data['category'], $data['charge_type'])) {
-                        $this->fail('no_category');
-                    }
-                    $newCategory = ['name' => $data['category'], 'charge_type' => $this->listCode('charge_type', $data['charge_type'])];
+                    $chargeType = isset($data['charge_type']) ? $this->listCode('charge_type', $data['charge_type'])
+                        : ($this->ctx['first_charge_type'] ??= array_key_first(MasterListItem::labels('charge_type')));
+                    $chargeType ?? $this->fail('no_category');
+                    $newCategory = ['name' => $data['category'], 'charge_type' => $chargeType];
                 }
             } elseif ($type !== 'doctor_opd_charge') {
                 $this->fail('unknown_act', ['value' => $data['act'], 'type' => $data['type']]);
             }
         }
-        $key = $type.'|'.mb_strtolower($data['act']);
+        $key = $type.'|'.mb_strtolower($data['act']).($type === 'charge' ? '|'.mb_strtolower($data['category'] ?? '') : '');
         $action = $item || $this->seen('tariff', $key) ? 'update' : 'create';
         $this->remember('tariff', $key);
 
@@ -681,12 +733,17 @@ class DataImport
             if (! $item && $type === 'doctor_opd_charge') {
                 $item = DoctorOPDCharge::where('doctor_id', $doctorId)->first() ?? DoctorOPDCharge::create(['doctor_id' => $doctorId, 'standard_charge' => $base]);
             } elseif (! $item) {
-                $item = $class::where($nameColumn, $data['act'])->first();
-                if (! $item) {
-                    $categoryId ??= ChargeCategory::where('name', $newCategory['name'])->value('id') ?? ChargeCategory::create($newCategory)->id;
-                    $item = Charge::create(['code' => mb_substr($data['act'], 0, 160), 'charge_category_id' => $categoryId,
-                        'charge_type' => ChargeCategory::whereKey($categoryId)->value('charge_type'), 'standard_charge' => $base]);
-                }
+                $categoryId ??= ChargeCategory::where('name', $newCategory['name'])->value('id') ?? ChargeCategory::create($newCategory)->id;
+                $item = match ($type) {
+                    'pathology_test' => PathologyTest::where('test_name', $data['act'])->first() ?? PathologyTest::create(['test_name' => mb_substr($data['act'], 0, 190),
+                        'short_name' => mb_substr($data['act'], 0, 50), 'test_type' => $data['category'], 'category_id' => PathologyCategory::firstOrCreate(['name' => $data['category']])->id,
+                        'charge_category_id' => $categoryId, 'standard_charge' => $base]),
+                    'radiology_test' => RadiologyTest::where('test_name', $data['act'])->first() ?? RadiologyTest::create(['test_name' => mb_substr($data['act'], 0, 190),
+                        'short_name' => mb_substr($data['act'], 0, 50), 'test_type' => $data['category'], 'category_id' => RadiologyCategory::firstOrCreate(['name' => $data['category']])->id,
+                        'charge_category_id' => $categoryId, 'standard_charge' => $base]),
+                    default => Charge::where('code', $data['act'])->where('charge_category_id', $categoryId)->first() ?? Charge::create(['code' => mb_substr($data['act'], 0, 160),
+                        'charge_category_id' => $categoryId, 'charge_type' => ChargeCategory::whereKey($categoryId)->value('charge_type'), 'standard_charge' => $base]),
+                };
             }
             if ($base !== null) {
                 $item->forceFill([$baseColumn => $base])->save();

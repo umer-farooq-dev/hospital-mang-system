@@ -50,7 +50,7 @@ class DataImportController extends AppBaseController
         $path = $file->storeAs('imports', uniqid('import_', true).'.'.strtolower($file->getClientOriginalExtension()));
         unset($options['file']);
         session([self::SESSION => ['path' => $path, 'name' => $file->getClientOriginalName(), 'kind' => $options['kind'], 'options' => $options]]);
-        $preview = (new DataImport($options['kind'], $options))->preview(self::rows($path, $file->getClientOriginalName()));
+        $preview = (new DataImport($options['kind'], $options))->preview(self::rows($path, $file->getClientOriginalName(), $options['kind']));
 
         return redirect()->route('data-import.index', ['kind' => $options['kind']])->with('data_import_preview', $preview);
     }
@@ -65,7 +65,7 @@ class DataImportController extends AppBaseController
             return redirect()->route('data-import.index');
         }
         $run = DataImportRun::create(['kind' => $pending['kind'], 'file_name' => mb_substr($pending['name'], 0, 255), 'user_id' => auth()->id(), 'options' => $pending['options']]);
-        $run = (new DataImport($pending['kind'], $pending['options']))->run(self::rows($pending['path'], $pending['name']), $run);
+        $run = (new DataImport($pending['kind'], $pending['options']))->run(self::rows($pending['path'], $pending['name'], $pending['kind']), $run);
         $this->forgetFile();
         $message = __('messages.data_import.done', ['created' => $run->created, 'updated' => $run->updated, 'existing' => $run->existing, 'failed' => $run->failed]);
         $run->failed ? Flash::warning($message) : Flash::success($message);
@@ -123,9 +123,12 @@ class DataImportController extends AppBaseController
             'Content-Disposition' => 'attachment; filename="errors_'.$run->kind.'_'.$run->id.'.csv"']);
     }
 
-    public static function rows(string $path, string $name): array
+    public static function rows(string $path, string $name, ?string $kind = null): array
     {
-        return LabImportProfile::readRows(new UploadedFile(Storage::path($path), $name, null, null, true));
+        $file = new UploadedFile(Storage::path($path), $name, null, null, true);
+        $grid = LabImportProfile::readGrid($file);
+
+        return LabImportProfile::rowsFromGrid($grid, $kind ? DataImport::headerRow($grid, $kind) : 1);
     }
 
     private function forgetFile(): void

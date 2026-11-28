@@ -86,6 +86,35 @@ class StartingDataTest extends TestCase
         $this->assertEquals(2300, DB::table('item_prices')->where(['priceable_type' => 'charge', 'price_list_id' => 2])->value('price'));
     }
 
+    public function test_a_hospital_tariff_file_without_type_column_is_read_from_its_title_line(): void
+    {
+        Schema::table('pathology_tests', function (Blueprint $t) {
+            $t->string('short_name')->nullable();
+            $t->string('test_type')->nullable();
+            $t->unsignedInteger('category_id')->nullable();
+            $t->unsignedInteger('charge_category_id')->nullable();
+            $t->unsignedBigInteger('patient_id')->nullable();
+            $t->string('currency_symbol')->nullable();
+        });
+        Schema::create('pathology_categories', function (Blueprint $t) {
+            $t->id();
+            $t->string('name');
+            $t->timestamps();
+        });
+        $grid = [['TARIFS 2026'], [], ['SPECIALITE SOIN', 'SOIN', 'COMPTANT', 'PRISE EN CHARGE'],
+            ['Laboratoire', 'NFS', '3500', '4025'], ['Pediatrie', 'Visite du médecin', '5000', '5000'], ['Gyneco', 'Visite du médecin', '6000', '6900']];
+        $this->assertSame(3, DataImport::headerRow($grid, 'tariff'));
+        $rows = \App\Models\LabImportProfile::rowsFromGrid($grid, 3);
+
+        $run = $this->import('tariff', $rows);
+        $this->assertSame([3, 0], [$run->created, $run->failed]);
+        $this->assertSame(['NFS', 'Laboratoire'], [DB::table('pathology_tests')->value('test_name'), DB::table('pathology_categories')->value('name')]);
+        $this->assertSame(2, DB::table('charges')->where('code', 'Visite du médecin')->count(), 'same act in two specialities');
+        $this->assertSame(3, (int) DB::table('charges')->value('charge_type'), 'first charge type of the list');
+        $this->assertEquals(4025, DB::table('item_prices')->where(['priceable_type' => 'pathology_test', 'price_list_id' => 2])->value('price'));
+        $this->assertSame(0, $this->import('tariff', $rows)->created, 'a second run updates');
+    }
+
     public function test_departments_surgical_acts_and_coverage_rules(): void
     {
         $this->assertSame(1, $this->import('departments', [['Service' => 'Pédiatrie', 'Réduction %' => '10'], ['Service' => 'Pédiatrie']])->created);
