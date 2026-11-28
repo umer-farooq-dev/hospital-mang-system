@@ -4538,6 +4538,7 @@ return [
         'patient_pays' => 'Le patient (sans assurance)',
         'no_policy' => 'Aucune assurance valide dans le dossier du patient.',
         'voucher' => 'N° de bon / d\'accord',
+        'price_list_auto' => "Selon l'assureur (comptant sans assurance)",
         'price_list' => 'Liste de prix',
         'discount' => 'Remise',
         'discount_max' => 'Jusqu\'à :max',

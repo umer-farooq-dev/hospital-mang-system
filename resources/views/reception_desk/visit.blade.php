@@ -123,8 +123,10 @@
                                 <div class="col-md-6">
                                     <label class="form-label">{{ __('messages.reception_visit.price_list') }}</label>
                                     <select name="price_list_id" class="form-select">
+                                        {{-- empty: the insurer's own list for an insured patient, the default list otherwise --}}
+                                        <option value="">{{ __('messages.reception_visit.price_list_auto') }}</option>
                                         @foreach ($priceLists as $id => $label)
-                                            <option value="{{ $id }}" @selected($defaultList == $id)>{{ $label }}</option>
+                                            <option value="{{ $id }}">{{ $label }}</option>
                                         @endforeach
                                     </select>
                                 </div>
