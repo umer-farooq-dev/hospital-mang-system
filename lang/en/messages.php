@@ -4313,7 +4313,7 @@ return [
         ],
         'kinds' => ['patient_balances' => 'Patient balances', 'payer_balances' => 'Insurer invoices due', 'departments' => 'Departments', 'tariff' => 'Prices', 'surgical_acts' => 'Surgical acts (K)', 'coverage_rules' => 'Coverage rules', 'patients' => 'Patients', 'policies' => 'Insurance policies', 'doctors' => 'Doctors', 'staff' => 'Staff', 'insurers' => 'Insurers',
             'suppliers' => 'Suppliers', 'opening_stock' => 'Opening stock', 'opening_balances' => 'Opening balances'],
-        'fields' => ['amount' => 'Amount', 'description' => 'Description', 'discount_percent' => 'Discount %', 'discount' => 'Discount %', 'type' => 'Type', 'act' => 'Act',
+        'fields' => ['tax_id' => 'Tax ID (IFU)', 'trade_register' => 'Trade register (RCCM)', 'tax_regime' => 'Tax regime', 'tax_division' => 'Tax division', 'account_code' => 'Account number', 'price_list' => 'Price list', 'amount' => 'Amount', 'description' => 'Description', 'discount_percent' => 'Discount %', 'discount' => 'Discount %', 'type' => 'Type', 'act' => 'Act',
             'category' => 'Category', 'charge_type' => 'Charge type', 'price' => 'Price', 'doctor_share' => 'Doctor share %', 'assistant_share' => 'Assistant share %',
             'k_surgeon' => 'K surgeon', 'k_assistant' => 'K assistant', 'k_anaesthetist' => 'K anaesthetist', 'not_covered' => 'Not covered', 'needs_approval' => 'Prior approval',
             'max_amount' => 'Maximum amount', 'pay_type' => 'Pay type', 'pay_rate' => 'Pay rate', 'withholding_exempt' => 'No withholding', 'number' => 'Number', 'last_name' => 'Last name', 'first_name' => 'First name', 'gender' => 'Gender', 'dob' => 'Date of birth',

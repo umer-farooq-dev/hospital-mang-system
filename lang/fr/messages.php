@@ -4325,7 +4325,7 @@ return [
         ],
         'kinds' => ['patient_balances' => 'Soldes patients', 'payer_balances' => 'Factures assureurs dues', 'departments' => 'Services', 'tariff' => 'Tarifs', 'surgical_acts' => 'Actes chirurgicaux (K)', 'coverage_rules' => 'Règles de prise en charge', 'patients' => 'Patients', 'policies' => "Contrats d'assurance", 'doctors' => 'Médecins', 'staff' => 'Personnel', 'insurers' => 'Assureurs',
             'suppliers' => 'Fournisseurs', 'opening_stock' => 'Stock initial', 'opening_balances' => "Soldes d'ouverture"],
-        'fields' => ['amount' => 'Montant', 'description' => 'Description', 'discount_percent' => 'Réduction %', 'discount' => 'Réduction %', 'type' => 'Type', 'act' => 'Acte',
+        'fields' => ['tax_id' => 'N° IFU', 'trade_register' => 'RCCM', 'tax_regime' => "Régime d'imposition", 'tax_division' => 'Division fiscale', 'account_code' => 'N° compte comptable', 'price_list' => 'Grille tarifaire', 'amount' => 'Montant', 'description' => 'Description', 'discount_percent' => 'Réduction %', 'discount' => 'Réduction %', 'type' => 'Type', 'act' => 'Acte',
             'category' => 'Catégorie', 'charge_type' => 'Type de charge', 'price' => 'Prix', 'doctor_share' => 'Part médecin %', 'assistant_share' => 'Part assistant %',
             'k_surgeon' => 'K chirurgien', 'k_assistant' => 'K assistant', 'k_anaesthetist' => 'K anesthésiste', 'not_covered' => 'Non couvert', 'needs_approval' => 'Accord préalable',
             'max_amount' => 'Montant maximum', 'pay_type' => 'Mode de rémunération', 'pay_rate' => 'Taux de rémunération', 'withholding_exempt' => 'Sans retenue', 'number' => 'Numéro', 'last_name' => 'Nom', 'first_name' => 'Prénom', 'gender' => 'Sexe', 'dob' => 'Date de naissance',

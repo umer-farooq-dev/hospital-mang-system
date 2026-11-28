@@ -23,13 +23,18 @@ class LabImportProfile extends Model
     /** Rows of a CSV (separator detected), XLSX or XLS file as [column title => value], titles taken from $headerRow. */
     public static function readRows(UploadedFile $file, int $headerRow = 1): array
     {
+        return self::rowsFromGrid(self::readGrid($file), $headerRow);
+    }
+
+    /** Cells of the first sheet (CSV/TXT, XLS or XLSX). */
+    public static function readGrid(UploadedFile $file): array
+    {
         $extension = strtolower($file->getClientOriginalExtension());
-        $grid = $extension === 'csv' || $extension === 'txt'
+
+        return $extension === 'csv' || $extension === 'txt'
             ? self::csvGrid((string) file_get_contents($file->getRealPath()))
             : (\Maatwebsite\Excel\Facades\Excel::toArray(new class {}, $file->getRealPath(), null,
                 $extension === 'xls' ? \Maatwebsite\Excel\Excel::XLS : \Maatwebsite\Excel\Excel::XLSX)[0] ?? []);
-
-        return self::rowsFromGrid($grid, $headerRow);
     }
 
     public static function csvGrid(string $content): array

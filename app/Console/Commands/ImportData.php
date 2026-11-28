@@ -34,7 +34,7 @@ class ImportData extends Command
         $path = Storage::putFileAs('imports', new \Illuminate\Http\File($file), uniqid('cli_', true).'.'.pathinfo($file, PATHINFO_EXTENSION));
         try {
             $options = array_filter(['store_id' => $this->option('store'), 'prefix' => $this->option('prefix'), 'date' => $this->option('date'), 'journal' => $this->option('journal')]);
-            $rows = DataImportController::rows($path, basename($file));
+            $rows = DataImportController::rows($path, basename($file), $kind);
             $import = new DataImport($kind, $options);
             if (! $this->option('commit')) {
                 $p = $import->preview($rows);
