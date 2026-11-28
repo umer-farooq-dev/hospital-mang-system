@@ -117,6 +117,17 @@ class ReceptionDeskRepository
         ];
     }
 
+    /** No list chosen: the chosen policy's insurer list, else the default list (as the exams do). */
+    private function withPriceList(Patient $patient, array $input): array
+    {
+        if (blank($input['price_list_id'] ?? null) && filled($input['patient_insurance_id'] ?? null)) {
+            $input['price_list_id'] = PatientInsurance::with('insurance')->where('patient_id', $patient->id)
+                ->find($input['patient_insurance_id'])?->insurance?->price_list_id;
+        }
+
+        return $input;
+    }
+
     /** Fee of the doctor's consultation in the chosen price list. */
     private function consultationFee(int $doctorId, ?int $priceListId): float
     {
@@ -133,6 +144,7 @@ class ReceptionDeskRepository
      */
     public function quote(Patient $patient, array $input): array
     {
+        $input = $this->withPriceList($patient, $input);
         $input['patient_id'] = $patient->id;
         $lines = [];
         if (! empty($input['consultation']) && ! empty($input['doctor_id'])) {
@@ -165,6 +177,7 @@ class ReceptionDeskRepository
         if ((float) ($input['extra_discount'] ?? 0) > self::maxDiscount()) {
             throw ValidationException::withMessages(['extra_discount' => __('messages.reception_visit.discount_too_high', ['max' => formatPercent(self::maxDiscount())])]);
         }
+        $input = $this->withPriceList($patient, $input);
         $input['patient_id'] = $patient->id;
         $session = $cashier->openSessionFor($user);
 

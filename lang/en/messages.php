@@ -4526,6 +4526,7 @@ return [
         'patient_pays' => 'The patient (no insurance)',
         'no_policy' => 'No valid insurance on the patient file.',
         'voucher' => 'Voucher / approval number',
+        'price_list_auto' => "Insurer's list (cash when not insured)",
         'price_list' => 'Price list',
         'discount' => 'Discount',
         'discount_max' => 'Up to :max',
