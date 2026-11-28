@@ -70,7 +70,7 @@ class PatientFlowRepository
                 'doctor' => $doctor?->doctorUser?->full_name,
                 'department_id' => $isVisit ? $doctor?->doctor_department_id : null,
                 'service' => ! $isVisit && ! $isExam ? __('messages.cashier.'.$line->payable_type) : ($isVisit ? ($doctor?->department?->title ?? __('messages.common.n/a'))
-                    : __('messages.exam_orders.'.(($item?->testable_type ?? '') === 'radiology_test' ? 'imaging' : (($item?->testable_type ?? '') === 'package' ? 'packages' : 'laboratory')))),
+                    : __('messages.exam_orders.'.(($item?->testable_type ?? '') === 'radiology_test' ? 'imaging' : (($item?->testable_type ?? '') === 'package' ? 'packages' : (($item?->testable_type ?? '') === 'charge' ? 'acts' : 'laboratory'))))),
                 'payer' => $policy?->insurance?->name,
                 'total' => $line->total,
                 'discount' => $line->discount_amount,

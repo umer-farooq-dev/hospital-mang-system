@@ -61,7 +61,26 @@ class ExamOrderTest extends TestCase
 
         $this->assertSame(['NFS', 'G.E. avec frottis'], array_column($lines, 'description'), 'unknown or malformed tests are dropped');
         $this->assertSame([4025.0, 3220.0, 805.0], [$lines[0]['split']['gross'], $lines[0]['split']['payer_amount'], $lines[0]['split']['patient_amount']], 'insured list +15%, insurer 80%');
-        $this->assertSame([1725.0, 0.0, 1725.0, ['not_covered']], [$lines[1]['split']['gross'], $lines[1]['split']['payer_amount'], $lines[1]['split']['patient_amount'], $lines[1]['split']['warnings']]);
+        $this->assertSame([1500.0, 0.0, 1500.0, ['not_covered']], [$lines[1]['split']['gross'], $lines[1]['split']['payer_amount'], $lines[1]['split']['patient_amount'], $lines[1]['split']['warnings']],
+            'not covered: the patient pays the cash price');
+
+        Schema::create('charge_categories', function (Blueprint $t) {
+            $t->id();
+            $t->string('name');
+            $t->integer('charge_type')->default(1);
+            $t->timestamps();
+        });
+        Schema::create('charges', function (Blueprint $t) {
+            $t->id();
+            $t->integer('charge_type')->default(1);
+            $t->unsignedInteger('charge_category_id');
+            $t->string('code');
+            $t->double('standard_charge');
+            $t->timestamps();
+        });
+        DB::table('charges')->insert(['id' => 1, 'charge_category_id' => 1, 'code' => 'Consultation de gynécologue', 'standard_charge' => 7000]);
+        $act = ExamOrder::priceTests(['charge:1'], ['patient_id' => 7, 'patient_insurance_id' => $policy->id]);
+        $this->assertSame(['Consultation de gynécologue', 8050.0, 6440.0], [$act[0]['description'], $act[0]['split']['gross'], $act[0]['split']['payer_amount']], 'an act of the tariff is priced like an exam');
 
         DB::table('packages')->insert(['id' => 1, 'name' => 'Check-up adulte', 'total_amount' => 20000]);
         $checkup = ExamOrder::priceTests(['package:1'], ['patient_id' => 7, 'patient_insurance_id' => $policy->id]);

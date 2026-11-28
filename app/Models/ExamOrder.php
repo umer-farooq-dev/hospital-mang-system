@@ -29,6 +29,7 @@ class ExamOrder extends Model
         'pathology_test' => PathologyTest::class,
         'radiology_test' => RadiologyTest::class,
         'package' => Package::class, // check-ups
+        'charge' => Charge::class, // acts of the tariff (dental, surgery, consultations...)
     ];
 
     public static function rules(): array
@@ -41,7 +42,7 @@ class ExamOrder extends Model
             'voucher_number' => 'nullable|string|max:50',
             'notes' => 'nullable|string|max:1000',
             'tests' => 'required|array|min:1',
-            'tests.*' => ['string', 'regex:/^(pathology_test|radiology_test|package):\d+$/'],
+            'tests.*' => ['string', 'regex:/^(pathology_test|radiology_test|package|charge):\d+$/'],
         ];
     }
 
@@ -93,15 +94,20 @@ class ExamOrder extends Model
             if (! $test) {
                 continue;
             }
+            $options = ['date' => $at, 'voucher_number' => $input['voucher_number'] ?? null, 'charge_category_id' => $test->charge_category_id,
+                'extra_discount' => $input['extra_discount'] ?? null];
             $gross = $list ? $list->priceFor($test, $at) : ItemPrice::basePrice($test);
+            $split = PriceSplit::compute($gross, $policy, $departmentId, $options);
+            // an exam the insurer does not cover is paid by the patient at the cash (default list) price
+            $default = PriceList::defaultList();
+            if (in_array('not_covered', $split['warnings'] ?? [], true) && $default && $list && $list->id !== $default->id) {
+                $split = PriceSplit::compute($default->priceFor($test, $at), $policy, $departmentId, $options);
+            }
             $lines[] = [
                 'type' => $type,
                 'id' => $test->id,
-                'description' => $test->test_name ?? $test->name,
-                'split' => PriceSplit::compute($gross, $policy, $departmentId, [
-                    'date' => $at, 'voucher_number' => $input['voucher_number'] ?? null, 'charge_category_id' => $test->charge_category_id,
-                    'extra_discount' => $input['extra_discount'] ?? null,
-                ]),
+                'description' => $test->test_name ?? $test->name ?? $test->code,
+                'split' => $split,
             ];
         }
 
