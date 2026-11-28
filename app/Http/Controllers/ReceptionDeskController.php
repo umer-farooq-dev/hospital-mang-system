@@ -97,7 +97,7 @@ class ReceptionDeskController extends AppBaseController
             'doctor_id' => 'nullable|integer|exists:doctors,id',
             'consultation' => 'nullable|boolean',
             'tests' => 'nullable|array',
-            'tests.*' => ['string', 'regex:/^(pathology_test|radiology_test|package):\d+$/'],
+            'tests.*' => ['string', 'regex:/^(pathology_test|radiology_test|package|charge):\d+$/'],
             'patient_insurance_id' => 'nullable|integer|exists:patient_insurances,id',
             'price_list_id' => 'nullable|integer|exists:price_lists,id',
             'voucher_number' => 'nullable|string|max:50',

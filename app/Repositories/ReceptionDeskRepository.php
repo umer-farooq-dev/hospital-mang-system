@@ -92,7 +92,11 @@ class ReceptionDeskRepository
         $doctors = Doctor::with('doctorUser', 'department')->whereHas('doctorUser', fn (Builder $q) => $q->where('status', 1))->get()
             ->sortBy('doctorUser.full_name');
         $policies = $patient->insurances()->with('insurance')->get()->filter(fn (PatientInsurance $p) => $p->is_active && $p->isValidOn());
-        $tests = [
+        // acts of the tariff by speciality, then lab, imaging and check-ups
+        $tests = \App\Models\Charge::with('chargeCategory:id,name')->orderBy('code')->get(['id', 'code', 'charge_category_id'])
+            ->groupBy(fn ($c) => $c->chargeCategory->name ?? __('messages.exam_orders.acts'))->sortKeys()
+            ->map(fn ($acts) => $acts->mapWithKeys(fn ($c) => ['charge:'.$c->id => $c->code])->all())->all();
+        $tests += [
             __('messages.exam_orders.laboratory') => PathologyTest::orderBy('test_name')->pluck('test_name', 'id')->mapWithKeys(fn ($n, $id) => ['pathology_test:'.$id => $n])->all(),
             __('messages.exam_orders.imaging') => RadiologyTest::orderBy('test_name')->pluck('test_name', 'id')->mapWithKeys(fn ($n, $id) => ['radiology_test:'.$id => $n])->all(),
             __('messages.exam_orders.packages') => \App\Models\Package::orderBy('name')->pluck('name', 'id')->mapWithKeys(fn ($n, $id) => ['package:'.$id => $n])->all(),
